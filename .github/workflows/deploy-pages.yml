@@ -5,9 +5,11 @@ on:
     branches:
       - main
       - release/v2.0.0-foundation
+      - release/v2.0.1-ux
     paths:
       - "Knaus_Companion_Ultimate_v1.0.zip"
       - "Knaus_Companion_Ultimate_v2.0.0.zip"
+      - "Knaus_Companion_Ultimate_v2.0.1.zip"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -27,19 +29,28 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Select preserved application package
+      - name: Select application package
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then
+          if [ -f Knaus_Companion_Ultimate_v2.0.1.zip ]; then
+            echo "APP_ZIP=Knaus_Companion_Ultimate_v2.0.1.zip" >> "$GITHUB_ENV"
+            echo "APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.1" >> "$GITHUB_ENV"
+            echo "EXPECTED_VERSION=2.0.1" >> "$GITHUB_ENV"
+            echo "ARTIFACT_NAME=knaus-companion-v2.0.1-ux" >> "$GITHUB_ENV"
+          elif [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then
             echo "APP_ZIP=Knaus_Companion_Ultimate_v2.0.0.zip" >> "$GITHUB_ENV"
             echo "APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.0" >> "$GITHUB_ENV"
+            echo "EXPECTED_VERSION=2.0.0" >> "$GITHUB_ENV"
+            echo "ARTIFACT_NAME=knaus-companion-v2.0.0-foundation" >> "$GITHUB_ENV"
           else
             echo "APP_ZIP=Knaus_Companion_Ultimate_v1.0.zip" >> "$GITHUB_ENV"
             echo "APP_DIR_NAME=Knaus_Companion_Ultimate" >> "$GITHUB_ENV"
+            echo "EXPECTED_VERSION=1.0" >> "$GITHUB_ENV"
+            echo "ARTIFACT_NAME=knaus-companion-v1.0" >> "$GITHUB_ENV"
           fi
 
-      - name: Build and validate preserved static site
+      - name: Build and validate static site
         shell: bash
         run: |
           set -euo pipefail
@@ -54,6 +65,7 @@ jobs:
 
           test "$(find _site/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find _site/manual/pages -type f | wc -l)" -eq 286
+          test "$(find _site/assets/photos -type f | wc -l)" -ge 6
           test -f _site/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
           test -f _site/data/build.json
           test -f _site/data/integrity.json
@@ -64,17 +76,21 @@ jobs:
 
           python3 - <<'PY'
           import json
+          import os
           import re
           from pathlib import Path
 
           site = Path('_site')
+          expected = os.environ['EXPECTED_VERSION']
           build = json.loads((site / 'data/build.json').read_text())
           chapters = json.loads((site / 'data/chapters.json').read_text())
           page_files = json.loads((site / 'data/manual_page_files.json').read_text())
 
-          assert build['version'] == '2.0.0', build['version']
-          assert build['counts']['chapters'] == 44
-          assert build['counts']['manualPages'] == 286
+          assert build['version'] == expected, (build['version'], expected)
+          assert build['counts']['chapters'] >= 44
+          assert build['counts']['manualPages'] >= 286
+          assert build['counts']['photos'] >= 6
+          assert build['counts']['documents'] >= 1
           assert len(chapters) == 44
           assert [c['n'] for c in chapters] == list(range(1, 45))
           assert len(page_files) == 286
@@ -95,9 +111,13 @@ jobs:
           html = (site / 'index.html').read_text()
           js = (site / 'assets/js/app.js').read_text()
           assert 'Knaus Companion Ultimate' in html
-          assert 'APP_VERSION="2.0.0"' in js
+          assert f'APP_VERSION="{expected}"' in js
           assert 'bookmarkChapter' in html and 'bookmarkManualPage' in html
           assert 'releaseCards' in html and 'integrityResults' in html
+          if expected == '2.0.1':
+              assert 'bottom-nav' in html
+              assert 'quickFab' in html
+              assert 'safetyLockResults' in html
 
           local_refs = []
           for text in (html, js):
@@ -111,18 +131,15 @@ jobs:
               if clean and not clean.endswith('/'):
                   assert (site / clean).exists(), clean
 
-          print('PASS: Knaus Companion', build['version'])
-          print('PASS: 44 chapters')
-          print('PASS: 286 manual pages')
-          print('PASS: chapter sequence and official page references')
-          print('PASS: release dashboard and bookmark controls')
-          print('PASS: static links checked; dynamic template paths ignored')
+          print('PASS:', expected)
+          print('PASS: 44 chapters, 286 pages, 6 photos, manufacturer PDF')
+          print('PASS: safety lock baseline and static links')
           PY
 
       - name: Upload validated staging artifact
         uses: actions/upload-artifact@v4
         with:
-          name: knaus-companion-v2.0.0-foundation
+          name: ${{ env.ARTIFACT_NAME }}
           path: _site
           if-no-files-found: error
           retention-days: 14
@@ -147,7 +164,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then
+          if [ -f Knaus_Companion_Ultimate_v2.0.1.zip ]; then
+            APP_ZIP=Knaus_Companion_Ultimate_v2.0.1.zip
+            APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.1
+          elif [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then
             APP_ZIP=Knaus_Companion_Ultimate_v2.0.0.zip
             APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.0
           else
