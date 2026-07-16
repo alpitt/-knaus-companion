@@ -1,4 +1,4 @@
-name: Deploy Knaus Companion to GitHub Pages
+name: Validate and Deploy Knaus Companion
 
 on:
   push:
@@ -17,23 +17,15 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Select preserved application package
         shell: bash
@@ -47,7 +39,7 @@ jobs:
             echo "APP_DIR_NAME=Knaus_Companion_Ultimate" >> "$GITHUB_ENV"
           fi
 
-      - name: Build and validate static site
+      - name: Build and validate preserved static site
         shell: bash
         run: |
           set -euo pipefail
@@ -59,18 +51,111 @@ jobs:
           test -f "$APP_DIR/index.html"
           cp -R "$APP_DIR"/. _site/
           touch _site/.nojekyll
+
           test "$(find _site/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find _site/manual/pages -type f | wc -l)" -eq 286
           test -f _site/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
           test -f _site/data/build.json
+          test -f _site/data/integrity.json
+          test -f _site/assets/js/app.js
+          test -f _site/assets/css/app.css
+          test -f _site/manifest.webmanifest
+          test -f _site/service-worker.js
+
           python3 - <<'PY'
           import json
+          import re
           from pathlib import Path
-          build=json.loads(Path('_site/data/build.json').read_text())
-          assert build['counts']['chapters']==44
-          assert build['counts']['manualPages']==286
-          print('Validated Knaus Companion', build['version'])
+
+          site = Path('_site')
+          build = json.loads((site / 'data/build.json').read_text())
+          chapters = json.loads((site / 'data/chapters.json').read_text())
+          page_files = json.loads((site / 'data/manual_page_files.json').read_text())
+
+          assert build['version'] == '2.0.0', build['version']
+          assert build['counts']['chapters'] == 44
+          assert build['counts']['manualPages'] == 286
+          assert len(chapters) == 44
+          assert [c['n'] for c in chapters] == list(range(1, 45))
+          assert len(page_files) == 286
+
+          for chapter in chapters:
+              path = site / 'chapters' / f"{chapter['n']:02d}.json"
+              assert path.is_file(), path
+              data = json.loads(path.read_text())
+              assert data['n'] == chapter['n']
+              assert data.get('title')
+              assert data.get('content')
+              page = int(data.get('officialPage', 1))
+              assert 1 <= page <= 286, (path, page)
+
+          for page_file in page_files:
+              assert (site / 'manual/pages' / page_file).is_file(), page_file
+
+          html = (site / 'index.html').read_text()
+          js = (site / 'assets/js/app.js').read_text()
+          assert 'Knaus Companion Ultimate' in html
+          assert 'APP_VERSION="2.0.0"' in js
+          assert 'bookmarkChapter' in html and 'bookmarkManualPage' in html
+          assert 'releaseCards' in html and 'integrityResults' in html
+
+          local_refs = []
+          for text in (html, js):
+              local_refs += re.findall(r'(?:src|href)=["\']([^"\']+)["\']', text)
+          for ref in local_refs:
+              if ref.startswith(('http:', 'https:', '#', 'data:', 'mailto:')):
+                  continue
+              clean = ref.split('#')[0].split('?')[0]
+              if clean and not clean.endswith('/'):
+                  assert (site / clean).exists(), clean
+
+          print('PASS: Knaus Companion', build['version'])
+          print('PASS: 44 chapters')
+          print('PASS: 286 manual pages')
+          print('PASS: chapter sequence and official page references')
+          print('PASS: release dashboard and bookmark controls')
           PY
+
+      - name: Upload validated staging artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: knaus-companion-${{ github.ref_name }}
+          path: _site
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: validate
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Rebuild validated site for deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then
+            APP_ZIP=Knaus_Companion_Ultimate_v2.0.0.zip
+            APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.0
+          else
+            APP_ZIP=Knaus_Companion_Ultimate_v1.0.zip
+            APP_DIR_NAME=Knaus_Companion_Ultimate
+          fi
+          rm -rf _site unpacked
+          mkdir -p _site unpacked
+          unzip -q "$APP_ZIP" -d unpacked
+          cp -R "unpacked/$APP_DIR_NAME"/. _site/
+          touch _site/.nojekyll
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
