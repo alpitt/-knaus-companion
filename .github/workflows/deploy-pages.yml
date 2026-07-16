@@ -1,0 +1,56 @@
+name: Deploy Knaus Companion to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Knaus_Companion_Ultimate_v1.0.zip"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build static site from preserved Ultimate package
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f Knaus_Companion_Ultimate_v1.0.zip
+          rm -rf _site unpacked
+          mkdir -p _site unpacked
+          unzip -q Knaus_Companion_Ultimate_v1.0.zip -d unpacked
+          APP_DIR="unpacked/Knaus_Companion_Ultimate"
+          test -f "$APP_DIR/index.html"
+          cp -R "$APP_DIR"/. _site/
+          touch _site/.nojekyll
+          test "$(find _site/chapters -type f -name '*.json' | wc -l)" -eq 44
+          test "$(find _site/manual/pages -type f | wc -l)" -eq 286
+          test -f _site/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
