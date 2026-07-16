@@ -122,7 +122,7 @@ jobs:
       - name: Upload validated staging artifact
         uses: actions/upload-artifact@v4
         with:
-          name: knaus-companion-${{ github.ref_name }}
+          name: knaus-companion-v2.0.0-foundation
           path: _site
           if-no-files-found: error
           retention-days: 14
