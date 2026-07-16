@@ -7,11 +7,13 @@ on:
       - release/v2.0.0-foundation
       - release/v2.0.1-ux
       - release/v2.1.0-electrical
+      - release/v2.2.0-electrical-database
     paths:
       - "Knaus_Companion_Ultimate_v1.0.zip"
       - "Knaus_Companion_Ultimate_v2.0.0.zip"
       - "Knaus_Companion_Ultimate_v2.0.1.zip"
       - "Knaus_Companion_Ultimate_v2.1.0.zip"
+      - "Knaus_Companion_Ultimate_v2.2.0.zip"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -35,7 +37,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f Knaus_Companion_Ultimate_v2.1.0.zip ]; then
+          if [ -f Knaus_Companion_Ultimate_v2.2.0.zip ]; then
+            echo "APP_ZIP=Knaus_Companion_Ultimate_v2.2.0.zip" >> "$GITHUB_ENV"
+            echo "APP_DIR_NAME=Knaus_Companion_Ultimate_v2.2.0" >> "$GITHUB_ENV"
+            echo "EXPECTED_VERSION=2.2.0" >> "$GITHUB_ENV"
+            echo "ARTIFACT_NAME=knaus-companion-v2.2.0-electrical-database" >> "$GITHUB_ENV"
+          elif [ -f Knaus_Companion_Ultimate_v2.1.0.zip ]; then
             echo "APP_ZIP=Knaus_Companion_Ultimate_v2.1.0.zip" >> "$GITHUB_ENV"
             echo "APP_DIR_NAME=Knaus_Companion_Ultimate_v2.1.0" >> "$GITHUB_ENV"
             echo "EXPECTED_VERSION=2.1.0" >> "$GITHUB_ENV"
@@ -112,9 +119,9 @@ jobs:
           assert f'APP_VERSION="{expected}"' in js
           assert 'bookmarkChapter' in html and 'bookmarkManualPage' in html
           assert 'releaseCards' in html and 'integrityResults' in html
-          if expected in ('2.0.1','2.1.0'):
+          if expected in ('2.0.1','2.1.0','2.2.0'):
               assert 'bottom-nav' in html and 'quickFab' in html and 'safetyLockResults' in html
-          if expected=='2.1.0':
+          if expected in ('2.1.0','2.2.0'):
               for name in ('electrical_components.json','fuses.json','electrical_diagnostics.json'):
                   assert (site/'data'/name).is_file(),name
               components=json.loads((site/'data/electrical_components.json').read_text())
@@ -125,6 +132,16 @@ jobs:
               assert len(diagnostics)>=3
               assert 'electricalCards' in html and 'fuseBody' in html
               assert 'renderElectrical' in js and 'renderFuses' in js
+          if expected=='2.2.0':
+              for name in ('electrical_relations.json','electrical_symptoms.json'):
+                  assert (site/'data'/name).is_file(),name
+              relations=json.loads((site/'data/electrical_relations.json').read_text())
+              symptoms=json.loads((site/'data/electrical_symptoms.json').read_text())
+              assert len(components)>=15
+              assert len(relations)>=15
+              assert len(symptoms)>=6
+              assert 'wiringResults' in html and 'electricalSearchResults' in html
+              assert 'renderWiringExplorer' in js and 'searchElectrical' in js
           refs=[]
           for text in (html,js): refs+=re.findall(r'(?:src|href)=["\']([^"\']+)["\']',text)
           for ref in refs:
@@ -133,7 +150,7 @@ jobs:
               if clean and not clean.endswith('/'): assert (site/clean).exists(),clean
           print('PASS:',expected)
           print('PASS: preservation baseline')
-          if expected=='2.1.0': print('PASS: electrical workshop data and controls')
+          if expected=='2.2.0': print('PASS: electrical database, wiring explorer and search')
           PY
 
       - name: Upload validated staging artifact
@@ -162,7 +179,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f Knaus_Companion_Ultimate_v2.1.0.zip ]; then APP_ZIP=Knaus_Companion_Ultimate_v2.1.0.zip; APP_DIR_NAME=Knaus_Companion_Ultimate_v2.1.0
+          if [ -f Knaus_Companion_Ultimate_v2.2.0.zip ]; then APP_ZIP=Knaus_Companion_Ultimate_v2.2.0.zip; APP_DIR_NAME=Knaus_Companion_Ultimate_v2.2.0
+          elif [ -f Knaus_Companion_Ultimate_v2.1.0.zip ]; then APP_ZIP=Knaus_Companion_Ultimate_v2.1.0.zip; APP_DIR_NAME=Knaus_Companion_Ultimate_v2.1.0
           elif [ -f Knaus_Companion_Ultimate_v2.0.1.zip ]; then APP_ZIP=Knaus_Companion_Ultimate_v2.0.1.zip; APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.1
           elif [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then APP_ZIP=Knaus_Companion_Ultimate_v2.0.0.zip; APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.0
           else APP_ZIP=Knaus_Companion_Ultimate_v1.0.zip; APP_DIR_NAME=Knaus_Companion_Ultimate; fi
