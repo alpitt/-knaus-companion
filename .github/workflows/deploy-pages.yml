@@ -2,9 +2,12 @@ name: Deploy Knaus Companion to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - release/v2.0.0-foundation
     paths:
       - "Knaus_Companion_Ultimate_v1.0.zip"
+      - "Knaus_Companion_Ultimate_v2.0.0.zip"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -32,21 +35,42 @@ jobs:
         with:
           enablement: true
 
-      - name: Build static site from preserved Ultimate package
+      - name: Select preserved application package
         shell: bash
         run: |
           set -euo pipefail
-          test -f Knaus_Companion_Ultimate_v1.0.zip
+          if [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then
+            echo "APP_ZIP=Knaus_Companion_Ultimate_v2.0.0.zip" >> "$GITHUB_ENV"
+            echo "APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.0" >> "$GITHUB_ENV"
+          else
+            echo "APP_ZIP=Knaus_Companion_Ultimate_v1.0.zip" >> "$GITHUB_ENV"
+            echo "APP_DIR_NAME=Knaus_Companion_Ultimate" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build and validate static site
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$APP_ZIP"
           rm -rf _site unpacked
           mkdir -p _site unpacked
-          unzip -q Knaus_Companion_Ultimate_v1.0.zip -d unpacked
-          APP_DIR="unpacked/Knaus_Companion_Ultimate"
+          unzip -q "$APP_ZIP" -d unpacked
+          APP_DIR="unpacked/$APP_DIR_NAME"
           test -f "$APP_DIR/index.html"
           cp -R "$APP_DIR"/. _site/
           touch _site/.nojekyll
           test "$(find _site/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find _site/manual/pages -type f | wc -l)" -eq 286
           test -f _site/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
+          test -f _site/data/build.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          build=json.loads(Path('_site/data/build.json').read_text())
+          assert build['counts']['chapters']==44
+          assert build['counts']['manualPages']==286
+          print('Validated Knaus Companion', build['version'])
+          PY
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
