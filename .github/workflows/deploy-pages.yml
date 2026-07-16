@@ -105,6 +105,8 @@ jobs:
           for ref in local_refs:
               if ref.startswith(('http:', 'https:', '#', 'data:', 'mailto:')):
                   continue
+              if '${' in ref or '{' in ref or '}' in ref:
+                  continue
               clean = ref.split('#')[0].split('?')[0]
               if clean and not clean.endswith('/'):
                   assert (site / clean).exists(), clean
@@ -114,6 +116,7 @@ jobs:
           print('PASS: 286 manual pages')
           print('PASS: chapter sequence and official page references')
           print('PASS: release dashboard and bookmark controls')
+          print('PASS: static links checked; dynamic template paths ignored')
           PY
 
       - name: Upload validated staging artifact
