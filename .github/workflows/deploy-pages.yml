@@ -6,10 +6,12 @@ on:
       - main
       - release/v2.0.0-foundation
       - release/v2.0.1-ux
+      - release/v2.1.0-electrical
     paths:
       - "Knaus_Companion_Ultimate_v1.0.zip"
       - "Knaus_Companion_Ultimate_v2.0.0.zip"
       - "Knaus_Companion_Ultimate_v2.0.1.zip"
+      - "Knaus_Companion_Ultimate_v2.1.0.zip"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -33,7 +35,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f Knaus_Companion_Ultimate_v2.0.1.zip ]; then
+          if [ -f Knaus_Companion_Ultimate_v2.1.0.zip ]; then
+            echo "APP_ZIP=Knaus_Companion_Ultimate_v2.1.0.zip" >> "$GITHUB_ENV"
+            echo "APP_DIR_NAME=Knaus_Companion_Ultimate_v2.1.0" >> "$GITHUB_ENV"
+            echo "EXPECTED_VERSION=2.1.0" >> "$GITHUB_ENV"
+            echo "ARTIFACT_NAME=knaus-companion-v2.1.0-electrical" >> "$GITHUB_ENV"
+          elif [ -f Knaus_Companion_Ultimate_v2.0.1.zip ]; then
             echo "APP_ZIP=Knaus_Companion_Ultimate_v2.0.1.zip" >> "$GITHUB_ENV"
             echo "APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.1" >> "$GITHUB_ENV"
             echo "EXPECTED_VERSION=2.0.1" >> "$GITHUB_ENV"
@@ -75,65 +82,58 @@ jobs:
           test -f _site/service-worker.js
 
           python3 - <<'PY'
-          import json
-          import os
-          import re
+          import json, os, re
           from pathlib import Path
-
-          site = Path('_site')
-          expected = os.environ['EXPECTED_VERSION']
-          build = json.loads((site / 'data/build.json').read_text())
-          chapters = json.loads((site / 'data/chapters.json').read_text())
-          page_files = json.loads((site / 'data/manual_page_files.json').read_text())
-
-          assert build['version'] == expected, (build['version'], expected)
-          assert build['counts']['chapters'] >= 44
-          assert build['counts']['manualPages'] >= 286
-          assert build['counts']['photos'] >= 6
-          assert build['counts']['documents'] >= 1
-          assert len(chapters) == 44
-          assert [c['n'] for c in chapters] == list(range(1, 45))
-          assert len(page_files) == 286
-
+          site=Path('_site')
+          expected=os.environ['EXPECTED_VERSION']
+          build=json.loads((site/'data/build.json').read_text())
+          chapters=json.loads((site/'data/chapters.json').read_text())
+          page_files=json.loads((site/'data/manual_page_files.json').read_text())
+          assert build['version']==expected,(build['version'],expected)
+          assert build['counts']['chapters']>=44
+          assert build['counts']['manualPages']>=286
+          assert build['counts']['photos']>=6
+          assert build['counts']['documents']>=1
+          assert len(chapters)==44
+          assert [c['n'] for c in chapters]==list(range(1,45))
+          assert len(page_files)==286
           for chapter in chapters:
-              path = site / 'chapters' / f"{chapter['n']:02d}.json"
-              assert path.is_file(), path
-              data = json.loads(path.read_text())
-              assert data['n'] == chapter['n']
-              assert data.get('title')
-              assert data.get('content')
-              page = int(data.get('officialPage', 1))
-              assert 1 <= page <= 286, (path, page)
-
+              path=site/'chapters'/f"{chapter['n']:02d}.json"
+              assert path.is_file(),path
+              data=json.loads(path.read_text())
+              assert data['n']==chapter['n']
+              assert data.get('title') and data.get('content')
+              assert 1<=int(data.get('officialPage',1))<=286
           for page_file in page_files:
-              assert (site / 'manual/pages' / page_file).is_file(), page_file
-
-          html = (site / 'index.html').read_text()
-          js = (site / 'assets/js/app.js').read_text()
+              assert (site/'manual/pages'/page_file).is_file(),page_file
+          html=(site/'index.html').read_text()
+          js=(site/'assets/js/app.js').read_text()
           assert 'Knaus Companion Ultimate' in html
           assert f'APP_VERSION="{expected}"' in js
           assert 'bookmarkChapter' in html and 'bookmarkManualPage' in html
           assert 'releaseCards' in html and 'integrityResults' in html
-          if expected == '2.0.1':
-              assert 'bottom-nav' in html
-              assert 'quickFab' in html
-              assert 'safetyLockResults' in html
-
-          local_refs = []
-          for text in (html, js):
-              local_refs += re.findall(r'(?:src|href)=["\']([^"\']+)["\']', text)
-          for ref in local_refs:
-              if ref.startswith(('http:', 'https:', '#', 'data:', 'mailto:')):
-                  continue
-              if '${' in ref or '{' in ref or '}' in ref:
-                  continue
-              clean = ref.split('#')[0].split('?')[0]
-              if clean and not clean.endswith('/'):
-                  assert (site / clean).exists(), clean
-
-          print('PASS:', expected)
-          print('PASS: 44 chapters, 286 pages, 6 photos, manufacturer PDF')
-          print('PASS: safety lock baseline and static links')
+          if expected in ('2.0.1','2.1.0'):
+              assert 'bottom-nav' in html and 'quickFab' in html and 'safetyLockResults' in html
+          if expected=='2.1.0':
+              for name in ('electrical_components.json','fuses.json','electrical_diagnostics.json'):
+                  assert (site/'data'/name).is_file(),name
+              components=json.loads((site/'data/electrical_components.json').read_text())
+              fuses=json.loads((site/'data/fuses.json').read_text())
+              diagnostics=json.loads((site/'data/electrical_diagnostics.json').read_text())
+              assert len(components)>=7
+              assert len(fuses)>=11
+              assert len(diagnostics)>=3
+              assert 'electricalCards' in html and 'fuseBody' in html
+              assert 'renderElectrical' in js and 'renderFuses' in js
+          refs=[]
+          for text in (html,js): refs+=re.findall(r'(?:src|href)=["\']([^"\']+)["\']',text)
+          for ref in refs:
+              if ref.startswith(('http:','https:','#','data:','mailto:')) or '${' in ref or '{' in ref or '}' in ref: continue
+              clean=ref.split('#')[0].split('?')[0]
+              if clean and not clean.endswith('/'): assert (site/clean).exists(),clean
+          print('PASS:',expected)
+          print('PASS: preservation baseline')
+          if expected=='2.1.0': print('PASS: electrical workshop data and controls')
           PY
 
       - name: Upload validated staging artifact
@@ -154,37 +154,27 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
-
       - name: Rebuild validated site for deployment
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f Knaus_Companion_Ultimate_v2.0.1.zip ]; then
-            APP_ZIP=Knaus_Companion_Ultimate_v2.0.1.zip
-            APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.1
-          elif [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then
-            APP_ZIP=Knaus_Companion_Ultimate_v2.0.0.zip
-            APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.0
-          else
-            APP_ZIP=Knaus_Companion_Ultimate_v1.0.zip
-            APP_DIR_NAME=Knaus_Companion_Ultimate
-          fi
+          if [ -f Knaus_Companion_Ultimate_v2.1.0.zip ]; then APP_ZIP=Knaus_Companion_Ultimate_v2.1.0.zip; APP_DIR_NAME=Knaus_Companion_Ultimate_v2.1.0
+          elif [ -f Knaus_Companion_Ultimate_v2.0.1.zip ]; then APP_ZIP=Knaus_Companion_Ultimate_v2.0.1.zip; APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.1
+          elif [ -f Knaus_Companion_Ultimate_v2.0.0.zip ]; then APP_ZIP=Knaus_Companion_Ultimate_v2.0.0.zip; APP_DIR_NAME=Knaus_Companion_Ultimate_v2.0.0
+          else APP_ZIP=Knaus_Companion_Ultimate_v1.0.zip; APP_DIR_NAME=Knaus_Companion_Ultimate; fi
           rm -rf _site unpacked
           mkdir -p _site unpacked
           unzip -q "$APP_ZIP" -d unpacked
           cp -R "unpacked/$APP_DIR_NAME"/. _site/
           touch _site/.nojekyll
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
