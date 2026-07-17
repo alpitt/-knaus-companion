@@ -66,12 +66,30 @@ jobs:
             cp -a "$SITE_ROOT"/. _site/
           fi
 
+          # Hotfix: initialize Vehicle Explorer state before any app startup code can access it.
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('_site/assets/js/app.js')
+          text = p.read_text(encoding='utf-8')
+          declaration = 'let explorerView="interior",wakeLock=null;'
+          if declaration in text:
+              text = text.replace(declaration, '', 1)
+              anchor = 'let state='
+              pos = text.find(anchor)
+              if pos == -1:
+                  raise SystemExit('Could not locate state declaration in app.js')
+              text = text[:pos] + declaration + '\n' + text[pos:]
+              p.write_text(text, encoding='utf-8')
+          if text.find(declaration) > text.find('init().catch'):
+              raise SystemExit('Explorer initialization hotfix did not apply')
+          PY
+
           # One-time cleanup for devices still controlled by the original v1 PWA service worker.
           python3 - <<'PY'
           from pathlib import Path
           p = Path('_site/index.html')
           text = p.read_text(encoding='utf-8')
-          marker = 'knaus-cache-reset-v310'
+          marker = 'knaus-cache-reset-v311-hotfix1'
           cleanup = f'''<script>
           (function(){{
             var marker='{marker}';
@@ -81,7 +99,7 @@ jobs:
               ('caches' in window) ? caches.keys().then(function(keys){{return Promise.all(keys.map(function(k){{return caches.delete(k);}}));}}) : Promise.resolve()
             ]).then(function(){{
               localStorage.setItem(marker,'done');
-              var u=new URL(location.href);u.searchParams.set('appVersion','3.1.0');location.replace(u.toString());
+              var u=new URL(location.href);u.searchParams.set('appVersion','3.1.0-hotfix1');location.replace(u.toString());
             }}).catch(function(){{localStorage.setItem(marker,'done');}});
           }})();
           </script>'''
