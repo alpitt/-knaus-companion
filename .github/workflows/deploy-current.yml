@@ -1,0 +1,83 @@
+name: Deploy current Knaus Companion to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out approved release
+        uses: actions/checkout@v4
+        with:
+          ref: release/v3.1.0-production-readiness
+          fetch-depth: 1
+
+      - name: Prepare site files
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site _extract
+          mkdir -p _site _extract
+
+          ZIP_FILE="$(find . -type f -iname '*v3.1.0*.zip' -print -quit || true)"
+
+          if [ -n "$ZIP_FILE" ]; then
+            echo "Using release archive: $ZIP_FILE"
+            unzip -q "$ZIP_FILE" -d _extract
+            INDEX_FILE="$(find _extract -type f -name index.html -print -quit || true)"
+            if [ -z "$INDEX_FILE" ]; then
+              echo "No index.html found inside $ZIP_FILE"
+              exit 1
+            fi
+            SITE_ROOT="$(dirname "$INDEX_FILE")"
+            cp -a "$SITE_ROOT"/. _site/
+          elif [ -f index.html ]; then
+            echo "Using extracted site files from branch root"
+            find . -mindepth 1 -maxdepth 1 \
+              ! -name '.git' \
+              ! -name '.github' \
+              ! -name '_site' \
+              ! -name '_extract' \
+              -exec cp -a {} _site/ \;
+          else
+            INDEX_FILE="$(find . -type f -name index.html -not -path './.git/*' -print -quit || true)"
+            if [ -z "$INDEX_FILE" ]; then
+              echo "No deployable index.html or v3.1.0 ZIP was found on the release branch"
+              exit 1
+            fi
+            SITE_ROOT="$(dirname "$INDEX_FILE")"
+            cp -a "$SITE_ROOT"/. _site/
+          fi
+
+          touch _site/.nojekyll
+          test -f _site/index.html
+          echo "Prepared $(find _site -type f | wc -l) files for deployment"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
