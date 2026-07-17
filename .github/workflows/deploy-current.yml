@@ -66,8 +66,33 @@ jobs:
             cp -a "$SITE_ROOT"/. _site/
           fi
 
+          # One-time cleanup for devices still controlled by the original v1 PWA service worker.
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('_site/index.html')
+          text = p.read_text(encoding='utf-8')
+          marker = 'knaus-cache-reset-v310'
+          cleanup = f'''<script>
+          (function(){{
+            var marker='{marker}';
+            if(localStorage.getItem(marker)==='done') return;
+            Promise.all([
+              ('serviceWorker' in navigator) ? navigator.serviceWorker.getRegistrations().then(function(rs){{return Promise.all(rs.map(function(r){{return r.unregister();}}));}}) : Promise.resolve(),
+              ('caches' in window) ? caches.keys().then(function(keys){{return Promise.all(keys.map(function(k){{return caches.delete(k);}}));}}) : Promise.resolve()
+            ]).then(function(){{
+              localStorage.setItem(marker,'done');
+              var u=new URL(location.href);u.searchParams.set('appVersion','3.1.0');location.replace(u.toString());
+            }}).catch(function(){{localStorage.setItem(marker,'done');}});
+          }})();
+          </script>'''
+          if marker not in text:
+              text = text.replace('</head>', cleanup + '\n</head>')
+              p.write_text(text, encoding='utf-8')
+          PY
+
           touch _site/.nojekyll
           test -f _site/index.html
+          grep -q '3.1.0' _site/index.html
           echo "Prepared $(find _site -type f | wc -l) files for deployment"
 
       - name: Configure Pages
