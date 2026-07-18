@@ -2,10 +2,9 @@ name: Deploy Knaus Companion to GitHub Pages
 
 on:
   push:
-    branches:
-      - release/v4.3.0-diagnostic-engine
+    branches: [main]
     paths:
-      - "Knaus_Companion_Ultimate_v4.3.0.zip"
+      - "Knaus_Companion_Ultimate_v*.zip"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -25,22 +24,23 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check out v4.3.0 release branch
+      - name: Check out main
         uses: actions/checkout@v4
-        with:
-          ref: release/v4.3.0-diagnostic-engine
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      - name: Build static site from v4.3.0 package
+      - name: Build static site from newest release package
         shell: bash
         run: |
           set -euo pipefail
-          ZIP="Knaus_Companion_Ultimate_v4.3.0.zip"
-          test -f "$ZIP"
+
+          ZIP="$(find . -maxdepth 1 -type f -name 'Knaus_Companion_Ultimate_v*.zip' -printf '%f\n' | sort -V | tail -n 1)"
+          test -n "$ZIP"
+          echo "Deploying $ZIP"
+
           rm -rf _site unpacked
           mkdir -p _site unpacked
           unzip -q "$ZIP" -d unpacked
@@ -50,7 +50,7 @@ jobs:
           cp -R "$APP_DIR"/. _site/
           touch _site/.nojekyll
 
-          grep -Rqs '4.3.0' _site
+          test -f _site/index.html
           test "$(find _site/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find _site/manual/pages -type f | wc -l)" -eq 286
           test -f _site/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
