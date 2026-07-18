@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "Knaus_Companion_Ultimate_v*.zip"
+      - "Knaus_Companion*.zip"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -37,7 +37,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          ZIP="$(find . -maxdepth 1 -type f -name 'Knaus_Companion_Ultimate_v*.zip' -printf '%f\n' | sort -V | tail -n 1)"
+          echo "Available Knaus packages:"
+          find . -maxdepth 1 -type f -name 'Knaus_Companion*.zip' -printf '%f\n' | sort -V
+
+          ZIP="$(find . -maxdepth 1 -type f -name 'Knaus_Companion*.zip' -printf '%f\n' | sort -V | tail -n 1)"
           test -n "$ZIP"
           echo "Deploying $ZIP"
 
@@ -45,8 +48,10 @@ jobs:
           mkdir -p _site unpacked
           unzip -q "$ZIP" -d unpacked
 
-          APP_DIR="$(find unpacked -type f -name index.html -printf '%h\n' | head -n 1)"
+          APP_DIR="$(find unpacked -type f -name index.html -printf '%h\n' | grep -v '/__MACOSX/' | head -n 1)"
           test -n "$APP_DIR"
+          echo "Application directory: $APP_DIR"
+
           cp -R "$APP_DIR"/. _site/
           touch _site/.nojekyll
 
