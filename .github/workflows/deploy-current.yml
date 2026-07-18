@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out approved release
+      - name: Check out approved stable release
         uses: actions/checkout@v4
         with:
-          ref: release/v3.1.0-production-readiness
+          ref: release/v3.0.0-ai-assistant
           fetch-depth: 1
 
       - name: Prepare site files
@@ -36,7 +36,7 @@ jobs:
           rm -rf _site _extract
           mkdir -p _site _extract
 
-          ZIP_FILE="$(find . -type f -iname '*v3.1.0*.zip' -print -quit || true)"
+          ZIP_FILE="$(find . -type f -iname '*v3.0.0*.zip' -print -quit || true)"
 
           if [ -n "$ZIP_FILE" ]; then
             echo "Using release archive: $ZIP_FILE"
@@ -59,37 +59,18 @@ jobs:
           else
             INDEX_FILE="$(find . -type f -name index.html -not -path './.git/*' -print -quit || true)"
             if [ -z "$INDEX_FILE" ]; then
-              echo "No deployable index.html or v3.1.0 ZIP was found on the release branch"
+              echo "No deployable index.html or v3.0.0 ZIP was found on the release branch"
               exit 1
             fi
             SITE_ROOT="$(dirname "$INDEX_FILE")"
             cp -a "$SITE_ROOT"/. _site/
           fi
 
-          # Hotfix: initialize Vehicle Explorer state before any app startup code can access it.
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('_site/assets/js/app.js')
-          text = p.read_text(encoding='utf-8')
-          declaration = 'let explorerView="interior",wakeLock=null;'
-          if declaration in text:
-              text = text.replace(declaration, '', 1)
-              anchor = 'let state='
-              pos = text.find(anchor)
-              if pos == -1:
-                  raise SystemExit('Could not locate state declaration in app.js')
-              text = text[:pos] + declaration + '\n' + text[pos:]
-              p.write_text(text, encoding='utf-8')
-          if text.find(declaration) > text.find('init().catch'):
-              raise SystemExit('Explorer initialization hotfix did not apply')
-          PY
-
-          # One-time cleanup for devices still controlled by the original v1 PWA service worker.
           python3 - <<'PY'
           from pathlib import Path
           p = Path('_site/index.html')
           text = p.read_text(encoding='utf-8')
-          marker = 'knaus-cache-reset-v311-hotfix1'
+          marker = 'knaus-cache-reset-stable-v300'
           cleanup = f'''<script>
           (function(){{
             var marker='{marker}';
@@ -99,7 +80,7 @@ jobs:
               ('caches' in window) ? caches.keys().then(function(keys){{return Promise.all(keys.map(function(k){{return caches.delete(k);}}));}}) : Promise.resolve()
             ]).then(function(){{
               localStorage.setItem(marker,'done');
-              var u=new URL(location.href);u.searchParams.set('appVersion','3.1.0-hotfix1');location.replace(u.toString());
+              var u=new URL(location.href);u.searchParams.set('appVersion','3.0.0-stable');location.replace(u.toString());
             }}).catch(function(){{localStorage.setItem(marker,'done');}});
           }})();
           </script>'''
@@ -110,7 +91,7 @@ jobs:
 
           touch _site/.nojekyll
           test -f _site/index.html
-          grep -q '3.1.0' _site/index.html
+          grep -q '3.0.0' _site/index.html
           echo "Prepared $(find _site -type f | wc -l) files for deployment"
 
       - name: Configure Pages
