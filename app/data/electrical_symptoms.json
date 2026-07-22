@@ -1,0 +1,78 @@
+[
+  {
+    "symptom": "No habitation lights",
+    "components": [
+      "leisure-battery",
+      "calira-evs",
+      "vb06",
+      "lighting-circuits"
+    ],
+    "fuses": [
+      "Stromkreis 1",
+      "Stromkreis 2"
+    ],
+    "diagnostic": "no-habitation-power"
+  },
+  {
+    "symptom": "Water pump dead",
+    "components": [
+      "leisure-battery",
+      "vb06",
+      "water-pump-circuit"
+    ],
+    "fuses": [
+      "Pumpe"
+    ],
+    "diagnostic": "no-habitation-power"
+  },
+  {
+    "symptom": "Fridge not working on 12 V while driving",
+    "components": [
+      "alternator",
+      "vb04",
+      "vb06",
+      "fridge-12v-circuit"
+    ],
+    "fuses": [
+      "D+",
+      "K\u00fchlschrank"
+    ],
+    "diagnostic": "no-driving-charge"
+  },
+  {
+    "symptom": "Leisure battery not charging while driving",
+    "components": [
+      "alternator",
+      "starter-battery",
+      "vb04",
+      "calira-evs",
+      "leisure-battery"
+    ],
+    "fuses": [
+      "D+"
+    ],
+    "diagnostic": "no-driving-charge"
+  },
+  {
+    "symptom": "Hook-up trips",
+    "components": [
+      "hookup",
+      "consumer-unit",
+      "calira-evs"
+    ],
+    "fuses": [],
+    "diagnostic": "mains-trip"
+  },
+  {
+    "symptom": "Heating control dead",
+    "components": [
+      "leisure-battery",
+      "vb04",
+      "heating-circuit"
+    ],
+    "fuses": [
+      "Heizung"
+    ],
+    "diagnostic": "no-habitation-power"
+  }
+]

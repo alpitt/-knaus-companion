@@ -1,0 +1,655 @@
+[
+  {
+    "id": "battery-not-charging",
+    "title": "Leisure battery is not charging",
+    "keywords": [
+      "battery not charging",
+      "leisure battery flat",
+      "charger",
+      "no charge",
+      "low voltage"
+    ],
+    "systems": [
+      "electrical"
+    ],
+    "difficulty": "Moderate",
+    "time": "20\u201345 minutes",
+    "safety": [
+      "Disconnect 230 V before opening electrical enclosures.",
+      "Avoid shorting battery terminals."
+    ],
+    "tools": [
+      "Multimeter",
+      "Torch",
+      "Insulated screwdriver"
+    ],
+    "parts": [
+      "Blade fuses",
+      "Battery terminal cleaner"
+    ],
+    "chapter": 16,
+    "manualPages": [
+      91,
+      95,
+      97
+    ],
+    "explorerZone": "electrical-compartment",
+    "steps": [
+      {
+        "q": "Is the vehicle connected to a known-working 230 V hook-up?",
+        "yes": 1,
+        "no": "Connect to a verified supply and confirm the site breaker and vehicle RCD are on."
+      },
+      {
+        "q": "Does the control panel show mains present?",
+        "yes": 2,
+        "no": "Check the hook-up lead, inlet, RCD and charger mains supply."
+      },
+      {
+        "q": "Is the leisure battery above 11.5 V at rest?",
+        "yes": 3,
+        "no": "The battery may be deeply discharged or failed. Charge externally only if safe and compatible."
+      },
+      {
+        "q": "Does battery voltage rise when mains charging is active?",
+        "yes": "Charging is operating. Investigate battery capacity, parasitic loads or poor connections.",
+        "no": 4
+      },
+      {
+        "q": "Are charger and battery fuses intact and terminals tight?",
+        "yes": "Likely charger, relay, wiring or battery fault. Arrange targeted electrical testing.",
+        "no": "Replace only with the specified fuse rating or clean and tighten the connection, then retest."
+      }
+    ]
+  },
+  {
+    "id": "battery-discharges",
+    "title": "Leisure battery discharges quickly",
+    "keywords": [
+      "battery drains",
+      "battery discharges",
+      "flat overnight",
+      "power loss",
+      "parasitic drain"
+    ],
+    "systems": [
+      "electrical"
+    ],
+    "difficulty": "Moderate",
+    "time": "30\u201360 minutes",
+    "safety": [
+      "Do not bypass fuses.",
+      "Isolate 230 V before electrical work."
+    ],
+    "tools": [
+      "Multimeter with current range",
+      "Fuse puller"
+    ],
+    "parts": [
+      "Correct blade fuses"
+    ],
+    "chapter": 16,
+    "manualPages": [
+      95,
+      97
+    ],
+    "explorerZone": "electrical-compartment",
+    "steps": [
+      {
+        "q": "Is the battery fully charged and known to be serviceable?",
+        "yes": 1,
+        "no": "Fully charge and test the battery before looking for a vehicle drain."
+      },
+      {
+        "q": "Are obvious loads such as heating fan, lights, inverter or fridge left on?",
+        "yes": "Switch off the load and monitor battery voltage.",
+        "no": 2
+      },
+      {
+        "q": "Does the voltage still fall rapidly with the habitation master switch off?",
+        "yes": 3,
+        "no": "A normal habitation load is responsible; isolate circuits one at a time."
+      },
+      {
+        "q": "Does removing one habitation fuse stop the drain?",
+        "yes": "The drain is on that circuit. Inspect its appliances and wiring.",
+        "no": "Check battery condition, direct battery connections and charging performance."
+      }
+    ]
+  },
+  {
+    "id": "hookup-failure",
+    "title": "230 V hook-up is not working",
+    "keywords": [
+      "hookup not working",
+      "no mains",
+      "no 230v",
+      "rcd trips",
+      "electric hookup"
+    ],
+    "systems": [
+      "electrical"
+    ],
+    "difficulty": "Moderate",
+    "time": "15\u201340 minutes",
+    "safety": [
+      "230 V AC can kill. Do not remove covers unless competent.",
+      "Use only tested hook-up leads and adapters."
+    ],
+    "tools": [
+      "Socket tester",
+      "Known-good hook-up lead"
+    ],
+    "parts": [
+      "CEE hook-up lead",
+      "Suitable adapter"
+    ],
+    "chapter": 12,
+    "manualPages": [
+      91
+    ],
+    "explorerZone": "hookup",
+    "steps": [
+      {
+        "q": "Does the supply post show power and its breaker remain on?",
+        "yes": 1,
+        "no": "Reset or report the site supply. Test with another outlet if permitted."
+      },
+      {
+        "q": "Does a known-good hook-up lead work?",
+        "yes": 2,
+        "no": "Replace the damaged or suspect lead."
+      },
+      {
+        "q": "Is the vehicle RCD and main breaker on?",
+        "yes": 3,
+        "no": "Reset once. If it trips again, disconnect appliances and arrange inspection."
+      },
+      {
+        "q": "Do any 230 V sockets work?",
+        "yes": "The fault is limited to one appliance or branch circuit.",
+        "no": "The inlet, RCD, consumer unit or internal wiring requires competent testing."
+      }
+    ]
+  },
+  {
+    "id": "lights-fail",
+    "title": "Habitation lights do not work",
+    "keywords": [
+      "lights not working",
+      "no lights",
+      "lights flicker",
+      "habitation lighting"
+    ],
+    "systems": [
+      "electrical"
+    ],
+    "difficulty": "Easy",
+    "time": "10\u201330 minutes",
+    "safety": [
+      "Replace fuses only with the stated rating."
+    ],
+    "tools": [
+      "Multimeter",
+      "Fuse puller"
+    ],
+    "parts": [
+      "Blade fuse",
+      "LED lamp"
+    ],
+    "chapter": 16,
+    "manualPages": [
+      95
+    ],
+    "explorerZone": "electrical-compartment",
+    "steps": [
+      {
+        "q": "Is the habitation master switch on and battery voltage normal?",
+        "yes": 1,
+        "no": "Switch on habitation power or charge the battery."
+      },
+      {
+        "q": "Do all lights fail or only one fitting?",
+        "yes": 2,
+        "no": "Check the individual lamp, switch and local wiring."
+      },
+      {
+        "q": "Is the lighting fuse intact?",
+        "yes": "Check the control panel output, distribution connector and earth return.",
+        "no": "Replace with the correct fuse rating and investigate if it blows again."
+      }
+    ]
+  },
+  {
+    "id": "pump-continuous",
+    "title": "Water pump runs continuously",
+    "keywords": [
+      "pump runs continuously",
+      "pump won't stop",
+      "water pump keeps running",
+      "pump cycling"
+    ],
+    "systems": [
+      "water",
+      "electrical"
+    ],
+    "difficulty": "Moderate",
+    "time": "20\u201345 minutes",
+    "safety": [
+      "Switch the pump off if no water is available.",
+      "Dry running can damage the pump."
+    ],
+    "tools": [
+      "Torch",
+      "Towels",
+      "Screwdriver"
+    ],
+    "parts": [
+      "Hose clips",
+      "Tap seals",
+      "Pump pressure switch"
+    ],
+    "chapter": 32,
+    "manualPages": [
+      85
+    ],
+    "explorerZone": "kitchen",
+    "steps": [
+      {
+        "q": "Is there enough water in the fresh tank?",
+        "yes": 1,
+        "no": "Fill the tank and prime the system."
+      },
+      {
+        "q": "Is water visibly leaking from a tap, hose, boiler drain or underneath the vehicle?",
+        "yes": "Switch off the pump and repair the leak before further use.",
+        "no": 2
+      },
+      {
+        "q": "Does opening and closing each tap release trapped air?",
+        "yes": 3,
+        "no": "Prime the pump and inspect the suction side for air leaks."
+      },
+      {
+        "q": "Does the pump stop after the system repressurises?",
+        "yes": "The issue was trapped air or incomplete priming.",
+        "no": "The pressure switch, non-return valve or hidden leak requires inspection."
+      }
+    ]
+  },
+  {
+    "id": "pump-no-run",
+    "title": "Water pump will not run",
+    "keywords": [
+      "pump not running",
+      "no water pump",
+      "tap no water",
+      "pump silent"
+    ],
+    "systems": [
+      "water",
+      "electrical"
+    ],
+    "difficulty": "Easy",
+    "time": "10\u201330 minutes",
+    "safety": [
+      "Do not bypass the pump fuse."
+    ],
+    "tools": [
+      "Multimeter",
+      "Fuse puller"
+    ],
+    "parts": [
+      "10 A fuse",
+      "Water pump"
+    ],
+    "chapter": 32,
+    "manualPages": [
+      85,
+      95
+    ],
+    "explorerZone": "kitchen",
+    "steps": [
+      {
+        "q": "Is the pump switch on and the habitation battery charged?",
+        "yes": 1,
+        "no": "Restore 12 V habitation power and turn the pump on."
+      },
+      {
+        "q": "Is the pump fuse intact?",
+        "yes": 2,
+        "no": "Replace only with the specified rating and investigate if it fails again."
+      },
+      {
+        "q": "Is 12 V present at the pump when water is demanded?",
+        "yes": "The pump or its local earth is likely faulty.",
+        "no": "Check switch, control panel output and wiring to the pump."
+      }
+    ]
+  },
+  {
+    "id": "no-hot-water",
+    "title": "No hot water",
+    "keywords": [
+      "no hot water",
+      "water cold",
+      "boiler not heating",
+      "hot tap cold"
+    ],
+    "systems": [
+      "water",
+      "gas",
+      "electrical"
+    ],
+    "difficulty": "Moderate",
+    "time": "20\u201360 minutes",
+    "safety": [
+      "Never operate a boiler that is empty.",
+      "Stop if there is a gas smell or combustion warning."
+    ],
+    "tools": [
+      "Torch",
+      "Multimeter"
+    ],
+    "parts": [
+      "Fuse",
+      "Gas cylinder"
+    ],
+    "chapter": 33,
+    "manualPages": [
+      75,
+      85
+    ],
+    "explorerZone": "boiler",
+    "steps": [
+      {
+        "q": "Is the boiler completely full of water?",
+        "yes": 1,
+        "no": "Fill and bleed the hot-water system before heating."
+      },
+      {
+        "q": "Does another gas appliance work?",
+        "yes": 2,
+        "no": "Check cylinder, regulator and gas isolation first."
+      },
+      {
+        "q": "Is the boiler receiving stable 12 V control power?",
+        "yes": 3,
+        "no": "Check the heating fuse, battery voltage and earth."
+      },
+      {
+        "q": "Is the frost valve closed and the boiler retaining water?",
+        "yes": 4,
+        "no": "Warm the area, close the valve correctly and refill."
+      },
+      {
+        "q": "Is a fault code displayed?",
+        "yes": "Record the exact code and use the appliance-specific service information.",
+        "no": "Inspect controls and flue, then arrange boiler service if it still fails."
+      }
+    ]
+  },
+  {
+    "id": "heater-no-ignite",
+    "title": "Space heater will not ignite",
+    "keywords": [
+      "heater won't ignite",
+      "no heating",
+      "truma fault",
+      "heater not working"
+    ],
+    "systems": [
+      "gas",
+      "electrical"
+    ],
+    "difficulty": "Moderate",
+    "time": "20\u201345 minutes",
+    "safety": [
+      "Stop if you smell gas.",
+      "Keep the flue terminal unobstructed."
+    ],
+    "tools": [
+      "Torch",
+      "Multimeter"
+    ],
+    "parts": [
+      "Gas cylinder",
+      "15 A fuse"
+    ],
+    "chapter": 33,
+    "manualPages": [
+      75
+    ],
+    "explorerZone": "boiler",
+    "steps": [
+      {
+        "q": "Does the hob light normally?",
+        "yes": 1,
+        "no": "Use the no-gas diagnostic first."
+      },
+      {
+        "q": "Is the heater gas isolation valve open?",
+        "yes": 2,
+        "no": "Open the correct valve and retry according to the heater instructions."
+      },
+      {
+        "q": "Is stable 12 V available and the heating fuse intact?",
+        "yes": 3,
+        "no": "Restore the 12 V supply and replace only the correct fuse."
+      },
+      {
+        "q": "Is the exterior flue clear?",
+        "yes": 4,
+        "no": "Remove the obstruction before use."
+      },
+      {
+        "q": "Is a fault code shown?",
+        "yes": "Record the exact code and follow the model-specific manual.",
+        "no": "Allow gas-line purge time, then arrange service if ignition still fails."
+      }
+    ]
+  },
+  {
+    "id": "fridge-no-gas-smart",
+    "title": "Refrigerator will not operate on gas",
+    "keywords": [
+      "fridge not working on gas",
+      "refrigerator gas failure",
+      "fridge won't light"
+    ],
+    "systems": [
+      "gas",
+      "electrical"
+    ],
+    "difficulty": "Moderate",
+    "time": "20\u201345 minutes",
+    "safety": [
+      "Do not operate with blocked refrigerator vents.",
+      "Stop if you smell gas."
+    ],
+    "tools": [
+      "Torch"
+    ],
+    "parts": [
+      "Gas cylinder",
+      "Igniter battery if fitted"
+    ],
+    "chapter": 34,
+    "manualPages": [
+      133
+    ],
+    "explorerZone": "fridge",
+    "steps": [
+      {
+        "q": "Does the hob operate normally?",
+        "yes": 1,
+        "no": "Check the cylinder, regulator and manifold."
+      },
+      {
+        "q": "Is the refrigerator gas isolation valve open?",
+        "yes": 2,
+        "no": "Open the correct valve and retry."
+      },
+      {
+        "q": "Are the exterior refrigerator vents clear?",
+        "yes": 3,
+        "no": "Clear them before use."
+      },
+      {
+        "q": "Does ignition click or indicate an attempt?",
+        "yes": 4,
+        "no": "Check 12 V control power and ignition controls."
+      },
+      {
+        "q": "Does the flame light but then go out?",
+        "yes": "Burner, thermocouple or flue servicing is likely required.",
+        "no": "Arrange burner and gas-path inspection."
+      }
+    ]
+  },
+  {
+    "id": "toilet-flush",
+    "title": "Toilet flush does not work",
+    "keywords": [
+      "toilet flush not working",
+      "cassette toilet no flush",
+      "toilet pump"
+    ],
+    "systems": [
+      "water",
+      "electrical"
+    ],
+    "difficulty": "Easy",
+    "time": "10\u201330 minutes",
+    "safety": [
+      "Use gloves around the cassette compartment."
+    ],
+    "tools": [
+      "Fuse puller",
+      "Multimeter"
+    ],
+    "parts": [
+      "Fuse",
+      "Flush pump"
+    ],
+    "chapter": 32,
+    "manualPages": [
+      85
+    ],
+    "explorerZone": "toilet-cassette",
+    "steps": [
+      {
+        "q": "Is there water available for the flush system?",
+        "yes": 1,
+        "no": "Fill the flush reservoir or fresh-water system, depending on model."
+      },
+      {
+        "q": "Is the toilet or pump fuse intact?",
+        "yes": 2,
+        "no": "Replace with the specified rating."
+      },
+      {
+        "q": "Can the flush pump be heard?",
+        "yes": "Inspect the nozzle, hose and water supply for blockage.",
+        "no": "Check the switch, local connector, pump and earth."
+      }
+    ]
+  },
+  {
+    "id": "camera-failure",
+    "title": "Rear camera has no picture",
+    "keywords": [
+      "rear camera no picture",
+      "reverse camera black screen",
+      "camera not working"
+    ],
+    "systems": [
+      "electrical",
+      "vehicle"
+    ],
+    "difficulty": "Moderate",
+    "time": "20\u201360 minutes",
+    "safety": [
+      "Secure the vehicle before working around reverse wiring."
+    ],
+    "tools": [
+      "Multimeter",
+      "Trim tools"
+    ],
+    "parts": [
+      "Inline fuse",
+      "Video lead"
+    ],
+    "chapter": 24,
+    "manualPages": [
+      53
+    ],
+    "explorerZone": "rear-camera",
+    "steps": [
+      {
+        "q": "Does the monitor power on?",
+        "yes": 1,
+        "no": "Check monitor supply, fuse and earth."
+      },
+      {
+        "q": "Does the system switch modes when reverse is selected?",
+        "yes": 2,
+        "no": "Check reverse-trigger signal or manual-view control."
+      },
+      {
+        "q": "Is the image intermittent when wiring is moved gently?",
+        "yes": "Inspect connectors and video cable for poor contact.",
+        "no": "Check camera power at the rear and confirm the camera output."
+      }
+    ]
+  },
+  {
+    "id": "awning-light",
+    "title": "Awning light does not work",
+    "keywords": [
+      "awning light not working",
+      "outside light",
+      "exterior light"
+    ],
+    "systems": [
+      "electrical",
+      "vehicle"
+    ],
+    "difficulty": "Easy",
+    "time": "10\u201330 minutes",
+    "safety": [
+      "Use safe access equipment if reaching above shoulder height."
+    ],
+    "tools": [
+      "Multimeter",
+      "Fuse puller"
+    ],
+    "parts": [
+      "LED lamp",
+      "Fuse"
+    ],
+    "chapter": 41,
+    "manualPages": [
+      53,
+      95
+    ],
+    "explorerZone": "bike-rack",
+    "steps": [
+      {
+        "q": "Do other habitation lights work?",
+        "yes": 1,
+        "no": "Check habitation master power and lighting supply first."
+      },
+      {
+        "q": "Is the awning-light switch supplying 12 V?",
+        "yes": 2,
+        "no": "Check the switch, fuse and feed."
+      },
+      {
+        "q": "Is 12 V present at the light fitting?",
+        "yes": "Replace or repair the lamp fitting and verify its earth.",
+        "no": "Inspect wiring and connectors between the switch and fitting."
+      }
+    ]
+  }
+]

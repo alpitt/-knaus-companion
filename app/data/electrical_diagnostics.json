@@ -1,0 +1,73 @@
+[
+  {
+    "id": "no-habitation-power",
+    "title": "No habitation 12 V power",
+    "chapter": 16,
+    "steps": [
+      {
+        "q": "Is the leisure battery above 12 V?",
+        "yes": 1,
+        "no": "Charge and test the leisure battery. Inspect the main battery fuse and terminals."
+      },
+      {
+        "q": "Is battery voltage present at the Calira EVS battery connection?",
+        "yes": 2,
+        "no": "Trace the battery cable, main fuse and earth return."
+      },
+      {
+        "q": "Is battery voltage present at the VB06 input?",
+        "yes": 3,
+        "no": "Inspect the EVS output path and connectors."
+      },
+      {
+        "q": "Does the affected circuit fuse have voltage on both test points?",
+        "yes": "Test the appliance feed and earth return under load.",
+        "no": "Replace only with the specified rating and investigate the circuit if it fails again."
+      }
+    ]
+  },
+  {
+    "id": "no-driving-charge",
+    "title": "Leisure battery not charging while driving",
+    "chapter": 11,
+    "steps": [
+      {
+        "q": "Does starter-battery voltage rise with the engine running?",
+        "yes": 1,
+        "no": "Investigate alternator output, belt, wiring and base-vehicle charging faults."
+      },
+      {
+        "q": "Does the VB04 D+ circuit become active with the engine running?",
+        "yes": 2,
+        "no": "Check the 5 A D+ fuse and trace the D+ signal."
+      },
+      {
+        "q": "Does leisure-battery voltage rise with the engine running?",
+        "yes": "Charging is present. Assess current and voltage drop if charging remains weak.",
+        "no": "Inspect split-charge control, EVS charging path, connectors and cable voltage drop."
+      }
+    ]
+  },
+  {
+    "id": "mains-trip",
+    "title": "RCD or campsite supply trips",
+    "chapter": 12,
+    "steps": [
+      {
+        "q": "Does the trip occur with all motorhome MCBs switched off?",
+        "yes": "Stop using the hook-up lead. Inspect the lead, inlet and supply polarity or earth fault.",
+        "no": 1
+      },
+      {
+        "q": "Does one MCB reproduce the trip when switched on?",
+        "yes": 2,
+        "no": "Reconnect loads individually and inspect portable appliances."
+      },
+      {
+        "q": "Does unplugging appliances on that circuit stop the trip?",
+        "yes": "The appliance or lead is the likely fault. Remove it from service.",
+        "no": "A fixed wiring or built-in appliance fault needs professional electrical testing."
+      }
+    ]
+  }
+]

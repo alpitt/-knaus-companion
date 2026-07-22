@@ -1,0 +1,72 @@
+[
+  {
+    "from": "gas-cylinder",
+    "to": "regulator",
+    "label": "high-pressure vapour"
+  },
+  {
+    "from": "regulator",
+    "to": "gas-manifold",
+    "label": "regulated supply"
+  },
+  {
+    "from": "gas-manifold",
+    "to": "truma-heater",
+    "label": "heating branch"
+  },
+  {
+    "from": "gas-manifold",
+    "to": "boiler-burner",
+    "label": "hot-water branch"
+  },
+  {
+    "from": "gas-manifold",
+    "to": "hob",
+    "label": "cooking branch"
+  },
+  {
+    "from": "gas-manifold",
+    "to": "oven",
+    "label": "oven branch if fitted"
+  },
+  {
+    "from": "gas-manifold",
+    "to": "fridge-gas",
+    "label": "refrigerator branch"
+  },
+  {
+    "from": "truma-heater",
+    "to": "warm-air-ducts",
+    "label": "heated airflow"
+  },
+  {
+    "from": "truma-heater",
+    "to": "flue-system",
+    "label": "combustion exhaust"
+  },
+  {
+    "from": "boiler-burner",
+    "to": "flue-system",
+    "label": "combustion exhaust"
+  },
+  {
+    "from": "fridge-gas",
+    "to": "flue-system",
+    "label": "burner exhaust"
+  },
+  {
+    "from": "gas-locker",
+    "to": "gas-cylinder",
+    "label": "contains and ventilates"
+  },
+  {
+    "from": "co-alarm",
+    "to": "truma-heater",
+    "label": "monitors habitation safety"
+  },
+  {
+    "from": "co-alarm",
+    "to": "hob",
+    "label": "monitors habitation safety"
+  }
+]

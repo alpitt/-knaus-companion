@@ -1,0 +1,182 @@
+[
+  {
+    "id": "engine-service",
+    "name": "Engine oil and filter",
+    "category": "Chassis",
+    "intervalMonths": 12,
+    "intervalKm": 15000,
+    "chapter": 24,
+    "system": "vehicle"
+  },
+  {
+    "id": "air-filter",
+    "name": "Engine air filter",
+    "category": "Chassis",
+    "intervalMonths": 24,
+    "intervalKm": 30000,
+    "chapter": 24,
+    "system": "vehicle"
+  },
+  {
+    "id": "fuel-filter",
+    "name": "Fuel filter",
+    "category": "Chassis",
+    "intervalMonths": 24,
+    "intervalKm": 30000,
+    "chapter": 24,
+    "system": "vehicle"
+  },
+  {
+    "id": "brake-fluid",
+    "name": "Brake fluid",
+    "category": "Chassis",
+    "intervalMonths": 24,
+    "intervalKm": 0,
+    "chapter": 24,
+    "system": "vehicle"
+  },
+  {
+    "id": "coolant",
+    "name": "Engine coolant",
+    "category": "Chassis",
+    "intervalMonths": 60,
+    "intervalKm": 0,
+    "chapter": 24,
+    "system": "vehicle"
+  },
+  {
+    "id": "timing-belt",
+    "name": "Timing belt inspection or replacement",
+    "category": "Chassis",
+    "intervalMonths": 60,
+    "intervalKm": 100000,
+    "chapter": 24,
+    "system": "vehicle"
+  },
+  {
+    "id": "habitation",
+    "name": "Habitation service",
+    "category": "Habitation",
+    "intervalMonths": 12,
+    "intervalKm": 0,
+    "chapter": 39,
+    "system": "vehicle"
+  },
+  {
+    "id": "damp",
+    "name": "Damp inspection",
+    "category": "Bodywork",
+    "intervalMonths": 12,
+    "intervalKm": 0,
+    "chapter": 39,
+    "system": "vehicle"
+  },
+  {
+    "id": "gas",
+    "name": "Gas system inspection",
+    "category": "Gas",
+    "intervalMonths": 12,
+    "intervalKm": 0,
+    "chapter": 25,
+    "system": "gas"
+  },
+  {
+    "id": "water-sanitise",
+    "name": "Fresh-water sanitisation",
+    "category": "Water",
+    "intervalMonths": 6,
+    "intervalKm": 0,
+    "chapter": 32,
+    "system": "water"
+  },
+  {
+    "id": "winterise",
+    "name": "Winterisation",
+    "category": "Seasonal",
+    "intervalMonths": 12,
+    "intervalKm": 0,
+    "chapter": 39,
+    "system": "water"
+  },
+  {
+    "id": "dewinterise",
+    "name": "De-winterisation",
+    "category": "Seasonal",
+    "intervalMonths": 12,
+    "intervalKm": 0,
+    "chapter": 39,
+    "system": "water"
+  },
+  {
+    "id": "battery-test",
+    "name": "Starter and leisure battery health test",
+    "category": "Electrical",
+    "intervalMonths": 6,
+    "intervalKm": 0,
+    "chapter": 16,
+    "system": "electrical"
+  },
+  {
+    "id": "rcd-test",
+    "name": "RCD test",
+    "category": "Electrical",
+    "intervalMonths": 1,
+    "intervalKm": 0,
+    "chapter": 12,
+    "system": "electrical"
+  },
+  {
+    "id": "roof-seals",
+    "name": "Roof and sealant inspection",
+    "category": "Bodywork",
+    "intervalMonths": 6,
+    "intervalKm": 0,
+    "chapter": 39,
+    "system": "vehicle"
+  },
+  {
+    "id": "tyres",
+    "name": "Tyre pressure and age inspection",
+    "category": "Chassis",
+    "intervalMonths": 1,
+    "intervalKm": 0,
+    "chapter": 24,
+    "system": "vehicle"
+  },
+  {
+    "id": "awning",
+    "name": "Awning inspection",
+    "category": "Exterior",
+    "intervalMonths": 6,
+    "intervalKm": 0,
+    "chapter": 41,
+    "system": "vehicle"
+  },
+  {
+    "id": "bike-rack",
+    "name": "Bike rack inspection",
+    "category": "Exterior",
+    "intervalMonths": 3,
+    "intervalKm": 0,
+    "chapter": 37,
+    "system": "vehicle"
+  },
+  {
+    "id": "co-alarm",
+    "name": "Carbon monoxide alarm test",
+    "category": "Safety",
+    "intervalMonths": 1,
+    "intervalKm": 0,
+    "chapter": 25,
+    "system": "gas"
+  },
+  {
+    "id": "smoke-alarm",
+    "name": "Smoke alarm test",
+    "category": "Safety",
+    "intervalMonths": 1,
+    "intervalKm": 0,
+    "chapter": 25,
+    "system": "vehicle"
+  }
+]

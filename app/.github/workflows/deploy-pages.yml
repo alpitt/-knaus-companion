@@ -1,0 +1,39 @@
+name: Deploy Knaus Companion 4.1
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate site
+        run: |
+          test -f index.html
+          test -f assets/js/app-v4.js
+          test -f assets/css/app-v4.css
+          test -f data/build.json
+          grep -q '"version": "4.1.0"' data/build.json
+          node --check assets/js/app-v4.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

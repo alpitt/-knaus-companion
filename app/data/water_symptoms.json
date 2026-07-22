@@ -1,0 +1,59 @@
+[
+  {
+    "symptom": "No water at taps",
+    "components": [
+      "fresh-tank",
+      "pump",
+      "cold-manifold",
+      "frost-valve"
+    ],
+    "diagnostic": "no-water-flow"
+  },
+  {
+    "symptom": "Pump does not stop",
+    "components": [
+      "pump",
+      "frost-valve",
+      "cold-manifold",
+      "hot-manifold"
+    ],
+    "diagnostic": "pump-runs-continuously"
+  },
+  {
+    "symptom": "No hot water",
+    "components": [
+      "pump",
+      "truma-boiler",
+      "frost-valve",
+      "hot-manifold"
+    ],
+    "diagnostic": "no-hot-water"
+  },
+  {
+    "symptom": "Water leaking under kitchen sink",
+    "components": [
+      "kitchen-tap",
+      "hot-manifold",
+      "cold-manifold"
+    ],
+    "diagnostic": "water-leak"
+  },
+  {
+    "symptom": "Water running from rear or underside",
+    "components": [
+      "frost-valve",
+      "fresh-tank",
+      "waste-valve"
+    ],
+    "diagnostic": "frost-valve-opens"
+  },
+  {
+    "symptom": "Waste water drains slowly",
+    "components": [
+      "bathroom-outlets",
+      "waste-tank",
+      "waste-valve"
+    ],
+    "diagnostic": "water-leak"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "from": "water-filler",
+    "to": "fresh-tank",
+    "label": "fills"
+  },
+  {
+    "from": "fresh-tank",
+    "to": "pump",
+    "label": "supplies"
+  },
+  {
+    "from": "pump",
+    "to": "cold-manifold",
+    "label": "pressurises"
+  },
+  {
+    "from": "cold-manifold",
+    "to": "truma-boiler",
+    "label": "cold inlet"
+  },
+  {
+    "from": "truma-boiler",
+    "to": "hot-manifold",
+    "label": "heated outlet"
+  },
+  {
+    "from": "cold-manifold",
+    "to": "kitchen-tap",
+    "label": "cold feed"
+  },
+  {
+    "from": "hot-manifold",
+    "to": "kitchen-tap",
+    "label": "hot feed"
+  },
+  {
+    "from": "cold-manifold",
+    "to": "bathroom-outlets",
+    "label": "cold feed"
+  },
+  {
+    "from": "hot-manifold",
+    "to": "bathroom-outlets",
+    "label": "hot feed"
+  },
+  {
+    "from": "cold-manifold",
+    "to": "toilet-flush",
+    "label": "flush supply"
+  },
+  {
+    "from": "kitchen-tap",
+    "to": "waste-tank",
+    "label": "gravity drain"
+  },
+  {
+    "from": "bathroom-outlets",
+    "to": "waste-tank",
+    "label": "gravity drain"
+  },
+  {
+    "from": "waste-tank",
+    "to": "waste-valve",
+    "label": "empties through"
+  },
+  {
+    "from": "truma-boiler",
+    "to": "frost-valve",
+    "label": "protected by"
+  },
+  {
+    "from": "fresh-tank",
+    "to": "level-sensors",
+    "label": "level monitored"
+  },
+  {
+    "from": "waste-tank",
+    "to": "level-sensors",
+    "label": "level monitored"
+  }
+]

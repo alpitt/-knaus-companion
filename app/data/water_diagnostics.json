@@ -1,0 +1,127 @@
+[
+  {
+    "id": "no-water-flow",
+    "title": "No water flow",
+    "chapter": 32,
+    "steps": [
+      {
+        "q": "Is there water in the fresh tank?",
+        "yes": 1,
+        "no": "Fill the fresh tank and retest."
+      },
+      {
+        "q": "Does the pump run when a tap opens?",
+        "yes": 2,
+        "no": "Check the master 12 V supply, VB06 Pumpe 10 A fuse, pump voltage and earth."
+      },
+      {
+        "q": "Is the frost-protection valve closed and is water staying in the system?",
+        "yes": 3,
+        "no": "Warm and reset the valve, then refill and purge."
+      },
+      {
+        "q": "Is the pump filter clear and the suction hose airtight?",
+        "yes": "Inspect blocked outlets, kinked pipework or a failed pump.",
+        "no": "Clean the filter and repair air leaks on the suction side."
+      }
+    ]
+  },
+  {
+    "id": "pump-runs-continuously",
+    "title": "Pump runs continuously",
+    "chapter": 32,
+    "steps": [
+      {
+        "q": "Is any tap or shower valve partly open?",
+        "yes": "Close it fully and retest.",
+        "no": 1
+      },
+      {
+        "q": "Is water discharging beneath or behind the motorhome?",
+        "yes": "Check the frost valve, tank drain and visible leaks.",
+        "no": 2
+      },
+      {
+        "q": "Can you hear or see a leak at the kitchen, bathroom or boiler connections?",
+        "yes": "Isolate and repair the leaking joint before continued use.",
+        "no": 3
+      },
+      {
+        "q": "Does the pump stop if its outlet is briefly isolated by a competent person?",
+        "yes": "A downstream leak or open valve remains likely.",
+        "no": "The pump pressure switch or pump assembly may be faulty."
+      }
+    ]
+  },
+  {
+    "id": "no-hot-water",
+    "title": "No hot water",
+    "chapter": 32,
+    "steps": [
+      {
+        "q": "Does cold water flow normally?",
+        "yes": 1,
+        "no": "Use the No water flow diagnostic first."
+      },
+      {
+        "q": "Has air been purged from the hot taps until flow is steady?",
+        "yes": 2,
+        "no": "Open hot taps and fill the boiler fully."
+      },
+      {
+        "q": "Is the frost valve closed and is the boiler retaining water?",
+        "yes": 3,
+        "no": "Warm, reset and refill the system."
+      },
+      {
+        "q": "Does the heater have gas or mains energy and stable 12 V control power?",
+        "yes": "Check appliance controls, fault codes and heating time.",
+        "no": "Restore the missing energy source or 12 V control supply."
+      }
+    ]
+  },
+  {
+    "id": "water-leak",
+    "title": "Water leak",
+    "chapter": 32,
+    "steps": [
+      {
+        "q": "Does the leak occur only when the pump is switched on?",
+        "yes": 1,
+        "no": "Check tank, filler, drains and gravity waste pipework."
+      },
+      {
+        "q": "Does it occur with cold water only?",
+        "yes": "Inspect cold-side joints, pump outlet and tap connections.",
+        "no": 2
+      },
+      {
+        "q": "Does it occur when a hot tap is opened?",
+        "yes": "Inspect the boiler outlet, hot hose and mixer tap connection. The kitchen hot connection has known history.",
+        "no": "Dry all areas and test one outlet at a time to isolate the branch."
+      }
+    ]
+  },
+  {
+    "id": "frost-valve-opens",
+    "title": "Frost valve opens unexpectedly",
+    "chapter": 32,
+    "steps": [
+      {
+        "q": "Is the valve area cold?",
+        "yes": "Warm the area according to the fitted valve instructions before resetting.",
+        "no": 1
+      },
+      {
+        "q": "Will the valve latch closed when the system is empty?",
+        "yes": 2,
+        "no": "Inspect the valve mechanism and fitted model instructions."
+      },
+      {
+        "q": "Does it open again during filling?",
+        "yes": "Check temperature, valve installation and possible mechanical failure.",
+        "no": "Refill slowly and purge air from hot taps."
+      }
+    ]
+  }
+]

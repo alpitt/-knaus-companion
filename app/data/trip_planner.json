@@ -1,0 +1,17 @@
+{
+  "version": "2.9.0",
+  "sampleTrip": {
+    "name": "Cornwall Tour",
+    "stops": [
+      "Bristol",
+      "Padstow",
+      "St Ives"
+    ],
+    "checklists": [
+      "Departure",
+      "Arrival",
+      "Departure from campsite",
+      "Return Home"
+    ]
+  }
+}

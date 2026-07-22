@@ -1,0 +1,92 @@
+[
+  {
+    "from": "alternator",
+    "to": "starter-battery",
+    "type": "charges",
+    "label": "B+ charging output"
+  },
+  {
+    "from": "starter-battery",
+    "to": "calira-evs",
+    "type": "supplies",
+    "label": "Driving-charge feed and signals"
+  },
+  {
+    "from": "calira-evs",
+    "to": "leisure-battery",
+    "type": "charges",
+    "label": "Battery charging and supply"
+  },
+  {
+    "from": "leisure-battery",
+    "to": "vb06",
+    "type": "supplies",
+    "label": "Main habitation 12 V"
+  },
+  {
+    "from": "calira-evs",
+    "to": "vb06",
+    "type": "manages",
+    "label": "Power distribution path"
+  },
+  {
+    "from": "vb06",
+    "to": "water-pump-circuit",
+    "type": "protects",
+    "label": "Pumpe 10 A"
+  },
+  {
+    "from": "vb06",
+    "to": "fridge-12v-circuit",
+    "type": "protects",
+    "label": "K\u00fchlschrank 20 A"
+  },
+  {
+    "from": "vb06",
+    "to": "lighting-circuits",
+    "type": "protects",
+    "label": "Stromkreis 1 or 2. Trace required"
+  },
+  {
+    "from": "vb04",
+    "to": "heating-circuit",
+    "type": "protects",
+    "label": "Heizung 15 A"
+  },
+  {
+    "from": "vb04",
+    "to": "fridge-12v-circuit",
+    "type": "controls",
+    "label": "D+ 5 A signal"
+  },
+  {
+    "from": "hookup",
+    "to": "consumer-unit",
+    "type": "supplies",
+    "label": "230 V input"
+  },
+  {
+    "from": "consumer-unit",
+    "to": "calira-evs",
+    "type": "supplies",
+    "label": "Charger mains input"
+  },
+  {
+    "from": "leisure-battery",
+    "to": "smartshunt-future",
+    "type": "future-monitoring",
+    "label": "Negative-side monitoring"
+  },
+  {
+    "from": "starter-battery",
+    "to": "orion-xs-future",
+    "type": "future-input",
+    "label": "Protected DC input"
+  },
+  {
+    "from": "orion-xs-future",
+    "to": "leisure-battery",
+    "type": "future-output",
+    "label": "Controlled battery charging"
+  }
+]

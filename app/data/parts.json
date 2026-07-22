@@ -1,0 +1,44 @@
+[
+  {
+    "system": "Electrical",
+    "part": "Calira EVS 30/20-DS/IU",
+    "status": "Installed",
+    "notes": "Main charger and habitation power supply."
+  },
+  {
+    "system": "Electrical",
+    "part": "Calira VB06-1",
+    "status": "Installed",
+    "notes": "Main habitation fuse distribution."
+  },
+  {
+    "system": "Electrical",
+    "part": "Calira VB04",
+    "status": "Installed",
+    "notes": "Auxiliary fuse and signal box under passenger seat."
+  },
+  {
+    "system": "Water",
+    "part": "Kitchen mixer tap",
+    "status": "Inspect or replace",
+    "notes": "Hot-water hose or tap connection previously leaked."
+  },
+  {
+    "system": "Power",
+    "part": "Victron SmartShunt 500A",
+    "status": "Recommended",
+    "notes": "First monitoring upgrade."
+  },
+  {
+    "system": "Power",
+    "part": "LiFePO4 leisure battery",
+    "status": "Planned",
+    "notes": "Final capacity depends on battery compartment and payload."
+  },
+  {
+    "system": "Power",
+    "part": "Victron Orion XS",
+    "status": "Planned",
+    "notes": "Recommended for controlled alternator charging after lithium conversion."
+  }
+]

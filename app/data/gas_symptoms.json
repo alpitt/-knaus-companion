@@ -1,0 +1,55 @@
+[
+  {
+    "symptom": "No gas appliance works",
+    "components": [
+      "gas-cylinder",
+      "regulator",
+      "gas-manifold"
+    ],
+    "diagnostic": "no-gas-appliances"
+  },
+  {
+    "symptom": "Heating will not ignite",
+    "components": [
+      "truma-heater",
+      "regulator",
+      "flue-system"
+    ],
+    "diagnostic": "heater-wont-ignite"
+  },
+  {
+    "symptom": "Fridge works on electric but not gas",
+    "components": [
+      "fridge-gas",
+      "gas-manifold",
+      "flue-system"
+    ],
+    "diagnostic": "fridge-no-gas"
+  },
+  {
+    "symptom": "Hob flame is yellow",
+    "components": [
+      "hob",
+      "regulator"
+    ],
+    "diagnostic": "yellow-flame"
+  },
+  {
+    "symptom": "Carbon monoxide alarm",
+    "components": [
+      "co-alarm",
+      "truma-heater",
+      "hob",
+      "fridge-gas"
+    ],
+    "diagnostic": "co-alarm"
+  },
+  {
+    "symptom": "One gas appliance fails",
+    "components": [
+      "gas-manifold",
+      "regulator"
+    ],
+    "diagnostic": "no-gas-appliances"
+  }
+]

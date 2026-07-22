@@ -1,0 +1,408 @@
+{
+  "version": "1.0",
+  "sections": [
+    {
+      "id": "identity",
+      "title": "Identity and chassis",
+      "fields": [
+        {
+          "id": "registration",
+          "label": "Registration",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "vin",
+          "label": "VIN",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "make",
+          "label": "Motorhome make",
+          "type": "text",
+          "value": "Knaus"
+        },
+        {
+          "id": "model",
+          "label": "Motorhome model",
+          "type": "text",
+          "value": "Sun Traveller"
+        },
+        {
+          "id": "year",
+          "label": "Model year",
+          "type": "number",
+          "value": "2009"
+        },
+        {
+          "id": "baseVehicle",
+          "label": "Base vehicle",
+          "type": "text",
+          "value": "Fiat Ducato X250"
+        },
+        {
+          "id": "engine",
+          "label": "Engine",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "gearbox",
+          "label": "Gearbox",
+          "type": "text",
+          "value": "Manual"
+        },
+        {
+          "id": "wheelbase",
+          "label": "Wheelbase",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "length",
+          "label": "Overall length",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "width",
+          "label": "Overall width",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "height",
+          "label": "Overall height",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "mam",
+          "label": "Maximum authorised mass",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "payload",
+          "label": "Calculated payload",
+          "type": "text",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "electrical",
+      "title": "Electrical",
+      "fields": [
+        {
+          "id": "starterBattery",
+          "label": "Starter battery",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "leisureBattery",
+          "label": "Leisure battery",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "batteryChemistry",
+          "label": "Battery chemistry",
+          "type": "select",
+          "options": [
+            "Unknown",
+            "Lead-acid",
+            "AGM",
+            "Gel",
+            "LiFePO4"
+          ],
+          "value": "Unknown"
+        },
+        {
+          "id": "batteryCapacity",
+          "label": "Battery capacity",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "charger",
+          "label": "Charger or power unit",
+          "type": "text",
+          "value": "Calira EVS 30/20-DS/IU"
+        },
+        {
+          "id": "mainFuseBox",
+          "label": "Main 12 V distribution",
+          "type": "text",
+          "value": "Calira VB06-1"
+        },
+        {
+          "id": "auxFuseBox",
+          "label": "Auxiliary distribution",
+          "type": "text",
+          "value": "Calira VB04"
+        },
+        {
+          "id": "solar",
+          "label": "Solar system",
+          "type": "text",
+          "value": "Not confirmed"
+        },
+        {
+          "id": "dcDc",
+          "label": "DC-DC charger",
+          "type": "text",
+          "value": "Planned"
+        },
+        {
+          "id": "inverter",
+          "label": "Inverter",
+          "type": "text",
+          "value": "None confirmed"
+        },
+        {
+          "id": "batteryMonitor",
+          "label": "Battery monitor",
+          "type": "text",
+          "value": "Planned Victron SmartShunt"
+        },
+        {
+          "id": "portablePower",
+          "label": "Portable power",
+          "type": "text",
+          "value": "Anker Solix C1000 Gen 2"
+        }
+      ]
+    },
+    {
+      "id": "water",
+      "title": "Water and plumbing",
+      "fields": [
+        {
+          "id": "freshCapacity",
+          "label": "Fresh-water capacity",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "wasteCapacity",
+          "label": "Waste-water capacity",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "pump",
+          "label": "Water pump model",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "boiler",
+          "label": "Boiler or heater model",
+          "type": "text",
+          "value": "Truma system. Exact model to confirm"
+        },
+        {
+          "id": "frostControl",
+          "label": "Frost protection valve",
+          "type": "text",
+          "value": "Installed. Exact model to confirm"
+        },
+        {
+          "id": "tankSensors",
+          "label": "Tank sensors",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "knownLeaks",
+          "label": "Known plumbing history",
+          "type": "textarea",
+          "value": "Kitchen hot-water hose or tap connection previously leaked. Rear discharge traced to frost-protection drain."
+        }
+      ]
+    },
+    {
+      "id": "gas",
+      "title": "Gas and heating",
+      "fields": [
+        {
+          "id": "cylinders",
+          "label": "Cylinder configuration",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "regulator",
+          "label": "Regulator",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "heating",
+          "label": "Heating model",
+          "type": "text",
+          "value": "Truma system. Exact model to confirm"
+        },
+        {
+          "id": "hob",
+          "label": "Hob",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "oven",
+          "label": "Oven",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "fridge",
+          "label": "Refrigerator model",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "fridgeSources",
+          "label": "Refrigerator energy sources",
+          "type": "text",
+          "value": "Gas, 230 V and 12 V"
+        }
+      ]
+    },
+    {
+      "id": "exterior",
+      "title": "Exterior and accessories",
+      "fields": [
+        {
+          "id": "awning",
+          "label": "Awning",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "bikeRack",
+          "label": "Bike rack",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "towbar",
+          "label": "Tow bar",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "satellite",
+          "label": "Satellite",
+          "type": "text",
+          "value": "Alden automatic dish"
+        },
+        {
+          "id": "camera",
+          "label": "Rear camera",
+          "type": "text",
+          "value": "AUTO-VOX SL5"
+        },
+        {
+          "id": "airCon",
+          "label": "Air conditioning",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "rooflights",
+          "label": "Rooflights and vents",
+          "type": "textarea",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "tyres",
+      "title": "Tyres and wheels",
+      "fields": [
+        {
+          "id": "frontTyres",
+          "label": "Front tyre size",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "rearTyres",
+          "label": "Rear tyre size",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "frontPressure",
+          "label": "Front pressure",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "rearPressure",
+          "label": "Rear pressure",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "spare",
+          "label": "Spare wheel or repair kit",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "wheelTorque",
+          "label": "Wheel-bolt torque",
+          "type": "text",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "documents",
+      "title": "Documents and renewals",
+      "fields": [
+        {
+          "id": "insuranceExpiry",
+          "label": "Insurance expiry",
+          "type": "date",
+          "value": ""
+        },
+        {
+          "id": "taxExpiry",
+          "label": "Motor tax expiry",
+          "type": "date",
+          "value": ""
+        },
+        {
+          "id": "nctExpiry",
+          "label": "CVRT or NCT expiry",
+          "type": "date",
+          "value": ""
+        },
+        {
+          "id": "habitationDue",
+          "label": "Habitation service due",
+          "type": "date",
+          "value": ""
+        },
+        {
+          "id": "gasDue",
+          "label": "Gas inspection due",
+          "type": "date",
+          "value": ""
+        },
+        {
+          "id": "dampDue",
+          "label": "Damp inspection due",
+          "type": "date",
+          "value": ""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,480 @@
+[
+  {
+    "id": "gas-locker",
+    "name": "Gas Locker",
+    "status": "Installed",
+    "category": "Storage",
+    "location": "Exterior-access locker. Exact cylinder layout to record in Vehicle Configuration.",
+    "purpose": "Stores LPG cylinders upright in a sealed, ventilated compartment.",
+    "operation": "Gas leaves each cylinder through the regulator and fixed pipework. The locker floor vent must remain clear.",
+    "maintenance": [
+      "Inspect floor vent",
+      "Check cylinder restraints",
+      "Keep electrical items out unless approved",
+      "Inspect locker seal"
+    ],
+    "faults": [
+      "Gas smell",
+      "Loose cylinder",
+      "Blocked floor vent",
+      "Corrosion or water ingress"
+    ],
+    "tests": [
+      "Close cylinder valves",
+      "Inspect restraints and hoses",
+      "Confirm floor vent is clear",
+      "Use approved leak-detection fluid on accessible joints"
+    ],
+    "chapters": [
+      25,
+      33
+    ],
+    "officialPages": [
+      69
+    ],
+    "tags": [
+      "gas locker",
+      "cylinder",
+      "vent",
+      "LPG"
+    ]
+  },
+  {
+    "id": "gas-cylinder",
+    "name": "LPG Cylinder",
+    "status": "Installed",
+    "category": "Fuel",
+    "location": "Gas locker.",
+    "purpose": "Stores LPG for heating, hot water, cooking and refrigerator operation.",
+    "operation": "Liquid LPG remains inside the cylinder while vapour feeds the regulator.",
+    "maintenance": [
+      "Check test date where applicable",
+      "Keep valve cap available",
+      "Secure for travel",
+      "Replace damaged seals"
+    ],
+    "faults": [
+      "Empty cylinder",
+      "Valve leak",
+      "Damaged seal",
+      "Incorrect connector"
+    ],
+    "tests": [
+      "Confirm cylinder has fuel",
+      "Inspect connector and seal",
+      "Open valve slowly",
+      "Check for leaks with approved fluid"
+    ],
+    "chapters": [
+      25,
+      33
+    ],
+    "officialPages": [
+      69
+    ],
+    "tags": [
+      "LPG",
+      "propane",
+      "butane",
+      "cylinder"
+    ]
+  },
+  {
+    "id": "regulator",
+    "name": "Gas Regulator",
+    "status": "Installed",
+    "category": "Pressure control",
+    "location": "Gas locker near cylinder connection.",
+    "purpose": "Reduces cylinder pressure to the appliance operating pressure.",
+    "operation": "Maintains controlled outlet pressure while appliances draw gas.",
+    "maintenance": [
+      "Check replacement age",
+      "Inspect hose date and condition",
+      "Keep vent orientation correct",
+      "Arrange professional pressure test"
+    ],
+    "faults": [
+      "No gas flow",
+      "Low pressure",
+      "Regulator icing",
+      "Leak at connection"
+    ],
+    "tests": [
+      "Confirm cylinder valve open",
+      "Check hose and connector",
+      "Try known-full cylinder",
+      "Arrange manometer test by competent technician"
+    ],
+    "chapters": [
+      25,
+      33
+    ],
+    "officialPages": [
+      69
+    ],
+    "tags": [
+      "regulator",
+      "pressure",
+      "hose",
+      "gas"
+    ]
+  },
+  {
+    "id": "gas-manifold",
+    "name": "Gas Isolation Manifold",
+    "status": "Installed",
+    "category": "Distribution",
+    "location": "Interior service area. Exact position to record.",
+    "purpose": "Provides individual isolation valves for gas appliances.",
+    "operation": "Each valve opens or closes one appliance branch.",
+    "maintenance": [
+      "Label each valve",
+      "Exercise valves gently",
+      "Inspect accessible joints"
+    ],
+    "faults": [
+      "Appliance isolated",
+      "Valve stiff",
+      "Leak at joint",
+      "Incorrect labelling"
+    ],
+    "tests": [
+      "Confirm correct valve open",
+      "Close branches during fault isolation",
+      "Use approved leak detection"
+    ],
+    "chapters": [
+      25,
+      33
+    ],
+    "officialPages": [
+      69
+    ],
+    "tags": [
+      "manifold",
+      "isolation valve",
+      "gas branch"
+    ]
+  },
+  {
+    "id": "truma-heater",
+    "name": "Truma Space Heating System",
+    "status": "Installed",
+    "category": "Heating",
+    "location": "Exact appliance model and position to confirm.",
+    "purpose": "Provides blown-air space heating and may integrate hot water.",
+    "operation": "Uses LPG or other fitted energy source, plus 12 V control power and fan power.",
+    "maintenance": [
+      "Confirm exact model",
+      "Keep combustion air and flue clear",
+      "Inspect warm-air ducts",
+      "Record fault codes"
+    ],
+    "faults": [
+      "Will not ignite",
+      "Starts then stops",
+      "Fan runs without heat",
+      "Low-voltage shutdown",
+      "Overheat fault"
+    ],
+    "tests": [
+      "Check 12 V supply",
+      "Check gas isolation",
+      "Inspect flue area",
+      "Read fault indication",
+      "Confirm warm-air outlets open"
+    ],
+    "chapters": [
+      9,
+      16,
+      33
+    ],
+    "officialPages": [
+      75
+    ],
+    "tags": [
+      "Truma",
+      "heater",
+      "space heating",
+      "fan",
+      "gas"
+    ]
+  },
+  {
+    "id": "warm-air-ducts",
+    "name": "Warm-air Ducting",
+    "status": "Installed",
+    "category": "Air distribution",
+    "location": "Runs from heater to cabin outlets.",
+    "purpose": "Carries heated air around the habitation area.",
+    "operation": "The heater fan pushes air through flexible ducts and adjustable outlets.",
+    "maintenance": [
+      "Inspect crushed ducts",
+      "Keep outlets open",
+      "Remove dust buildup",
+      "Check under-bed and locker routes"
+    ],
+    "faults": [
+      "One area stays cold",
+      "Weak airflow",
+      "Rattle",
+      "Overheating near heater"
+    ],
+    "tests": [
+      "Compare airflow at outlets",
+      "Inspect visible ducts",
+      "Open all vents",
+      "Check for detached duct"
+    ],
+    "chapters": [
+      33
+    ],
+    "officialPages": [
+      75
+    ],
+    "tags": [
+      "duct",
+      "warm air",
+      "outlet",
+      "heating"
+    ]
+  },
+  {
+    "id": "boiler-burner",
+    "name": "Hot-water Burner and Controls",
+    "status": "Installed",
+    "category": "Hot water",
+    "location": "Integrated with Truma boiler or Combi system.",
+    "purpose": "Heats the boiler water using the fitted energy source.",
+    "operation": "Requires full boiler, correct gas supply, combustion airflow and stable 12 V controls.",
+    "maintenance": [
+      "Confirm model manual",
+      "Inspect flue",
+      "Descale when required",
+      "Test before travel season"
+    ],
+    "faults": [
+      "No ignition",
+      "Water not heating",
+      "Fault after short run",
+      "Combustion fault"
+    ],
+    "tests": [
+      "Confirm boiler full",
+      "Check gas valve",
+      "Check 12 V supply",
+      "Read fault code",
+      "Verify exhaust is unobstructed"
+    ],
+    "chapters": [
+      32,
+      33
+    ],
+    "officialPages": [
+      75,
+      85
+    ],
+    "tags": [
+      "boiler",
+      "burner",
+      "hot water",
+      "Truma"
+    ]
+  },
+  {
+    "id": "hob",
+    "name": "Gas Hob",
+    "status": "Installed",
+    "category": "Cooking",
+    "location": "Kitchen worktop.",
+    "purpose": "Provides cooking burners.",
+    "operation": "Manual or electronic ignition lights gas at the burner after the isolation valve is opened.",
+    "maintenance": [
+      "Clean burner ports",
+      "Inspect flame pattern",
+      "Keep lid interlock working",
+      "Arrange professional service for poor combustion"
+    ],
+    "faults": [
+      "Will not light",
+      "Flame goes out",
+      "Yellow flame",
+      "Igniter fails"
+    ],
+    "tests": [
+      "Confirm gas isolation open",
+      "Try another burner",
+      "Inspect burner cap seating",
+      "Check flame remains after holding control"
+    ],
+    "chapters": [
+      25,
+      33
+    ],
+    "officialPages": [
+      69
+    ],
+    "tags": [
+      "hob",
+      "burner",
+      "kitchen",
+      "flame"
+    ]
+  },
+  {
+    "id": "oven",
+    "name": "Gas Oven or Grill",
+    "status": "Unknown",
+    "category": "Cooking",
+    "location": "Kitchen appliance stack if fitted.",
+    "purpose": "Provides baking or grilling where installed.",
+    "operation": "Uses gas burner, flame-failure protection and ventilation.",
+    "maintenance": [
+      "Confirm whether fitted",
+      "Clean burner area",
+      "Inspect door seal",
+      "Follow appliance manual"
+    ],
+    "faults": [
+      "No ignition",
+      "Uneven heat",
+      "Flame will not stay lit"
+    ],
+    "tests": [
+      "Confirm isolation valve",
+      "Inspect ignition",
+      "Check flame-failure hold time"
+    ],
+    "chapters": [
+      25,
+      33
+    ],
+    "officialPages": [
+      69
+    ],
+    "tags": [
+      "oven",
+      "grill",
+      "gas cooking"
+    ]
+  },
+  {
+    "id": "fridge-gas",
+    "name": "Refrigerator Gas System",
+    "status": "Installed",
+    "category": "Appliance",
+    "location": "Refrigerator enclosure with exterior vents.",
+    "purpose": "Allows absorption refrigerator operation on LPG when parked.",
+    "operation": "A small burner heats the absorption circuit. Ventilation and a clear flue are essential.",
+    "maintenance": [
+      "Clean burner and flue professionally",
+      "Keep exterior vents clear",
+      "Check flame quality",
+      "Inspect gas isolation"
+    ],
+    "faults": [
+      "Works on electric but not gas",
+      "Ignition clicking",
+      "Flame goes out",
+      "Poor cooling"
+    ],
+    "tests": [
+      "Confirm gas valve open",
+      "Check another gas appliance",
+      "Observe ignition indication",
+      "Inspect external vents"
+    ],
+    "chapters": [
+      25,
+      34
+    ],
+    "officialPages": [
+      133
+    ],
+    "tags": [
+      "fridge",
+      "refrigerator",
+      "gas burner",
+      "vent"
+    ]
+  },
+  {
+    "id": "flue-system",
+    "name": "Combustion Flues and Exterior Vents",
+    "status": "Installed",
+    "category": "Exhaust",
+    "location": "Exterior walls or roof depending on appliance.",
+    "purpose": "Supplies combustion air and removes exhaust gases.",
+    "operation": "Each room-sealed appliance uses its approved terminal and clearances.",
+    "maintenance": [
+      "Keep clear of covers and debris",
+      "Inspect seals",
+      "Check after body repairs",
+      "Never modify terminal"
+    ],
+    "faults": [
+      "Blocked flue",
+      "Damaged terminal",
+      "Water ingress",
+      "Combustion lockout"
+    ],
+    "tests": [
+      "Visual inspection only unless qualified",
+      "Confirm no obstruction",
+      "Check seal condition"
+    ],
+    "chapters": [
+      25,
+      33,
+      34
+    ],
+    "officialPages": [
+      69,
+      75,
+      133
+    ],
+    "tags": [
+      "flue",
+      "vent",
+      "exhaust",
+      "combustion"
+    ]
+  },
+  {
+    "id": "co-alarm",
+    "name": "Carbon Monoxide Alarm",
+    "status": "Recommended safety item",
+    "category": "Safety",
+    "location": "Install according to alarm and vehicle guidance.",
+    "purpose": "Warns of dangerous carbon monoxide accumulation.",
+    "operation": "Continuously monitors air and sounds when thresholds are exceeded.",
+    "maintenance": [
+      "Test regularly",
+      "Replace by expiry date",
+      "Keep vents unobstructed",
+      "Record replacement date"
+    ],
+    "faults": [
+      "Low battery chirp",
+      "Expired sensor",
+      "Alarm activation"
+    ],
+    "tests": [
+      "Use test button",
+      "Check expiry date",
+      "Respond to any real alarm by evacuating and ventilating"
+    ],
+    "chapters": [
+      25,
+      33
+    ],
+    "officialPages": [
+      69
+    ],
+    "tags": [
+      "CO alarm",
+      "carbon monoxide",
+      "safety"
+    ]
+  }
+]

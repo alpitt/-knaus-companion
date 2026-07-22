@@ -1,0 +1,520 @@
+[
+  {
+    "id": "fresh-tank",
+    "name": "Fresh-water Tank",
+    "status": "Installed",
+    "category": "Storage",
+    "location": "Vehicle-specific location to confirm in configuration.",
+    "purpose": "Stores potable water for taps, shower, toilet flush and boiler filling.",
+    "operation": "Filled through the external filler. Water leaves through the pump pickup and returns nowhere. It must be drained for winter storage.",
+    "maintenance": [
+      "Sanitise periodically",
+      "Inspect filler cap and hose",
+      "Check tank drain",
+      "Inspect for sediment and odour"
+    ],
+    "faults": [
+      "Tank will not fill",
+      "Tank drains unexpectedly",
+      "Incorrect level reading",
+      "Contamination or odour"
+    ],
+    "tests": [
+      "Check tank level physically",
+      "Inspect filler venting",
+      "Verify drain valve is shut",
+      "Compare panel indication with actual level"
+    ],
+    "chapters": [
+      32,
+      39
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "fresh water",
+      "tank",
+      "filler",
+      "drain",
+      "sanitise"
+    ]
+  },
+  {
+    "id": "water-filler",
+    "name": "External Water Filler",
+    "status": "Installed",
+    "category": "Filling",
+    "location": "Exterior body side. Exact position to record with a photo.",
+    "purpose": "Allows the fresh tank to be filled from a hose or container.",
+    "operation": "Water enters the tank through the filler hose while displaced air exits through a vent.",
+    "maintenance": [
+      "Clean cap and seal",
+      "Inspect filler hose and vent",
+      "Use a food-grade hose"
+    ],
+    "faults": [
+      "Water backs up",
+      "Slow filling",
+      "Leak inside body",
+      "Missing or damaged cap"
+    ],
+    "tests": [
+      "Inspect cap seal",
+      "Fill slowly and watch for leaks",
+      "Check vent is clear"
+    ],
+    "chapters": [
+      32,
+      39
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "filler",
+      "fresh tank",
+      "hose",
+      "vent"
+    ]
+  },
+  {
+    "id": "pump",
+    "name": "Fresh-water Pump",
+    "status": "Installed",
+    "category": "Pressure",
+    "location": "Exact vehicle location and model to confirm.",
+    "purpose": "Pressurises the cold-water system and supplies the boiler and outlets.",
+    "operation": "Runs when pressure falls after a tap opens. Stops when pressure recovers.",
+    "maintenance": [
+      "Clean inlet filter",
+      "Inspect mounts and terminals",
+      "Check for leaks and air ingress"
+    ],
+    "faults": [
+      "Pump dead",
+      "Pump runs continuously",
+      "Low pressure",
+      "Rapid cycling",
+      "Noisy operation"
+    ],
+    "tests": [
+      "Check VB06 Pumpe 10 A fuse",
+      "Listen for pump operation",
+      "Measure voltage at pump under demand",
+      "Inspect filter and suction hose",
+      "Check for open drain valves"
+    ],
+    "chapters": [
+      8,
+      13,
+      16,
+      32
+    ],
+    "officialPages": [
+      85,
+      95
+    ],
+    "tags": [
+      "pump",
+      "10A",
+      "VB06",
+      "pressure",
+      "water"
+    ]
+  },
+  {
+    "id": "cold-manifold",
+    "name": "Cold-water Distribution",
+    "status": "Installed",
+    "category": "Pipework",
+    "location": "Pipe routes and junctions require tracing.",
+    "purpose": "Distributes pressurised cold water to taps, toilet and boiler inlet.",
+    "operation": "Receives water from the pump and branches to each appliance or outlet.",
+    "maintenance": [
+      "Inspect push-fit joints",
+      "Support pipework",
+      "Check for abrasion and frost damage"
+    ],
+    "faults": [
+      "One outlet has no flow",
+      "Hidden leak",
+      "Air lock",
+      "Loose connector"
+    ],
+    "tests": [
+      "Compare flow at each outlet",
+      "Inspect accessible joints under pressure",
+      "Isolate suspected branch if possible"
+    ],
+    "chapters": [
+      14,
+      32
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "cold water",
+      "pipework",
+      "manifold",
+      "leak"
+    ]
+  },
+  {
+    "id": "truma-boiler",
+    "name": "Truma Boiler or Combi Water Heater",
+    "status": "Installed",
+    "category": "Hot water",
+    "location": "Exact model and installation position to confirm from appliance label.",
+    "purpose": "Heats stored water and may also provide space heating depending on model.",
+    "operation": "Fills from the cold system. Heated water leaves through the hot outlet. Control power requires 12 V even when heating by gas.",
+    "maintenance": [
+      "Confirm model and manual",
+      "Inspect flue area",
+      "Descale if required by manufacturer",
+      "Test before each touring season"
+    ],
+    "faults": [
+      "No hot water",
+      "Water discharges outside",
+      "Ignition failure",
+      "Low-voltage shutdown",
+      "Boiler will not fill"
+    ],
+    "tests": [
+      "Confirm frost valve closed",
+      "Purge air from hot taps",
+      "Check gas and 12 V supply",
+      "Observe fault code",
+      "Verify water remains in boiler"
+    ],
+    "chapters": [
+      9,
+      16,
+      32,
+      33
+    ],
+    "officialPages": [
+      75,
+      85
+    ],
+    "tags": [
+      "Truma",
+      "boiler",
+      "hot water",
+      "Combi",
+      "heater"
+    ]
+  },
+  {
+    "id": "frost-valve",
+    "name": "Frost-protection Drain Valve",
+    "status": "Confirmed",
+    "category": "Drain and protection",
+    "location": "Near the boiler. Exact position should be photographed and recorded.",
+    "purpose": "Protects the boiler by draining water when cold or when manually opened.",
+    "operation": "The valve must be closed before filling. It may reopen at low temperature depending on the fitted model.",
+    "maintenance": [
+      "Exercise the valve",
+      "Keep area warm enough when filling",
+      "Inspect discharge path"
+    ],
+    "faults": [
+      "Water drains from rear or underside",
+      "Boiler will not stay full",
+      "Valve will not latch closed"
+    ],
+    "tests": [
+      "Warm the valve area",
+      "Reset according to fitted model",
+      "Fill system and watch discharge outlet"
+    ],
+    "chapters": [
+      32,
+      33,
+      39
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "FrostControl",
+      "frost valve",
+      "drain",
+      "rear discharge",
+      "boiler"
+    ]
+  },
+  {
+    "id": "hot-manifold",
+    "name": "Hot-water Distribution",
+    "status": "Installed",
+    "category": "Pipework",
+    "location": "Routes from boiler to kitchen, bathroom and shower require tracing.",
+    "purpose": "Carries heated water from the boiler to outlets.",
+    "operation": "Pressurised by the pump. Hot flow begins after air is purged and the boiler is full.",
+    "maintenance": [
+      "Inspect hot-rated hose and joints",
+      "Check for heat damage",
+      "Support pipe runs"
+    ],
+    "faults": [
+      "Hot side leak",
+      "No hot flow at one tap",
+      "Air trapped",
+      "Loose tap connector"
+    ],
+    "tests": [
+      "Open hot taps to purge air",
+      "Inspect joints while pump is running",
+      "Compare cold and hot flow"
+    ],
+    "chapters": [
+      14,
+      32
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "hot water",
+      "pipework",
+      "tap",
+      "leak"
+    ]
+  },
+  {
+    "id": "kitchen-tap",
+    "name": "Kitchen Mixer Tap",
+    "status": "Known repair area",
+    "category": "Outlet",
+    "location": "Kitchen sink.",
+    "purpose": "Mixes hot and cold water at the kitchen sink.",
+    "operation": "Opening the tap drops system pressure and starts the pump.",
+    "maintenance": [
+      "Inspect hose connections",
+      "Check microswitch if fitted",
+      "Descale aerator"
+    ],
+    "faults": [
+      "Leak below tap",
+      "Hot hose leak",
+      "No pump trigger",
+      "Poor flow"
+    ],
+    "tests": [
+      "Dry area fully",
+      "Run cold then hot separately",
+      "Inspect connection while pressurised",
+      "Check microswitch continuity if fitted"
+    ],
+    "chapters": [
+      16,
+      32
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "kitchen tap",
+      "mixer",
+      "hot hose",
+      "leak",
+      "microswitch"
+    ]
+  },
+  {
+    "id": "bathroom-outlets",
+    "name": "Bathroom and Shower Outlets",
+    "status": "Installed",
+    "category": "Outlet",
+    "location": "Bathroom basin and shower.",
+    "purpose": "Provides hot and cold water for washing and showering.",
+    "operation": "Uses the same pressurised hot and cold system as the kitchen.",
+    "maintenance": [
+      "Clean shower head",
+      "Inspect flexible hose",
+      "Check tray and drain seals"
+    ],
+    "faults": [
+      "Low flow",
+      "Leaking hose",
+      "Poor drainage",
+      "Pump cycling"
+    ],
+    "tests": [
+      "Compare basin and shower flow",
+      "Inspect hose under pressure",
+      "Check drain for blockage"
+    ],
+    "chapters": [
+      32,
+      39
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "shower",
+      "bathroom",
+      "basin",
+      "drain"
+    ]
+  },
+  {
+    "id": "waste-tank",
+    "name": "Waste-water Tank",
+    "status": "Installed",
+    "category": "Waste",
+    "location": "Underbody or floor-mounted. Exact position and capacity to confirm.",
+    "purpose": "Collects sink and shower grey water.",
+    "operation": "Receives gravity drainage from outlets and empties through the waste valve.",
+    "maintenance": [
+      "Rinse tank",
+      "Clean drain valve",
+      "Avoid grease and solids",
+      "Inspect supports"
+    ],
+    "faults": [
+      "Bad odour",
+      "Slow drainage",
+      "Valve leak",
+      "Incorrect level reading",
+      "Frozen tank"
+    ],
+    "tests": [
+      "Open valve over an approved disposal point",
+      "Check outlet flow",
+      "Inspect visible pipework and valve"
+    ],
+    "chapters": [
+      32,
+      39
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "waste tank",
+      "grey water",
+      "drain valve",
+      "odour"
+    ]
+  },
+  {
+    "id": "waste-valve",
+    "name": "Waste Drain Valve",
+    "status": "Installed",
+    "category": "Waste",
+    "location": "External underside. Exact operating point to record.",
+    "purpose": "Controls emptying of the waste-water tank.",
+    "operation": "Keep closed while touring and open only over a suitable disposal point.",
+    "maintenance": [
+      "Lubricate or service as appropriate",
+      "Clean outlet cap",
+      "Check for drips"
+    ],
+    "faults": [
+      "Will not open",
+      "Will not close",
+      "Leaks while travelling",
+      "Frozen valve"
+    ],
+    "tests": [
+      "Operate when tank is empty",
+      "Inspect seal and linkage",
+      "Check outlet after closing"
+    ],
+    "chapters": [
+      32,
+      39
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "waste valve",
+      "grey water",
+      "drain"
+    ]
+  },
+  {
+    "id": "toilet-flush",
+    "name": "Toilet Flush Water Supply",
+    "status": "Installed",
+    "category": "Sanitation",
+    "location": "Bathroom toilet system.",
+    "purpose": "Supplies flush water from the main tank or a dedicated reservoir depending on fitted toilet.",
+    "operation": "Electrical switch or pump delivers flush water.",
+    "maintenance": [
+      "Clean flush nozzle",
+      "Use approved products",
+      "Inspect cassette seals separately"
+    ],
+    "faults": [
+      "No flush",
+      "Weak flush",
+      "Fuse failure",
+      "Leak around bowl"
+    ],
+    "tests": [
+      "Confirm system type",
+      "Check 12 V supply",
+      "Inspect pump or solenoid",
+      "Check nozzle blockage"
+    ],
+    "chapters": [
+      13,
+      32
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "toilet",
+      "flush",
+      "cassette",
+      "pump"
+    ]
+  },
+  {
+    "id": "level-sensors",
+    "name": "Water Level Sensors",
+    "status": "Installed",
+    "category": "Monitoring",
+    "location": "Fresh and waste tanks.",
+    "purpose": "Reports approximate tank levels to the control panel.",
+    "operation": "Probe or sender readings change with liquid level.",
+    "maintenance": [
+      "Clean probes or sender",
+      "Inspect wiring",
+      "Treat readings as approximate"
+    ],
+    "faults": [
+      "Always full",
+      "Always empty",
+      "Erratic display"
+    ],
+    "tests": [
+      "Compare panel reading with known fill level",
+      "Inspect sender wiring",
+      "Clean accessible probes"
+    ],
+    "chapters": [
+      5,
+      16,
+      32
+    ],
+    "officialPages": [
+      85
+    ],
+    "tags": [
+      "sensor",
+      "tank level",
+      "fresh",
+      "waste",
+      "panel"
+    ]
+  }
+]

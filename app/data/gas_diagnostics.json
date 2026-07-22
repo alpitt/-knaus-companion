@@ -1,0 +1,117 @@
+[
+  {
+    "id": "no-gas-appliances",
+    "title": "No gas appliance works",
+    "chapter": 25,
+    "steps": [
+      {
+        "q": "Is there a known-full cylinder connected and its valve open?",
+        "yes": 1,
+        "no": "Fit or open a known-full cylinder, then retest."
+      },
+      {
+        "q": "Are the regulator hose and connector secure with no visible damage?",
+        "yes": 2,
+        "no": "Close the cylinder and replace damaged parts before use."
+      },
+      {
+        "q": "Are the individual appliance isolation valves open?",
+        "yes": 3,
+        "no": "Open only the required appliance valve and retest."
+      },
+      {
+        "q": "Does any appliance now light?",
+        "yes": "The fault is likely local to the remaining appliance.",
+        "no": "Stop repeated ignition attempts and arrange regulator or system-pressure testing by a competent technician."
+      }
+    ]
+  },
+  {
+    "id": "heater-wont-ignite",
+    "title": "Heater will not ignite",
+    "chapter": 33,
+    "steps": [
+      {
+        "q": "Does another gas appliance work?",
+        "yes": 1,
+        "no": "Use the No gas appliance works diagnostic first."
+      },
+      {
+        "q": "Is the heater receiving stable 12 V control power?",
+        "yes": 2,
+        "no": "Check the VB04 Heizung 15 A fuse, battery voltage and earth."
+      },
+      {
+        "q": "Is the heater gas isolation valve open and the flue terminal clear?",
+        "yes": 3,
+        "no": "Correct the isolation or obstruction before retrying."
+      },
+      {
+        "q": "Is a fault code shown?",
+        "yes": "Record the exact code and use the appliance-specific manual.",
+        "no": "Allow purge time after cylinder changes, then arrange appliance service if ignition still fails."
+      }
+    ]
+  },
+  {
+    "id": "fridge-no-gas",
+    "title": "Refrigerator will not run on gas",
+    "chapter": 34,
+    "steps": [
+      {
+        "q": "Does the hob light normally?",
+        "yes": 1,
+        "no": "Check cylinder, regulator and manifold supply first."
+      },
+      {
+        "q": "Is the refrigerator gas isolation valve open?",
+        "yes": 2,
+        "no": "Open it and retry according to the appliance instructions."
+      },
+      {
+        "q": "Are the exterior refrigerator vents unobstructed?",
+        "yes": 3,
+        "no": "Clear them before operation."
+      },
+      {
+        "q": "Does ignition occur but the flame fail to stay lit?",
+        "yes": "Burner, thermocouple or flue service is likely required.",
+        "no": "Check appliance controls and 12 V control supply, then arrange service."
+      }
+    ]
+  },
+  {
+    "id": "yellow-flame",
+    "title": "Yellow or unstable hob flame",
+    "chapter": 25,
+    "steps": [
+      {
+        "q": "Is the burner cap seated correctly and clean?",
+        "yes": 1,
+        "no": "Allow it to cool, clean and reseat it."
+      },
+      {
+        "q": "Do all burners show the same poor flame?",
+        "yes": "Stop use and arrange regulator-pressure and gas-quality checks.",
+        "no": "The affected burner needs cleaning or service."
+      }
+    ]
+  },
+  {
+    "id": "co-alarm",
+    "title": "Carbon monoxide alarm sounds",
+    "chapter": 25,
+    "steps": [
+      {
+        "q": "Is anyone feeling unwell, dizzy, sick or unusually tired?",
+        "yes": "Evacuate immediately, call emergency services, and do not re-enter until declared safe.",
+        "no": 1
+      },
+      {
+        "q": "Are any combustion appliances running?",
+        "yes": "Turn them off only if safe, evacuate, ventilate from outside where possible, and arrange inspection before reuse.",
+        "no": "Evacuate, ventilate, check alarm age and arrange investigation before occupying the vehicle."
+      }
+    ]
+  }
+]

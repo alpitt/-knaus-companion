@@ -1,0 +1,317 @@
+[
+  {
+    "id": "electrical-compartment",
+    "name": "Electrical Compartment",
+    "view": "interior",
+    "x": 18,
+    "y": 65,
+    "w": 18,
+    "h": 18,
+    "system": "electrical",
+    "component": "calira-evs",
+    "label": "Calira EVS and VB06",
+    "description": "Main habitation charging and 12 V distribution area.",
+    "chapters": [
+      6,
+      7,
+      8,
+      12,
+      16
+    ],
+    "manualPages": [
+      91,
+      95,
+      97
+    ]
+  },
+  {
+    "id": "passenger-seat",
+    "name": "Passenger Seat Base",
+    "view": "interior",
+    "x": 7,
+    "y": 64,
+    "w": 10,
+    "h": 18,
+    "system": "electrical",
+    "component": "vb04",
+    "label": "VB04 fuse box",
+    "description": "Confirmed auxiliary fuse and signal box under the passenger seat.",
+    "chapters": [
+      9,
+      11,
+      15,
+      16
+    ],
+    "manualPages": [
+      95,
+      101
+    ]
+  },
+  {
+    "id": "kitchen",
+    "name": "Kitchen",
+    "view": "interior",
+    "x": 38,
+    "y": 22,
+    "w": 22,
+    "h": 28,
+    "system": "water",
+    "component": "kitchen-tap",
+    "label": "Kitchen tap and pipework",
+    "description": "Known hot-water hose or mixer connection leak area.",
+    "chapters": [
+      16,
+      32
+    ],
+    "manualPages": [
+      85
+    ]
+  },
+  {
+    "id": "bathroom",
+    "name": "Bathroom",
+    "view": "interior",
+    "x": 67,
+    "y": 20,
+    "w": 20,
+    "h": 32,
+    "system": "water",
+    "component": "bathroom-outlets",
+    "label": "Bathroom and shower",
+    "description": "Basin, shower, toilet flush and waste drainage.",
+    "chapters": [
+      32,
+      39
+    ],
+    "manualPages": [
+      85
+    ]
+  },
+  {
+    "id": "boiler",
+    "name": "Boiler and Frost Valve",
+    "view": "interior",
+    "x": 64,
+    "y": 60,
+    "w": 17,
+    "h": 18,
+    "system": "water",
+    "component": "truma-boiler",
+    "label": "Truma boiler",
+    "description": "Hot-water system and frost-protection drain area.",
+    "chapters": [
+      32,
+      33,
+      39
+    ],
+    "manualPages": [
+      75,
+      85
+    ]
+  },
+  {
+    "id": "fridge",
+    "name": "Refrigerator",
+    "view": "interior",
+    "x": 38,
+    "y": 56,
+    "w": 18,
+    "h": 24,
+    "system": "gas",
+    "component": "fridge-gas",
+    "label": "Three-way refrigerator",
+    "description": "Gas, 230 V and 12 V refrigerator systems.",
+    "chapters": [
+      8,
+      11,
+      25,
+      34
+    ],
+    "manualPages": [
+      95,
+      133
+    ]
+  },
+  {
+    "id": "gas-locker",
+    "name": "Gas Locker",
+    "view": "exterior",
+    "x": 9,
+    "y": 56,
+    "w": 15,
+    "h": 24,
+    "system": "gas",
+    "component": "gas-locker",
+    "label": "LPG cylinders and regulator",
+    "description": "Cylinder storage, ventilation, regulator and hose inspection.",
+    "chapters": [
+      25,
+      33
+    ],
+    "manualPages": [
+      69
+    ]
+  },
+  {
+    "id": "water-filler",
+    "name": "Water Filler",
+    "view": "exterior",
+    "x": 32,
+    "y": 46,
+    "w": 10,
+    "h": 12,
+    "system": "water",
+    "component": "water-filler",
+    "label": "Fresh-water filler",
+    "description": "External filler, venting and fresh-water tank supply.",
+    "chapters": [
+      32,
+      39
+    ],
+    "manualPages": [
+      85
+    ]
+  },
+  {
+    "id": "hookup",
+    "name": "230 V Hook-up",
+    "view": "exterior",
+    "x": 48,
+    "y": 46,
+    "w": 10,
+    "h": 12,
+    "system": "electrical",
+    "component": "hookup",
+    "label": "Mains hook-up inlet",
+    "description": "External mains inlet and internal RCD or consumer unit.",
+    "chapters": [
+      12,
+      16,
+      21
+    ],
+    "manualPages": [
+      91
+    ]
+  },
+  {
+    "id": "toilet-cassette",
+    "name": "Toilet Cassette",
+    "view": "exterior",
+    "x": 64,
+    "y": 43,
+    "w": 13,
+    "h": 22,
+    "system": "water",
+    "component": "toilet-flush",
+    "label": "Toilet service hatch",
+    "description": "Cassette service access and toilet flush system.",
+    "chapters": [
+      32
+    ],
+    "manualPages": [
+      85
+    ]
+  },
+  {
+    "id": "bike-rack",
+    "name": "Rear Bike Rack",
+    "view": "exterior",
+    "x": 81,
+    "y": 37,
+    "w": 15,
+    "h": 35,
+    "system": "vehicle",
+    "component": "",
+    "label": "Bike rack",
+    "description": "Rear carrier, mounting points, rails and load checks.",
+    "chapters": [
+      37,
+      41
+    ],
+    "manualPages": [
+      53
+    ]
+  },
+  {
+    "id": "rear-camera",
+    "name": "Rear Camera",
+    "view": "exterior",
+    "x": 83,
+    "y": 18,
+    "w": 10,
+    "h": 10,
+    "system": "vehicle",
+    "component": "",
+    "label": "AUTO-VOX SL5",
+    "description": "Installed rear-view camera and display system.",
+    "chapters": [
+      24,
+      41
+    ],
+    "manualPages": [
+      53
+    ]
+  },
+  {
+    "id": "roof-satellite",
+    "name": "Satellite Dish",
+    "view": "roof",
+    "x": 42,
+    "y": 20,
+    "w": 18,
+    "h": 20,
+    "system": "vehicle",
+    "component": "",
+    "label": "Alden automatic dish",
+    "description": "Installed automatic satellite dish. Controller model requires confirmation.",
+    "chapters": [
+      35,
+      41
+    ],
+    "manualPages": [
+      53
+    ]
+  },
+  {
+    "id": "rooflights",
+    "name": "Rooflights and Vents",
+    "view": "roof",
+    "x": 20,
+    "y": 40,
+    "w": 18,
+    "h": 22,
+    "system": "vehicle",
+    "component": "",
+    "label": "Rooflights",
+    "description": "Roof openings, seals and ventilation points.",
+    "chapters": [
+      28,
+      39,
+      41
+    ],
+    "manualPages": [
+      53
+    ]
+  },
+  {
+    "id": "future-solar",
+    "name": "Future Solar Area",
+    "view": "roof",
+    "x": 65,
+    "y": 35,
+    "w": 22,
+    "h": 28,
+    "system": "electrical",
+    "component": "orion-xs-future",
+    "label": "Planned solar and charging area",
+    "description": "Planning area for future solar installation and electrical upgrade integration.",
+    "chapters": [
+      18,
+      20,
+      43
+    ],
+    "manualPages": [
+      97
+    ]
+  }
+]

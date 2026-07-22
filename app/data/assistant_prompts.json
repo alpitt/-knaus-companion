@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Diagnose a problem",
+    "prompt": "Why won't my water pump stop?",
+    "category": "diagnostics"
+  },
+  {
+    "title": "Trip readiness",
+    "prompt": "Am I ready to leave for a trip?",
+    "category": "readiness"
+  },
+  {
+    "title": "Maintenance status",
+    "prompt": "What maintenance is due?",
+    "category": "maintenance"
+  },
+  {
+    "title": "Find a component",
+    "prompt": "Where is the boiler drain valve?",
+    "category": "location"
+  },
+  {
+    "title": "Review faults",
+    "prompt": "Show my open and recurring faults",
+    "category": "faults"
+  },
+  {
+    "title": "Inventory check",
+    "prompt": "Which parts are low in stock?",
+    "category": "inventory"
+  },
+  {
+    "title": "Touring help",
+    "prompt": "What should I check before leaving a campsite?",
+    "category": "touring"
+  },
+  {
+    "title": "History search",
+    "prompt": "What work has been completed on the water system?",
+    "category": "history"
+  }
+]

@@ -1,0 +1,78 @@
+[
+  {
+    "id": "no-hot-water",
+    "title": "No hot water",
+    "chapter": 32,
+    "steps": [
+      {
+        "q": "Is there fresh water in the tank?",
+        "yes": 1,
+        "no": "Fill the fresh-water tank, then retest."
+      },
+      {
+        "q": "Does the water pump run when a tap opens?",
+        "yes": 2,
+        "no": "Check the pump switch, VB06 pump fuse, battery voltage and pump connections."
+      },
+      {
+        "q": "Is the frost-protection drain closed and is water staying in the boiler?",
+        "yes": 3,
+        "no": "Warm and reset the drain valve, then refill and purge the system."
+      },
+      {
+        "q": "Is the heater or boiler receiving 12 V and gas?",
+        "yes": "Allow the boiler to heat, then inspect controls and fault indications.",
+        "no": "Check the VB04 heating fuse, gas cylinder, regulator and appliance isolation valve."
+      }
+    ]
+  },
+  {
+    "id": "no-12v",
+    "title": "No 12 V habitation power",
+    "chapter": 16,
+    "steps": [
+      {
+        "q": "Is the leisure battery above 12 V?",
+        "yes": 1,
+        "no": "Charge and test the leisure battery."
+      },
+      {
+        "q": "Are the main battery terminals and main fuse secure?",
+        "yes": 2,
+        "no": "Correct the loose or failed connection before proceeding."
+      },
+      {
+        "q": "Is power present at the Calira EVS output?",
+        "yes": 3,
+        "no": "Check the EVS supply, charger and main connections."
+      },
+      {
+        "q": "Is power present at the VB06 input?",
+        "yes": "Check the individual output fuse and appliance earth.",
+        "no": "Trace the cable and connector between EVS and VB06."
+      }
+    ]
+  },
+  {
+    "id": "fridge-driving",
+    "title": "Refrigerator not working on 12 V while driving",
+    "chapter": 34,
+    "steps": [
+      {
+        "q": "Is the engine running and alternator voltage above resting battery voltage?",
+        "yes": 1,
+        "no": "Investigate the vehicle charging system first."
+      },
+      {
+        "q": "Is the VB04 D+ fuse intact?",
+        "yes": 2,
+        "no": "Replace only with the specified 5 A fuse and investigate if it fails again."
+      },
+      {
+        "q": "Is the VB06 refrigerator fuse intact?",
+        "yes": "Test D+ at the refrigerator relay and the 12 V heating element circuit.",
+        "no": "Replace with the specified fuse and investigate the load if it fails again."
+      }
+    ]
+  }
+]

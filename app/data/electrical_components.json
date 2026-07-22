@@ -1,0 +1,807 @@
+[
+  {
+    "id": "starter-battery",
+    "name": "Starter Battery",
+    "category": "Charging",
+    "status": "Installed",
+    "location": "Fiat Ducato engine bay",
+    "purpose": "Starts the engine and supplies base-vehicle systems.",
+    "expected": "About 12.6 V rested when healthy. Charging voltage rises with engine running.",
+    "fuses": "Vehicle main fuse protection. Confirm exact Fiat fuse allocation from chassis documentation.",
+    "chapters": [
+      10,
+      11,
+      16
+    ],
+    "officialPages": [
+      97
+    ],
+    "tests": [
+      "Measure rested voltage",
+      "Measure voltage while cranking",
+      "Measure alternator charging voltage",
+      "Inspect terminals and earth strap"
+    ],
+    "upgrade": "Do not connect large habitation loads directly to the starter battery.",
+    "manufacturer": "Confirm from fitted label",
+    "model": "Starter Battery",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "About 12.6 V rested when healthy. Charging voltage rises with engine running."
+    ],
+    "relay": "Confirm from fitted wiring",
+    "wires": [],
+    "connectors": [],
+    "faults": [],
+    "maintenance": [],
+    "replacement": "Confirm exact replacement specification before ordering.",
+    "tags": [
+      "Starter Battery",
+      "Charging"
+    ]
+  },
+  {
+    "id": "leisure-battery",
+    "name": "Leisure Battery",
+    "category": "Storage",
+    "status": "Installed",
+    "location": "Habitation battery compartment. Confirm exact final position in vehicle record.",
+    "purpose": "Supplies habitation lighting, pump, controls and appliance electronics.",
+    "expected": "Lead-acid resting voltage near 12.6 V when fully charged. Interpret readings only after surface charge settles.",
+    "fuses": "Main battery fuse plus downstream Calira distribution protection.",
+    "chapters": [
+      10,
+      13,
+      17,
+      18
+    ],
+    "officialPages": [
+      97,
+      99
+    ],
+    "tests": [
+      "Check rested voltage",
+      "Check charging voltage on hook-up",
+      "Check charging voltage with engine running",
+      "Perform voltage-drop test under load"
+    ],
+    "upgrade": "Planned LiFePO4 conversion requires charger, alternator-charging and low-temperature review.",
+    "manufacturer": "Confirm from fitted label",
+    "model": "Leisure Battery",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "Lead-acid resting voltage near 12.6 V when fully charged. Interpret readings only after surface charge settles."
+    ],
+    "relay": "Confirm from fitted wiring",
+    "wires": [],
+    "connectors": [],
+    "faults": [],
+    "maintenance": [],
+    "replacement": "Confirm exact replacement specification before ordering.",
+    "tags": [
+      "Leisure Battery",
+      "Storage"
+    ]
+  },
+  {
+    "id": "calira-evs",
+    "name": "Calira EVS 30/20-DS/IU",
+    "category": "Power management",
+    "status": "Confirmed",
+    "location": "Electrical compartment. Confirmed by vehicle photograph.",
+    "purpose": "Main habitation charger and electrical supply unit.",
+    "expected": "Receives 230 V on hook-up and manages charging and habitation power distribution.",
+    "fuses": "Inspect upstream mains protection, battery fuse and downstream distribution.",
+    "chapters": [
+      6,
+      7,
+      12,
+      16
+    ],
+    "officialPages": [
+      91,
+      97
+    ],
+    "tests": [
+      "Confirm 230 V input",
+      "Measure battery voltage before and after hook-up",
+      "Check EVS output",
+      "Inspect plugs for heat damage"
+    ],
+    "upgrade": "Retain unless testing proves failure. Integrate upgrades around it where safe.",
+    "manufacturer": "Confirm from fitted label",
+    "model": "Calira EVS 30/20-DS/IU",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "Receives 230 V on hook-up and manages charging and habitation power distribution."
+    ],
+    "relay": "Confirm from fitted wiring",
+    "wires": [],
+    "connectors": [],
+    "faults": [],
+    "maintenance": [],
+    "replacement": "Confirm exact replacement specification before ordering.",
+    "tags": [
+      "Calira EVS 30/20-DS/IU",
+      "Power management"
+    ]
+  },
+  {
+    "id": "vb06",
+    "name": "Calira VB06-1",
+    "category": "Distribution",
+    "status": "Confirmed",
+    "location": "Habitation electrical compartment.",
+    "purpose": "Main fused 12 V distribution for refrigerator, battery monitor, permanent supply, pump and habitation circuits.",
+    "expected": "Battery voltage should be present at the input. Each intact fuse should have voltage on both test points.",
+    "fuses": "Refrigerator 20 A, battery monitor 7.5 A, permanent supply 15 A, pump 10 A, circuit 1 15 A, circuit 2 15 A.",
+    "chapters": [
+      8,
+      13,
+      15,
+      16
+    ],
+    "officialPages": [
+      95
+    ],
+    "tests": [
+      "Test input voltage",
+      "Test both sides of each fuse",
+      "Check output voltage under load",
+      "Inspect connectors and earth return"
+    ],
+    "upgrade": "Add labels only after tracing the final loads for circuit 1 and circuit 2.",
+    "manufacturer": "Confirm from fitted label",
+    "model": "Calira VB06-1",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "Battery voltage should be present at the input. Each intact fuse should have voltage on both test points."
+    ],
+    "relay": "Confirm from fitted wiring",
+    "wires": [],
+    "connectors": [],
+    "faults": [],
+    "maintenance": [],
+    "replacement": "Confirm exact replacement specification before ordering.",
+    "tags": [
+      "Calira VB06-1",
+      "Distribution"
+    ]
+  },
+  {
+    "id": "vb04",
+    "name": "Calira VB04",
+    "category": "Signals and distribution",
+    "status": "Confirmed",
+    "location": "Under the passenger seat.",
+    "purpose": "Auxiliary fused supply and signal distribution including heating, D+ and ignition-switched circuits.",
+    "expected": "D+ should become active with the engine running. +15 should follow ignition state.",
+    "fuses": "Dauer 15 A, Heizung 15 A, SML 10 A, D+ 5 A, +15 5 A.",
+    "chapters": [
+      9,
+      11,
+      15,
+      16
+    ],
+    "officialPages": [
+      95,
+      101
+    ],
+    "tests": [
+      "Test permanent supply",
+      "Test heating fuse",
+      "Test D+ with engine off and running",
+      "Test +15 with ignition off and on"
+    ],
+    "upgrade": "Do not add loads to D+ or +15 without relay isolation and current assessment.",
+    "manufacturer": "Confirm from fitted label",
+    "model": "Calira VB04",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "D+ should become active with the engine running. +15 should follow ignition state."
+    ],
+    "relay": "Confirm from fitted wiring",
+    "wires": [],
+    "connectors": [],
+    "faults": [],
+    "maintenance": [],
+    "replacement": "Confirm exact replacement specification before ordering.",
+    "tags": [
+      "Calira VB04",
+      "Signals and distribution"
+    ]
+  },
+  {
+    "id": "hookup",
+    "name": "230 V Hook-up and RCD",
+    "category": "Mains",
+    "status": "Installed",
+    "location": "External inlet and internal consumer unit.",
+    "purpose": "Supplies campsite mains power and charger input.",
+    "expected": "Correct polarity, earth continuity and RCD operation are essential.",
+    "fuses": "Protected by campsite supply, motorhome RCD and MCBs.",
+    "chapters": [
+      12,
+      16,
+      21
+    ],
+    "officialPages": [
+      91
+    ],
+    "tests": [
+      "Inspect cable and plugs",
+      "Test RCD using test button",
+      "Confirm socket voltage",
+      "Check charger response"
+    ],
+    "upgrade": "Use a correctly rated outdoor hook-up lead. Avoid improvised adapters.",
+    "manufacturer": "Confirm from fitted label",
+    "model": "230 V Hook-up and RCD",
+    "voltage": "230 V AC",
+    "normalReadings": [
+      "Correct polarity, earth continuity and RCD operation are essential."
+    ],
+    "relay": "Confirm from fitted wiring",
+    "wires": [],
+    "connectors": [],
+    "faults": [],
+    "maintenance": [],
+    "replacement": "Confirm exact replacement specification before ordering.",
+    "tags": [
+      "230 V Hook-up and RCD",
+      "Mains"
+    ]
+  },
+  {
+    "id": "anker",
+    "name": "Anker Solix C1000 Gen 2",
+    "category": "Portable power",
+    "status": "Owned",
+    "location": "Portable. Store securely for travel.",
+    "purpose": "Independent portable AC and DC power source.",
+    "expected": "Operate separately from the factory Calira system unless a professionally designed changeover system is installed.",
+    "fuses": "Internal protection within the Anker. External loads must still use suitable leads and ratings.",
+    "chapters": [
+      19,
+      20
+    ],
+    "officialPages": [
+      91
+    ],
+    "tests": [
+      "Check state of charge",
+      "Test AC output with a small load",
+      "Inspect charging lead",
+      "Confirm secure travel storage"
+    ],
+    "upgrade": "Do not back-feed the motorhome hook-up inlet.",
+    "manufacturer": "Confirm from fitted label",
+    "model": "Anker Solix C1000 Gen 2",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "Operate separately from the factory Calira system unless a professionally designed changeover system is installed."
+    ],
+    "relay": "Confirm from fitted wiring",
+    "wires": [],
+    "connectors": [],
+    "faults": [],
+    "maintenance": [],
+    "replacement": "Confirm exact replacement specification before ordering.",
+    "tags": [
+      "Anker Solix C1000 Gen 2",
+      "Portable power"
+    ]
+  },
+  {
+    "id": "alternator",
+    "name": "Alternator",
+    "category": "Charging",
+    "status": "Installed",
+    "location": "Engine bay, driven by the auxiliary belt.",
+    "purpose": "Charges the starter battery and supplies the vehicle while the engine runs.",
+    "manufacturer": "Fiat base vehicle equipment",
+    "model": "Confirm from alternator label",
+    "voltage": "System nominal 12 V",
+    "normalReadings": [
+      "Starter battery voltage should rise after starting",
+      "Compare alternator output and battery voltage under load"
+    ],
+    "expected": "Charging voltage should rise above rested battery voltage with the engine running.",
+    "fuses": "Base-vehicle high-current protection. Refer to Fiat documentation for exact allocation.",
+    "relay": "D+ or engine-running signal controls habitation charging logic.",
+    "wires": [
+      "High-current B+ cable",
+      "Earth through engine and chassis",
+      "D+ or control signal"
+    ],
+    "connectors": [
+      "B+ terminal",
+      "Regulator connector"
+    ],
+    "chapters": [
+      11,
+      16,
+      24
+    ],
+    "officialPages": [
+      97
+    ],
+    "tests": [
+      "Measure starter battery before starting",
+      "Start engine and measure again",
+      "Switch on headlights and blower, then recheck",
+      "Inspect belt and high-current connections"
+    ],
+    "faults": [
+      "No voltage rise",
+      "Intermittent charging",
+      "Voltage drop at battery",
+      "Belt or connection fault"
+    ],
+    "maintenance": [
+      "Inspect belt condition",
+      "Inspect terminal security",
+      "Check earth straps"
+    ],
+    "replacement": "Match output rating, pulley and connector type to the fitted unit.",
+    "upgrade": "A DC-DC charger should draw from the charging system through correctly protected cabling.",
+    "tags": [
+      "alternator",
+      "charging",
+      "engine running",
+      "D+",
+      "starter battery"
+    ]
+  },
+  {
+    "id": "consumer-unit",
+    "name": "230 V Consumer Unit",
+    "category": "Mains",
+    "status": "Installed",
+    "location": "Inside the habitation area. Exact position should be added to the vehicle map.",
+    "purpose": "Distributes mains power through RCD and MCB protection.",
+    "manufacturer": "Confirm from enclosure label",
+    "model": "Confirm from enclosure label",
+    "voltage": "230 V AC",
+    "normalReadings": [
+      "230 V at incoming supply when connected",
+      "RCD test button should trip the device"
+    ],
+    "expected": "RCD and MCB protection should remain stable with healthy wiring and appliances.",
+    "fuses": "MCBs protect final circuits. The campsite bollard also protects the incoming supply.",
+    "relay": "None normally required for basic hook-up distribution.",
+    "wires": [
+      "Live",
+      "Neutral",
+      "Protective earth"
+    ],
+    "connectors": [
+      "Hook-up inlet feed",
+      "MCB outputs",
+      "Earth bar",
+      "Neutral bar"
+    ],
+    "chapters": [
+      12,
+      16,
+      21
+    ],
+    "officialPages": [
+      91,
+      95
+    ],
+    "tests": [
+      "Disconnect supply before opening enclosure",
+      "Operate RCD test button",
+      "Test sockets with approved equipment",
+      "Investigate repeated trips by isolating circuits"
+    ],
+    "faults": [
+      "RCD will not reset",
+      "One MCB trips",
+      "No mains at sockets",
+      "Charger works but sockets do not"
+    ],
+    "maintenance": [
+      "Monthly RCD test",
+      "Annual professional inspection",
+      "Inspect for heat discolouration"
+    ],
+    "replacement": "Use an enclosure and devices suitable for motorhome use and the installed circuit ratings.",
+    "upgrade": "Any inverter changeover must prevent back-feed and neutral-earth errors.",
+    "tags": [
+      "230v",
+      "consumer unit",
+      "RCD",
+      "MCB",
+      "hook-up",
+      "mains"
+    ]
+  },
+  {
+    "id": "water-pump-circuit",
+    "name": "Water Pump Circuit",
+    "category": "Habitation load",
+    "status": "Confirmed",
+    "location": "VB06 pump fuse to pump and pressure-switch wiring.",
+    "purpose": "Supplies the fresh-water pump when the control system and pressure switch demand flow.",
+    "manufacturer": "Circuit uses Calira distribution",
+    "model": "Pump model requires confirmation",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "Battery voltage at the VB06 pump fuse",
+      "Voltage at pump during demand"
+    ],
+    "expected": "Pump should run when a tap opens and stop after pressure builds.",
+    "fuses": "VB06 Pumpe 10 A.",
+    "relay": "Depends on fitted control and pump arrangement.",
+    "wires": [
+      "12 V protected feed",
+      "Pump earth",
+      "Pressure-switch or control wiring"
+    ],
+    "connectors": [
+      "VB06 output",
+      "Pump terminals",
+      "Pressure-switch connections"
+    ],
+    "chapters": [
+      13,
+      15,
+      16,
+      32
+    ],
+    "officialPages": [
+      85,
+      95
+    ],
+    "tests": [
+      "Check 10 A fuse on both test points",
+      "Open a tap and test pump voltage",
+      "Test earth voltage drop",
+      "Power pump briefly from a protected test supply only if competent"
+    ],
+    "faults": [
+      "Pump dead",
+      "Pump runs continuously",
+      "Low flow",
+      "Fuse blows"
+    ],
+    "maintenance": [
+      "Inspect terminals",
+      "Clean pump filter",
+      "Check for leaks and air ingress"
+    ],
+    "replacement": "Match pump pressure, flow rate, current draw and mounting.",
+    "upgrade": "Do not fit a higher-current pump without checking cable and fuse suitability.",
+    "tags": [
+      "pump",
+      "water",
+      "10A",
+      "VB06",
+      "pressure switch"
+    ]
+  },
+  {
+    "id": "fridge-12v-circuit",
+    "name": "Refrigerator 12 V Circuit",
+    "category": "Habitation load",
+    "status": "Confirmed",
+    "location": "VB06 refrigerator fuse, D+ control path and refrigerator wiring.",
+    "purpose": "Provides driving-mode refrigerator heating and control power.",
+    "manufacturer": "Calira distribution with fitted refrigerator",
+    "model": "Refrigerator model requires confirmation",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "D+ active only with engine running",
+      "Protected supply at refrigerator when driving mode is commanded"
+    ],
+    "expected": "12 V cooling is intended mainly while driving and depends on the engine-running signal.",
+    "fuses": "VB06 K\u00fchlschrank 20 A and VB04 D+ 5 A.",
+    "relay": "A refrigerator or split-charge relay may be used in the fitted architecture.",
+    "wires": [
+      "High-current 12 V feed",
+      "D+ signal",
+      "Earth return"
+    ],
+    "connectors": [
+      "VB06 output",
+      "VB04 D+",
+      "Refrigerator terminal block"
+    ],
+    "chapters": [
+      8,
+      9,
+      11,
+      34
+    ],
+    "officialPages": [
+      95,
+      133
+    ],
+    "tests": [
+      "Confirm alternator charging",
+      "Check D+ changes with engine state",
+      "Test both refrigerator fuse points",
+      "Measure voltage at refrigerator under load"
+    ],
+    "faults": [
+      "Works on gas but not while driving",
+      "Fuse heating",
+      "Low voltage at refrigerator",
+      "D+ absent"
+    ],
+    "maintenance": [
+      "Inspect vent area and terminals",
+      "Check cable heat damage",
+      "Verify fuse rating"
+    ],
+    "replacement": "Match relay and element ratings to the fitted refrigerator.",
+    "upgrade": "Lithium and DC-DC work must preserve the refrigerator control strategy.",
+    "tags": [
+      "fridge",
+      "refrigerator",
+      "20A",
+      "D+",
+      "driving",
+      "VB06",
+      "VB04"
+    ]
+  },
+  {
+    "id": "heating-circuit",
+    "name": "Heating Control Circuit",
+    "category": "Habitation load",
+    "status": "Confirmed",
+    "location": "VB04 heating fuse to Truma control and heater electronics.",
+    "purpose": "Supplies 12 V control power for heating and hot-water operation.",
+    "manufacturer": "Calira distribution and fitted Truma system",
+    "model": "Confirm heater model from appliance label",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "Battery voltage at VB04 heating fuse",
+      "Stable supply during ignition and fan operation"
+    ],
+    "expected": "The heater needs reliable 12 V control power even when heat is produced from gas.",
+    "fuses": "VB04 Heizung 15 A.",
+    "relay": "Internal appliance relays and controls.",
+    "wires": [
+      "Protected 12 V feed",
+      "Earth return",
+      "Control-panel wiring"
+    ],
+    "connectors": [
+      "VB04 output",
+      "Truma control unit",
+      "Appliance connector"
+    ],
+    "chapters": [
+      9,
+      13,
+      16,
+      33
+    ],
+    "officialPages": [
+      75
+    ],
+    "tests": [
+      "Test fuse both sides",
+      "Measure voltage while heater starts",
+      "Inspect earth and connectors",
+      "Check for voltage collapse during fan operation"
+    ],
+    "faults": [
+      "No display",
+      "Ignition failure caused by low voltage",
+      "Intermittent shutdown",
+      "Fuse failure"
+    ],
+    "maintenance": [
+      "Inspect wiring annually",
+      "Keep vents clear",
+      "Record fault codes"
+    ],
+    "replacement": "Confirm appliance model and wiring before replacing controls.",
+    "upgrade": "Battery changes must maintain stable voltage and correct protection.",
+    "tags": [
+      "heating",
+      "Truma",
+      "15A",
+      "VB04",
+      "hot water",
+      "boiler"
+    ]
+  },
+  {
+    "id": "lighting-circuits",
+    "name": "Interior Lighting Circuits",
+    "category": "Habitation load",
+    "status": "Installed",
+    "location": "VB06 habitation circuits to switches and light fittings.",
+    "purpose": "Supplies habitation lighting.",
+    "manufacturer": "Mixed factory fittings",
+    "model": "Record individual fittings when identified",
+    "voltage": "12 V DC",
+    "normalReadings": [
+      "Near battery voltage at fitting with light on",
+      "Low voltage drop across switches and connectors"
+    ],
+    "expected": "Lights should remain stable without flicker or excessive voltage loss.",
+    "fuses": "Likely VB06 Stromkreis 1 or Stromkreis 2. Final allocation requires tracing.",
+    "relay": "Normally switched locally without a relay.",
+    "wires": [
+      "Protected feed",
+      "Switched feed",
+      "Earth return"
+    ],
+    "connectors": [
+      "VB06 output",
+      "Wall switches",
+      "Light fittings"
+    ],
+    "chapters": [
+      13,
+      14,
+      15,
+      16
+    ],
+    "officialPages": [
+      93,
+      95
+    ],
+    "tests": [
+      "Identify correct fuse by controlled isolation",
+      "Measure fitting voltage",
+      "Check switch voltage drop",
+      "Inspect earth continuity"
+    ],
+    "faults": [
+      "All lights dead",
+      "One fitting dead",
+      "Flicker",
+      "Dim lights"
+    ],
+    "maintenance": [
+      "Inspect fittings and switches",
+      "Replace overheated connectors",
+      "Record circuit allocation after tracing"
+    ],
+    "replacement": "Use suitable 12 V fittings and preserve cable protection.",
+    "upgrade": "LED replacements should be compatible with the supply and radio environment.",
+    "tags": [
+      "lights",
+      "lighting",
+      "Stromkreis",
+      "VB06",
+      "12V"
+    ]
+  },
+  {
+    "id": "smartshunt-future",
+    "name": "Victron SmartShunt 500 A",
+    "category": "Monitoring upgrade",
+    "status": "Recommended",
+    "location": "Future installation close to the leisure battery in the negative return.",
+    "purpose": "Measures battery current, state of charge and energy use.",
+    "manufacturer": "Victron Energy",
+    "model": "SmartShunt 500 A",
+    "voltage": "12 V system monitoring",
+    "normalReadings": [
+      "All habitation negative current must pass through the shunt",
+      "Charged-voltage and tail-current settings must suit battery chemistry"
+    ],
+    "expected": "Accurate readings depend on correct wiring and configuration.",
+    "fuses": "Small fused positive sense wire required according to manufacturer instructions.",
+    "relay": "None.",
+    "wires": [
+      "Battery-only negative side",
+      "System negative side",
+      "Fused positive sense lead"
+    ],
+    "connectors": [
+      "M10 shunt studs",
+      "VE.Smart Bluetooth configuration"
+    ],
+    "chapters": [
+      17,
+      18,
+      20,
+      43
+    ],
+    "officialPages": [
+      97,
+      99
+    ],
+    "tests": [
+      "Verify no bypass negative cables",
+      "Check current direction",
+      "Synchronise at full charge",
+      "Compare load current with known appliance"
+    ],
+    "faults": [
+      "State of charge drifts",
+      "No Bluetooth",
+      "Current reads backwards",
+      "Loads bypass shunt"
+    ],
+    "maintenance": [
+      "Inspect terminal torque",
+      "Review settings after battery changes",
+      "Export configuration record"
+    ],
+    "replacement": "Use correct current rating and terminal hardware.",
+    "upgrade": "Recommended first electrical upgrade before changing battery chemistry.",
+    "tags": [
+      "SmartShunt",
+      "Victron",
+      "monitor",
+      "battery",
+      "upgrade"
+    ]
+  },
+  {
+    "id": "orion-xs-future",
+    "name": "Victron Orion XS",
+    "category": "Charging upgrade",
+    "status": "Planned",
+    "location": "Future ventilated installation between starter and leisure systems.",
+    "purpose": "Provides controlled DC-DC charging, especially for a future lithium battery.",
+    "manufacturer": "Victron Energy",
+    "model": "Orion XS 12/12-50A or final selected model",
+    "voltage": "12 V to 12 V",
+    "normalReadings": [
+      "Input follows starter system",
+      "Output follows configured charge profile",
+      "Current limited to design value"
+    ],
+    "expected": "Requires correctly sized cables, fuses, ventilation and engine-running control.",
+    "fuses": "High-current fuse at both battery ends based on cable and equipment design.",
+    "relay": "Engine-running detection or remote enable as configured.",
+    "wires": [
+      "Fused positive input",
+      "Fused positive output",
+      "Negative returns",
+      "Remote control wiring"
+    ],
+    "connectors": [
+      "Input terminals",
+      "Output terminals",
+      "Remote connector"
+    ],
+    "chapters": [
+      11,
+      18,
+      20,
+      43
+    ],
+    "officialPages": [
+      97
+    ],
+    "tests": [
+      "Confirm input voltage under load",
+      "Confirm configured output profile",
+      "Measure cable voltage drop",
+      "Verify shutdown with engine off"
+    ],
+    "faults": [
+      "No charge",
+      "Thermal reduction",
+      "Excessive voltage drop",
+      "Incorrect engine detection"
+    ],
+    "maintenance": [
+      "Inspect fuses and terminals",
+      "Check ventilation",
+      "Review firmware and settings"
+    ],
+    "replacement": "Final model depends on alternator capacity, battery and cable route.",
+    "upgrade": "Install only after completing the charging-system design.",
+    "tags": [
+      "Orion XS",
+      "DC-DC",
+      "lithium",
+      "charging",
+      "upgrade"
+    ]
+  }
+]

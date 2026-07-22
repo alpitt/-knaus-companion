@@ -1,0 +1,82 @@
+[
+  {
+    "id": "fuse-5a",
+    "name": "Blade fuse 5 A",
+    "category": "Electrical",
+    "qty": 4,
+    "system": "electrical",
+    "notes": "Used for D+ and +15 circuits where specified."
+  },
+  {
+    "id": "fuse-75a",
+    "name": "Blade fuse 7.5 A",
+    "category": "Electrical",
+    "qty": 2,
+    "system": "electrical",
+    "notes": "Battery monitor circuit."
+  },
+  {
+    "id": "fuse-10a",
+    "name": "Blade fuse 10 A",
+    "category": "Electrical",
+    "qty": 4,
+    "system": "electrical",
+    "notes": "Pump and SML circuits where specified."
+  },
+  {
+    "id": "fuse-15a",
+    "name": "Blade fuse 15 A",
+    "category": "Electrical",
+    "qty": 6,
+    "system": "electrical",
+    "notes": "Permanent, heating and habitation circuits."
+  },
+  {
+    "id": "fuse-20a",
+    "name": "Blade fuse 20 A",
+    "category": "Electrical",
+    "qty": 2,
+    "system": "electrical",
+    "notes": "Refrigerator circuit."
+  },
+  {
+    "id": "tap-seals",
+    "name": "Mixer tap seals and hose washers",
+    "category": "Water",
+    "qty": 1,
+    "system": "water",
+    "notes": "Keep for known kitchen tap leak area."
+  },
+  {
+    "id": "hose-clips",
+    "name": "Stainless hose clips",
+    "category": "Water",
+    "qty": 4,
+    "system": "water",
+    "notes": "Assorted sizes for emergency hose repairs."
+  },
+  {
+    "id": "gas-leak-fluid",
+    "name": "Approved gas leak-detection fluid",
+    "category": "Gas",
+    "qty": 1,
+    "system": "gas",
+    "notes": "For accessible joints only."
+  },
+  {
+    "id": "hookup-adapter",
+    "name": "CEE hook-up adapter set",
+    "category": "Electrical",
+    "qty": 1,
+    "system": "electrical",
+    "notes": "Use only suitable, correctly rated adapters."
+  },
+  {
+    "id": "water-treatment",
+    "name": "Fresh-water sanitising treatment",
+    "category": "Water",
+    "qty": 1,
+    "system": "water",
+    "notes": "Use to product instructions."
+  }
+]

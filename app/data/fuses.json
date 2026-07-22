@@ -1,0 +1,79 @@
+[
+  {
+    "box": "VB06-1",
+    "label": "K\u00fchlschrank",
+    "rating": "20 A",
+    "function": "Refrigerator circuit",
+    "component": "vb06"
+  },
+  {
+    "box": "VB06-1",
+    "label": "Batteriew\u00e4chter",
+    "rating": "7.5 A",
+    "function": "Battery monitor",
+    "component": "vb06"
+  },
+  {
+    "box": "VB06-1",
+    "label": "Dauerplus",
+    "rating": "15 A",
+    "function": "Permanent 12 V supply",
+    "component": "vb06"
+  },
+  {
+    "box": "VB06-1",
+    "label": "Pumpe",
+    "rating": "10 A",
+    "function": "Water pump",
+    "component": "vb06"
+  },
+  {
+    "box": "VB06-1",
+    "label": "Stromkreis 1",
+    "rating": "15 A",
+    "function": "Habitation circuit 1. Final loads require tracing",
+    "component": "vb06"
+  },
+  {
+    "box": "VB06-1",
+    "label": "Stromkreis 2",
+    "rating": "15 A",
+    "function": "Habitation circuit 2. Final loads require tracing",
+    "component": "vb06"
+  },
+  {
+    "box": "VB04",
+    "label": "Dauer",
+    "rating": "15 A",
+    "function": "Permanent supply",
+    "component": "vb04"
+  },
+  {
+    "box": "VB04",
+    "label": "Heizung",
+    "rating": "15 A",
+    "function": "Heating supply",
+    "component": "vb04"
+  },
+  {
+    "box": "VB04",
+    "label": "SML",
+    "rating": "10 A",
+    "function": "Control circuit. Exact allocation requires tracing",
+    "component": "vb04"
+  },
+  {
+    "box": "VB04",
+    "label": "D+",
+    "rating": "5 A",
+    "function": "Engine-running signal",
+    "component": "vb04"
+  },
+  {
+    "box": "VB04",
+    "label": "+15",
+    "rating": "5 A",
+    "function": "Ignition-switched supply",
+    "component": "vb04"
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "name": "Knaus Sun Traveller",
+  "year": 2009,
+  "baseVehicle": "Fiat Ducato X250",
+  "drive": "Front-wheel drive",
+  "transmission": "Manual",
+  "confirmedEquipment": [
+    {
+      "name": "Calira EVS 30/20-DS/IU",
+      "category": "Electrical",
+      "status": "Confirmed by vehicle photograph"
+    },
+    {
+      "name": "Calira VB06-1",
+      "category": "Electrical",
+      "status": "Confirmed by vehicle photograph"
+    },
+    {
+      "name": "Calira VB04",
+      "category": "Electrical",
+      "status": "Confirmed under passenger seat"
+    },
+    {
+      "name": "Anker Solix C1000 Gen 2",
+      "category": "Portable power",
+      "status": "Owned"
+    },
+    {
+      "name": "AUTO-VOX SL5",
+      "category": "Camera",
+      "status": "Installed"
+    },
+    {
+      "name": "Alden automatic satellite dish",
+      "category": "Entertainment",
+      "status": "Installed. Controller requires confirmation"
+    }
+  ]
+}
