@@ -14,8 +14,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: knaus-companion-pages
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -23,6 +23,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out main
         uses: actions/checkout@v4
@@ -32,25 +33,35 @@ jobs:
         with:
           enablement: true
 
-      - name: Build static site from newest release package
+      - name: Select and validate newest release
         shell: bash
         run: |
           set -euo pipefail
 
-          echo "Available Knaus packages:"
-          find . -maxdepth 1 -type f -name 'Knaus_Companion*.zip' -printf '%f\n' | sort -V
+          mapfile -t PACKAGES < <(
+            find . -maxdepth 1 -type f -name 'Knaus_Companion*.zip' -printf '%f\n' | sort -V
+          )
 
-          ZIP="$(find . -maxdepth 1 -type f -name 'Knaus_Companion*.zip' -printf '%f\n' | sort -V | tail -n 1)"
-          test -n "$ZIP"
-          echo "Deploying $ZIP"
+          if [ "${#PACKAGES[@]}" -eq 0 ]; then
+            echo "No Knaus Companion release ZIP was found in the root of main."
+            exit 1
+          fi
+
+          printf 'Available release packages:\n'
+          printf '  %s\n' "${PACKAGES[@]}"
+
+          ZIP="${PACKAGES[-1]}"
+          echo "Deploying newest package: $ZIP"
 
           rm -rf _site unpacked
           mkdir -p _site unpacked
           unzip -q "$ZIP" -d unpacked
 
           APP_DIR="$(find unpacked -type f -name index.html -printf '%h\n' | grep -v '/__MACOSX/' | head -n 1)"
-          test -n "$APP_DIR"
-          echo "Application directory: $APP_DIR"
+          if [ -z "$APP_DIR" ]; then
+            echo "No application index.html was found inside $ZIP."
+            exit 1
+          fi
 
           cp -R "$APP_DIR"/. _site/
           touch _site/.nojekyll
@@ -59,6 +70,8 @@ jobs:
           test "$(find _site/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find _site/manual/pages -type f | wc -l)" -eq 286
           test -f _site/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
+
+          echo "Validated and prepared $(find _site -type f | wc -l) files."
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
