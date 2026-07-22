@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "Knaus_Companion*.zip"
+      - "app/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -28,55 +28,25 @@ jobs:
       - name: Check out main
         uses: actions/checkout@v4
 
+      - name: Validate repository application source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f app/index.html
+          test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
+          test "$(find app/manual/pages -type f | wc -l)" -eq 286
+          test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
+          echo "Validated $(find app -type f | wc -l) application files."
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      - name: Select and validate newest release
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          mapfile -t PACKAGES < <(
-            find . -maxdepth 1 -type f -name 'Knaus_Companion*.zip' -printf '%f\n' | sort -V
-          )
-
-          if [ "${#PACKAGES[@]}" -eq 0 ]; then
-            echo "No Knaus Companion release ZIP was found in the root of main."
-            exit 1
-          fi
-
-          printf 'Available release packages:\n'
-          printf '  %s\n' "${PACKAGES[@]}"
-
-          ZIP="${PACKAGES[-1]}"
-          echo "Deploying newest package: $ZIP"
-
-          rm -rf _site unpacked
-          mkdir -p _site unpacked
-          unzip -q "$ZIP" -d unpacked
-
-          APP_DIR="$(find unpacked -type f -name index.html -printf '%h\n' | grep -v '/__MACOSX/' | head -n 1)"
-          if [ -z "$APP_DIR" ]; then
-            echo "No application index.html was found inside $ZIP."
-            exit 1
-          fi
-
-          cp -R "$APP_DIR"/. _site/
-          touch _site/.nojekyll
-
-          test -f _site/index.html
-          test "$(find _site/chapters -type f -name '*.json' | wc -l)" -eq 44
-          test "$(find _site/manual/pages -type f | wc -l)" -eq 286
-          test -f _site/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-
-          echo "Validated and prepared $(find _site -type f | wc -l) files."
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: app
 
       - name: Deploy to GitHub Pages
         id: deployment
