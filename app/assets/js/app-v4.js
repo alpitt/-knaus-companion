@@ -63,6 +63,8 @@ function renderHome(){
     [APP_VERSION,"Current version"],[DATA.chapters.length||44,"Companion chapters"],[DATA.pages.length||286,"Manual pages"],[openFaults,"Open faults"],[services,"Service records"]
   ].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
   $("#homeModules").innerHTML=[
+    moduleCard("electrical","⚡","Electrical system","Trace 12 V, mains and planned upgrades"),
+    moduleCard("water","💧","Water system","Follow fresh, hot and waste-water flow"),
     moduleCard("vehicle","🚐","My motorhome","Systems, photos and upgrades"),
     moduleCard("manuals","📘","Manuals","Companion chapters and official pages"),
     moduleCard("diagnostics","🧰","Diagnostics","Guided checks for common problems"),
