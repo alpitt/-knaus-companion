@@ -33,10 +33,32 @@ jobs:
         run: |
           set -euo pipefail
           test -f app/index.html
+          node --check app/assets/js/app-v4.js
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
           echo "Validated $(find app -type f | wc -l) application files."
+
+      - name: Validate interactive system data
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = Path("app/data")
+          for path in data.glob("*.json"):
+              json.loads(path.read_text(encoding="utf-8"))
+
+          components = json.loads((data / "electrical_components.json").read_text(encoding="utf-8"))
+          relations = json.loads((data / "electrical_relations.json").read_text(encoding="utf-8"))
+          component_ids = {component["id"] for component in components}
+          assert len(component_ids) == len(components), "Electrical component IDs must be unique"
+          for relation in relations:
+              assert relation["from"] in component_ids, f"Unknown relation source: {relation['from']}"
+              assert relation["to"] in component_ids, f"Unknown relation target: {relation['to']}"
+          print(f"Validated {len(components)} electrical components and {len(relations)} relations.")
+          PY
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -51,3 +73,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
