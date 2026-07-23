@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 5.6.0 adds the Touring Expense Log. Record fuel, campsite, toll, ferry, supplies, service and other costs; associate entries with trips; retain litres, mileage, vendors and notes; and review total and fuel-specific spending offline.
+
 Version 5.5.0 adds the Parts & Spares Stockroom. Track the ten preserved emergency-stock lines with current and target quantities, record storage locations and notes, use one-tap consume/restock actions, and surface low-stock items on the Operations Dashboard.
 
 Version 5.4.0 restores the preserved Vehicle Reference Gallery. Search and inspect all six installed-equipment photographs, open a large offline view, and save searchable titles, locations and inspection notes without modifying the original images.

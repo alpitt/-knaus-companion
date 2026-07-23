@@ -34,7 +34,11 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 5.5.0' app/index.html
+          grep -q 'Version 5.6.0' app/index.html
+          grep -q 'id="expenseLog"' app/index.html
+          grep -q 'id="expenseSummary"' app/index.html
+          grep -q 'id="expenseFilters"' app/index.html
+          grep -q 'id="expenseForm"' app/index.html
           grep -q 'id="partsStockroom"' app/index.html
           grep -q 'id="partsSummary"' app/index.html
           grep -q 'id="partsFilters"' app/index.html
@@ -66,7 +70,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="5.5.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="5.6.0"' app/assets/js/app-v4.js
+          grep -q 'function renderExpenses()' app/assets/js/app-v4.js
+          grep -q 'function saveExpense(event)' app/assets/js/app-v4.js
+          grep -q 'function deleteExpense(id)' app/assets/js/app-v4.js
           grep -q 'function renderPartsStock()' app/assets/js/app-v4.js
           grep -q 'function adjustPartStock(id,delta)' app/assets/js/app-v4.js
           grep -q 'function savePartStock(event)' app/assets/js/app-v4.js
