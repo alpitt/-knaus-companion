@@ -1,5 +1,5 @@
-const CACHE='knaus-companion-v5-4-0-photos';
-const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css?v=5.4.0-photos','./assets/js/app-v4.js?v=5.4.0-photos','./data/build.json','./data/touring_operations.json','./data/packing_templates.json','./data/maintenance_tasks.json','./assets/photos/vehicle_photo_01.jpg','./assets/photos/vehicle_photo_02.jpg','./assets/photos/vehicle_photo_03.jpg','./assets/photos/vehicle_photo_04.jpg','./assets/photos/vehicle_photo_05.jpg','./assets/photos/vehicle_photo_06.jpg'];
+const CACHE='knaus-companion-v5-5-0-parts';
+const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css?v=5.5.0-parts','./assets/js/app-v4.js?v=5.5.0-parts','./data/build.json','./data/touring_operations.json','./data/packing_templates.json','./data/maintenance_tasks.json','./data/parts_inventory.json','./assets/photos/vehicle_photo_01.jpg','./assets/photos/vehicle_photo_02.jpg','./assets/photos/vehicle_photo_03.jpg','./assets/photos/vehicle_photo_04.jpg','./assets/photos/vehicle_photo_05.jpg','./assets/photos/vehicle_photo_06.jpg'];
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting()});
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

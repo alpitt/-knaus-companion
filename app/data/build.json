@@ -1,6 +1,6 @@
 {
-  "version": "5.4.0",
-  "releaseName": "Vehicle Reference Gallery",
+  "version": "5.5.0",
+  "releaseName": "Parts & Spares Stockroom",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -100,7 +100,13 @@
     "Large reference-photo inspection view",
     "Editable photo titles, locations and inspection notes",
     "Vehicle photo annotations included in offline search and backups",
-    "Reference photographs precached for offline use"
+    "Reference photographs precached for offline use",
+    "Offline stockroom for ten preserved emergency parts and consumables",
+    "Current and target stock quantities with low-stock filtering",
+    "One-tap parts usage and replenishment actions",
+    "Editable storage locations and stock notes",
+    "Low-stock alerts on the operations dashboard",
+    "Parts stock included in global search and backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 5.4.0</title>
+  <title>Knaus Companion 5.5.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.4.0-photos">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.5.0-parts">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 5.4.0</span>
+        <span>Version 5.5.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -232,6 +232,12 @@
           <label class="campsite-search">Search photos and annotations<input id="photoSearch" type="search" placeholder="Component, location, label or note"></label>
           <div id="vehiclePhotos" class="photo-grid"></div>
         </section>
+        <section class="section-block" id="partsStockroom">
+          <div class="section-heading"><div><span class="eyebrow">Parts & spares</span><h2>Emergency stockroom</h2></div></div>
+          <div id="partsSummary" class="status-grid"></div>
+          <div class="parts-toolbar"><label class="campsite-search">Search stock<input id="partsSearch" type="search" placeholder="Fuse, water, gas or note"></label><div id="partsFilters" class="chips" aria-label="Filter parts stock"></div></div>
+          <div id="partsStock" class="parts-grid"></div>
+        </section>
         <section class="section-block" id="upgradePlanner">
           <div class="section-heading"><div><span class="eyebrow">Upgrade planner</span><h2>Plan vehicle improvements</h2></div><button class="primary-btn" id="addUpgradeProject">Add project</button></div>
           <div id="upgradeSummary" class="status-grid"></div>
@@ -426,6 +432,19 @@
       </form>
     </dialog>
 
+    <dialog id="partDialog" class="detail-dialog trip-dialog">
+      <form id="partForm">
+        <div class="dialog-head"><div><span class="eyebrow">Parts stock</span><h2 id="partDialogTitle">Update stock item</h2></div><button class="icon-btn" type="button" data-part-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Current quantity<input id="partQuantity" name="quantity" type="number" min="0" step="1" required></label>
+          <label class="trip-field">Target quantity<input id="partTarget" name="target" type="number" min="0" step="1" required></label>
+          <label class="trip-field trip-field-wide">Stored location<input id="partLocation" name="location" maxlength="140" placeholder="Garage locker, electrical kit…"></label>
+          <label class="trip-field trip-field-wide">Stock notes<textarea id="partNotes" name="notes" maxlength="2000"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-part-cancel>Cancel</button><button class="primary-btn" type="submit">Save stock</button></div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="serviceRecordDialog" class="detail-dialog trip-dialog">
       <form id="serviceRecordForm">
         <div class="dialog-head">
@@ -550,7 +569,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=5.4.0-photos"></script>
+  <script src="assets/js/app-v4.js?v=5.5.0-parts"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

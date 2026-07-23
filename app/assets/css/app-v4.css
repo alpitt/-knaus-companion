@@ -513,3 +513,12 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .photo-dialog{width:min(920px,calc(100% - 20px))}.photo-viewer{display:grid;place-items:center;max-height:55dvh;overflow:auto;background:#111}.photo-viewer img{display:block;max-width:100%;max-height:55dvh;object-fit:contain}
 @media(max-width:600px){.photo-grid{grid-template-columns:1fr}.photo-card img{height:260px}.photo-viewer{max-height:42dvh}.photo-viewer img{max-height:42dvh}}
 
+/* v5.5 parts and spares stockroom */
+.parts-toolbar{display:flex;align-items:end;gap:12px;flex-wrap:wrap}.parts-toolbar .campsite-search{flex:1;min-width:240px}.parts-toolbar .chips{margin:0}
+.parts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.part-card{display:flex;flex-direction:column;gap:12px;border-top:5px solid #16a34a}.part-card.low-stock{border-top-color:#d97706}.part-card.low-stock .maintenance-status{background:#fef3c7;color:#92400e}
+.part-card-head{display:flex;justify-content:space-between;gap:12px}.part-card-head h3{margin:.35rem 0 .2rem;font-size:1.1rem}.part-card-head p,.part-card>p{margin:0;color:var(--muted)}
+.part-quantity{display:grid;place-items:center;align-self:start;min-width:62px;padding:9px;border-radius:13px;background:var(--panel-2);font-size:1.35rem}.part-quantity small{font-size:.7rem;color:var(--muted)}
+.part-location{color:var(--muted);font-size:.88rem}.part-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto}.part-actions button{min-height:40px;padding:8px 11px}
+@media(max-width:600px){.parts-toolbar{display:grid}.parts-grid{grid-template-columns:1fr}.part-actions{display:grid}.part-actions button{width:100%}}
+

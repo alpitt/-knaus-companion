@@ -1,7 +1,7 @@
 
-const APP_VERSION="5.4.0";
+const APP_VERSION="5.5.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const VEHICLE_PHOTOS=[
   {id:"photo-01",file:"vehicle_photo_01.jpg",title:"Calira VB06-1 and EVS installation",location:"Electrical compartment",tags:"electrical fuse distribution charger wiring VB06-1 EVS 30/20"},
@@ -12,7 +12,7 @@ const VEHICLE_PHOTOS=[
   {id:"photo-06",file:"vehicle_photo_06.jpg",title:"Calira EVS 30/20 identification",location:"Electrical compartment",tags:"electrical charger label model EVS 30/20 identification"}
 ];
 
-const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[],touringOperations:null,packingTemplates:null};
+const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],partsInventory:[],campsites:[],touringChecks:[],touringOperations:null,packingTemplates:null};
 let state=loadState();
 let libraryMode="chapters";
 let activeManualPage=1;
@@ -42,6 +42,8 @@ let editingFaultId=null;
 let upgradeFilter="active";
 let editingUpgradeId=null;
 let activeVehiclePhotoId=null;
+let partsFilter="all";
+let activePartId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -102,6 +104,7 @@ function dashboardAlerts(){
     if(project.status==="blocked")alerts.push({priority:2,kind:"warning",icon:"🧱",title:`${project.title} is blocked`,detail:"Review the upgrade plan and next action",route:"vehicle"});
     else if(Number(project.budget)>0&&Number(project.spent)>Number(project.budget))alerts.push({priority:2,kind:"warning",icon:"💶",title:`${project.title} is over budget`,detail:`€${(Number(project.spent)-Number(project.budget)).toFixed(2)} over plan`,route:"vehicle"});
   });
+  (DATA.partsInventory||[]).forEach(part=>{const stock=partStock(part);if(stock.quantity<stock.target)alerts.push({priority:2,kind:"warning",icon:"📦",title:`${part.name} low`,detail:`${stock.quantity} onboard; target ${stock.target}`,route:"vehicle"})});
   return alerts.sort((a,b)=>a.priority-b.priority||a.title.localeCompare(b.title));
 }
 function renderDashboard(){
@@ -161,6 +164,7 @@ function assistantIndex(){
   (state.inventory||[]).forEach(d=>docs.push({type:"inventory",title:d.name||"Onboard item",text:JSON.stringify(d),raw:d}));
   (state.upgradeProjects||[]).forEach(d=>docs.push({type:"upgrade project",title:d.title||"Upgrade project",text:JSON.stringify(d),raw:d}));
   VEHICLE_PHOTOS.forEach(photo=>{const note=state.vehiclePhotoNotes?.[photo.id]||{};docs.push({type:"vehicle photo",title:note.title||photo.title,text:`${photo.location} ${photo.tags} ${note.location||""} ${note.notes||""}`,raw:photo})});
+  (DATA.partsInventory||[]).forEach(part=>docs.push({type:"parts stock",title:part.name,text:JSON.stringify({...part,...partStock(part)}),raw:part}));
   (state.trips||[]).forEach(d=>docs.push({type:"trip",title:d.title||d.destination||"Touring trip",text:JSON.stringify(d),raw:d}));
   (state.savedCampsites||[]).forEach(d=>docs.push({type:"campsite",title:d.name||"Saved campsite",text:JSON.stringify(d),raw:d}));
   (state.packingLists||[]).forEach(d=>docs.push({type:"packing list",title:d.title||"Packing list",text:JSON.stringify(d),raw:d}));
@@ -1284,6 +1288,23 @@ function saveVehiclePhotoNote(event){
   state.vehiclePhotoNotes={...(state.vehiclePhotoNotes||{}),[photo.id]:{title:values.title.trim(),location:values.location.trim(),notes:values.notes.trim(),updatedAt:new Date().toISOString()}};
   saveState();closeVehiclePhoto();renderVehiclePhotos();toast("Photo annotation saved");
 }
+function partStock(part){const saved=state.partsStock?.[part.id]||{},baseline=Number(part.qty)||0;return {quantity:saved.quantity??baseline,target:saved.target??baseline,location:saved.location||"",notes:saved.notes||part.notes||"",updatedAt:saved.updatedAt||""}}
+function renderPartsStock(){
+  const parts=DATA.partsInventory||[],stocked=parts.map(part=>({part,stock:partStock(part)})),low=stocked.filter(item=>item.stock.quantity<item.stock.target),total=stocked.reduce((sum,item)=>sum+item.stock.quantity,0);
+  $("#partsSummary").innerHTML=[[parts.length,"Stock lines"],[total,"Items onboard"],[low.length,"Low stock"],[stocked.filter(item=>item.stock.location).length,"Locations recorded"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  const categories=["all","low",...[...new Set(parts.map(part=>String(part.category||"Other").toLowerCase()))]];
+  $("#partsFilters").innerHTML=categories.map(id=>`<button class="chip ${partsFilter===id?"active":""}" data-parts-filter="${esc(id)}">${esc(id==="all"?"All":id==="low"?"Low stock":id)}</button>`).join("");
+  const query=($("#partsSearch")?.value||"").trim().toLowerCase(),visible=stocked.filter(({part,stock})=>(partsFilter==="all"||(partsFilter==="low"?stock.quantity<stock.target:String(part.category).toLowerCase()===partsFilter))&&(!query||[part.name,part.category,part.system,part.notes,stock.location,stock.notes].join(" ").toLowerCase().includes(query)));
+  $("#partsStock").innerHTML=visible.length?visible.map(({part,stock})=>`<article class="panel part-card ${stock.quantity<stock.target?"low-stock":""}">
+    <div class="part-card-head"><div><span class="maintenance-status">${esc(part.category)}</span><h3>${esc(part.name)}</h3><p>${diagnosticIcon(part.system)} ${esc(part.system)}</p></div><strong class="part-quantity">${stock.quantity}<small>/ ${stock.target}</small></strong></div>
+    <p>${esc(stock.notes||part.notes||"")}</p>${stock.location?`<span class="part-location">📍 ${esc(stock.location)}</span>`:""}
+    <div class="part-actions"><button class="secondary-btn" data-part-adjust="${esc(part.id)}" data-delta="-1" ${stock.quantity<=0?"disabled":""}>Use one</button><button class="secondary-btn" data-part-adjust="${esc(part.id)}" data-delta="1">Add one</button><button class="primary-btn" data-part-edit="${esc(part.id)}">Details</button></div>
+  </article>`).join(""):'<article class="panel trip-empty"><p>No stock items match this view.</p></article>';
+}
+function adjustPartStock(id,delta){const part=DATA.partsInventory.find(item=>item.id===id);if(!part)return;const stock=partStock(part);stock.quantity=Math.max(0,stock.quantity+Number(delta));stock.updatedAt=new Date().toISOString();state.partsStock={...(state.partsStock||{}),[id]:stock};saveState();renderPartsStock();renderHome();toast(delta>0?"Stock increased":"Stock usage recorded")}
+function openPartEditor(id){const part=DATA.partsInventory.find(item=>item.id===id);if(!part)return;activePartId=id;const stock=partStock(part);$("#partDialogTitle").textContent=part.name;$("#partQuantity").value=stock.quantity;$("#partTarget").value=stock.target;$("#partLocation").value=stock.location;$("#partNotes").value=stock.notes;const dialog=$("#partDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","")}
+function closePartEditor(){const dialog=$("#partDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");activePartId=null}
+function savePartStock(event){event.preventDefault();const part=DATA.partsInventory.find(item=>item.id===activePartId);if(!part)return;const values=Object.fromEntries(new FormData(event.currentTarget));state.partsStock={...(state.partsStock||{}),[part.id]:{quantity:Math.max(0,Number(values.quantity)||0),target:Math.max(0,Number(values.target)||0),location:values.location.trim(),notes:values.notes.trim(),updatedAt:new Date().toISOString()}};saveState();closePartEditor();renderPartsStock();renderHome();toast("Parts stock updated")}
 function renderUpgradeProjects(){
   const projects=state.upgradeProjects||[],active=projects.filter(item=>item.status!=="complete"),spent=projects.reduce((sum,item)=>sum+(Number(item.spent)||0),0),budget=projects.reduce((sum,item)=>sum+(Number(item.budget)||0),0);
   $("#upgradeSummary").innerHTML=[[active.length,"Active projects"],[projects.filter(item=>item.status==="blocked").length,"Blocked"],[`€${budget.toFixed(2)}`,"Total budget"],[`€${spent.toFixed(2)}`,"Total spent"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
@@ -1317,6 +1338,7 @@ function deleteUpgradeProject(id){const project=(state.upgradeProjects||[]).find
 function renderVehicle(){
   renderVehicleRecords();
   renderVehiclePhotos();
+  renderPartsStock();
   renderUpgradeProjects();
   $("#vehicleCards").innerHTML=[
     moduleCard("electrical","⚡","Interactive electrical","Trace supplies, protection and connected loads"),
@@ -1368,11 +1390,11 @@ async function clearCache(){
 async function init(){
   [
     DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
-    DATA.electrical,DATA.electricalRelations,DATA.fuses,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.campsites,DATA.touringChecks,DATA.touringOperations,DATA.packingTemplates
+    DATA.electrical,DATA.electricalRelations,DATA.fuses,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.partsInventory,DATA.campsites,DATA.touringChecks,DATA.touringOperations,DATA.packingTemplates
   ]=await Promise.all([
     loadJSON("data/chapters.json"),loadJSON("data/manual_pages.json"),loadJSON("data/smart_diagnostics.json"),
     loadJSON("data/maintenance_tasks.json"),loadJSON("data/assistant_prompts.json"),loadJSON("data/build.json",{}),
-    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),
+    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),loadJSON("data/parts_inventory.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
   applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderSettings();
@@ -1445,6 +1467,10 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-inventory-cancel]"))closeInventoryEditor();
   const vehiclePhoto=e.target.closest("[data-vehicle-photo]");if(vehiclePhoto)openVehiclePhoto(vehiclePhoto.dataset.vehiclePhoto);
   if(e.target.closest("[data-photo-cancel]"))closeVehiclePhoto();
+  const partsFilterButton=e.target.closest("[data-parts-filter]");if(partsFilterButton){partsFilter=partsFilterButton.dataset.partsFilter;renderPartsStock()}
+  const partAdjust=e.target.closest("[data-part-adjust]");if(partAdjust)adjustPartStock(partAdjust.dataset.partAdjust,partAdjust.dataset.delta);
+  const partEdit=e.target.closest("[data-part-edit]");if(partEdit)openPartEditor(partEdit.dataset.partEdit);
+  if(e.target.closest("[data-part-cancel]"))closePartEditor();
   if(e.target.closest("[data-upgrade-add]"))openUpgradeEditor();
   const upgradeFilterButton=e.target.closest("[data-upgrade-filter]");if(upgradeFilterButton){upgradeFilter=upgradeFilterButton.dataset.upgradeFilter;renderUpgradeProjects()}
   const upgradeEdit=e.target.closest("[data-upgrade-edit]");if(upgradeEdit)openUpgradeEditor(upgradeEdit.dataset.upgradeEdit);
@@ -1482,14 +1508,16 @@ $("#vehicleDocumentForm").addEventListener("submit",saveVehicleDocument);
 $("#inventoryForm").addEventListener("submit",saveInventoryItem);
 $("#upgradeForm").addEventListener("submit",saveUpgradeProject);
 $("#photoForm").addEventListener("submit",saveVehiclePhotoNote);
+$("#partForm").addEventListener("submit",savePartStock);
 $("#addVehicleDocument").onclick=()=>openVehicleDocumentEditor();
 $("#addInventoryItem").onclick=()=>openInventoryEditor();
 $("#addUpgradeProject").onclick=()=>openUpgradeEditor();
 $("#inventorySearch").addEventListener("input",renderVehicleRecords);
 $("#photoSearch").addEventListener("input",renderVehiclePhotos);
+$("#partsSearch").addEventListener("input",renderPartsStock);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 
