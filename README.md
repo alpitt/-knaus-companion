@@ -29,6 +29,8 @@ The gas-system explorer covers LPG supply, heating, cooking, refrigeration, flue
 
 The interactive vehicle map provides interior, exterior and roof hotspots linked directly to the system explorers and preserved workshop references.
 
+The fuse and circuit finder documents the VB06-1 and VB04 boards with searchable labels, ratings, protected loads and a safe test sequence.
+
 ## iPhone installation
 
 Open the site in Safari, tap Share, then tap Add to Home Screen. Open the installed app and select Download offline pack.

@@ -88,6 +88,14 @@ jobs:
               if hotspot.get("component") and hotspot["system"] in systems:
                   assert hotspot["component"] in systems[hotspot["system"]], f"Unknown component for hotspot {hotspot['id']}"
           print(f"Validated {len(hotspots)} interactive vehicle hotspots.")
+
+          fuses = json.loads((data / "fuses.json").read_text(encoding="utf-8"))
+          fuse_keys = {(fuse["box"], fuse["label"]) for fuse in fuses}
+          assert len(fuse_keys) == len(fuses), "Fuse board and label pairs must be unique"
+          for fuse in fuses:
+              assert fuse["box"] and fuse["label"] and fuse["rating"] and fuse["function"], "Fuse records require board, label, rating and function"
+              assert fuse["component"] in component_ids, f"Unknown electrical component for fuse {fuse['label']}"
+          print(f"Validated {len(fuses)} documented fuses across {len({fuse['box'] for fuse in fuses})} boards.")
           PY
 
       - name: Configure GitHub Pages
