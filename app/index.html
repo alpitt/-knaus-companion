@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 5.5.0</title>
+  <title>Knaus Companion 5.6.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.5.0-parts">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.6.0-expenses">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 5.5.0</span>
+        <span>Version 5.6.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -195,6 +195,12 @@
           </div>
           <div id="tripSummary" class="status-grid"></div>
           <div id="tripList" class="trip-list"></div>
+        </section>
+        <section class="section-block" id="expenseLog">
+          <div class="section-heading"><div><span class="eyebrow">Touring expense log</span><h2>Fuel and journey costs</h2></div><button class="primary-btn" id="addExpense">Add expense</button></div>
+          <div id="expenseSummary" class="status-grid"></div>
+          <div id="expenseFilters" class="chips" aria-label="Filter expense type"></div>
+          <div id="expenseList" class="expense-list"></div>
         </section>
         <section class="section-block" id="campsitePlanner">
           <div class="section-heading">
@@ -559,6 +565,23 @@
       </form>
     </dialog>
 
+    <dialog id="expenseDialog" class="detail-dialog trip-dialog">
+      <form id="expenseForm">
+        <div class="dialog-head"><div><span class="eyebrow">Touring expense</span><h2 id="expenseDialogTitle">Add expense</h2></div><button class="icon-btn" type="button" data-expense-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Date<input id="expenseDate" name="date" type="date" required></label>
+          <label class="trip-field">Type<select id="expenseType" name="type"><option value="fuel">Fuel</option><option value="campsite">Campsite</option><option value="toll">Toll</option><option value="ferry">Ferry</option><option value="supplies">Supplies</option><option value="service">Service</option><option value="other">Other</option></select></label>
+          <label class="trip-field">Amount (€)<input id="expenseAmount" name="amount" type="number" min="0" step="0.01" required></label>
+          <label class="trip-field">Trip<select id="expenseTrip" name="tripId"><option value="">No linked trip</option></select></label>
+          <label class="trip-field">Litres<input id="expenseLitres" name="litres" type="number" min="0" step="0.01" placeholder="Fuel only"></label>
+          <label class="trip-field">Mileage (km)<input id="expenseMileage" name="mileage" type="number" min="0" step="1"></label>
+          <label class="trip-field trip-field-wide">Vendor or place<input id="expenseVendor" name="vendor" maxlength="140"></label>
+          <label class="trip-field trip-field-wide">Notes<textarea id="expenseNotes" name="notes" maxlength="2000"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-expense-cancel>Cancel</button><button class="primary-btn" type="submit">Save expense</button></div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="detailDialog" class="detail-dialog">
       <div class="dialog-head">
         <div><span class="eyebrow" id="detailType">Details</span><h2 id="detailTitle">Details</h2></div>
@@ -569,7 +592,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=5.5.0-parts"></script>
+  <script src="assets/js/app-v4.js?v=5.6.0-expenses"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

@@ -522,3 +522,8 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .part-location{color:var(--muted);font-size:.88rem}.part-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto}.part-actions button{min-height:40px;padding:8px 11px}
 @media(max-width:600px){.parts-toolbar{display:grid}.parts-grid{grid-template-columns:1fr}.part-actions{display:grid}.part-actions button{width:100%}}
 
+/* v5.6 touring expense log */
+.expense-list{display:grid;gap:10px}.expense-card{display:grid;grid-template-columns:42px minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:14px}
+.expense-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--panel-2);font-size:1.35rem}.expense-card>div:nth-child(2){display:grid;gap:3px}.expense-card small,.expense-card p{margin:0;color:var(--muted)}.expense-card p{white-space:pre-wrap}.expense-amount{font-size:1.1rem;white-space:nowrap}.expense-actions{display:flex;gap:7px}.expense-actions button{min-height:40px;padding:8px 11px}
+@media(max-width:700px){.expense-card{grid-template-columns:42px 1fr auto}.expense-actions{grid-column:2/4;display:grid;grid-template-columns:1fr 1fr}.expense-actions button{width:100%}}@media(max-width:440px){.expense-card{grid-template-columns:42px 1fr}.expense-amount{grid-column:2}.expense-actions{grid-column:1/3}}
+

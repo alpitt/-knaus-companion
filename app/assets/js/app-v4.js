@@ -1,7 +1,7 @@
 
-const APP_VERSION="5.5.0";
+const APP_VERSION="5.6.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],expenses:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const VEHICLE_PHOTOS=[
   {id:"photo-01",file:"vehicle_photo_01.jpg",title:"Calira VB06-1 and EVS installation",location:"Electrical compartment",tags:"electrical fuse distribution charger wiring VB06-1 EVS 30/20"},
@@ -44,6 +44,8 @@ let editingUpgradeId=null;
 let activeVehiclePhotoId=null;
 let partsFilter="all";
 let activePartId=null;
+let expenseFilter="all";
+let editingExpenseId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -124,6 +126,7 @@ function renderDashboard(){
   const activity=[
     ...(state.logs||[]).map(item=>({date:item.date||item.createdAt,icon:"🔧",title:item.title||"Service record",type:"Service",route:"maintenance"})),
     ...(state.trips||[]).map(item=>({date:item.startDate||item.createdAt,icon:"🗺️",title:item.title||item.destination||"Touring trip",type:"Trip",route:"touring"})),
+    ...(state.expenses||[]).map(item=>({date:item.date||item.createdAt,icon:"💶",title:item.vendor||`${item.type||"Touring"} expense`,type:"Expense",route:"touring"})),
     ...(state.diagnosticReports||[]).map(item=>({date:item.completedAt||item.createdAt,icon:"🧰",title:item.title||"Diagnostic report",type:"Diagnostic",route:"diagnostics"})),
     ...(state.vehicleDocuments||[]).map(item=>({date:item.updatedAt||item.createdAt,icon:"📄",title:item.type||"Vehicle document",type:"Document",route:"vehicle"})),
     ...(state.upgradeProjects||[]).map(item=>({date:item.updatedAt||item.createdAt,icon:"🛠️",title:item.title||"Upgrade project",type:"Upgrade",route:"vehicle"}))
@@ -166,6 +169,7 @@ function assistantIndex(){
   VEHICLE_PHOTOS.forEach(photo=>{const note=state.vehiclePhotoNotes?.[photo.id]||{};docs.push({type:"vehicle photo",title:note.title||photo.title,text:`${photo.location} ${photo.tags} ${note.location||""} ${note.notes||""}`,raw:photo})});
   (DATA.partsInventory||[]).forEach(part=>docs.push({type:"parts stock",title:part.name,text:JSON.stringify({...part,...partStock(part)}),raw:part}));
   (state.trips||[]).forEach(d=>docs.push({type:"trip",title:d.title||d.destination||"Touring trip",text:JSON.stringify(d),raw:d}));
+  (state.expenses||[]).forEach(d=>docs.push({type:"touring expense",title:d.vendor||`${d.type||"Touring"} expense`,text:JSON.stringify(d),raw:d}));
   (state.savedCampsites||[]).forEach(d=>docs.push({type:"campsite",title:d.name||"Saved campsite",text:JSON.stringify(d),raw:d}));
   (state.packingLists||[]).forEach(d=>docs.push({type:"packing list",title:d.title||"Packing list",text:JSON.stringify(d),raw:d}));
   return docs;
@@ -381,6 +385,7 @@ function renderTouring(){
   ];
   $("#touringCards").innerHTML=cards.map(([id,icon,title,desc])=>`<button class="module-card" data-touring="${id}"><div class="icon">${icon}</div><h3>${title}</h3><p>${desc}</p></button>`).join("");
   renderTravelJournal();
+  renderExpenses();
   renderCampsites();
   renderPacking();
 }
@@ -453,6 +458,23 @@ function deleteTrip(id){
   if(!trip||!confirm(`Delete “${trip.title||"this trip"}”? This cannot be undone.`))return;
   state.trips=state.trips.filter(item=>item.id!==id);saveState();renderTouring();toast("Trip deleted");
 }
+function expenseIcon(type){return ({fuel:"⛽",campsite:"🏕️",toll:"🛣️",ferry:"⛴️",supplies:"🛒",service:"🔧",other:"💶"}[type]||"💶")}
+function renderExpenses(){
+  const expenses=[...(state.expenses||[])].sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))),fuel=expenses.filter(item=>item.type==="fuel"),total=expenses.reduce((sum,item)=>sum+(Number(item.amount)||0),0),litres=fuel.reduce((sum,item)=>sum+(Number(item.litres)||0),0);
+  $("#expenseSummary").innerHTML=[[expenses.length,"Entries"],[`€${total.toFixed(2)}`,"Total spend"],[`${litres.toFixed(1)} L`,"Fuel recorded"],[fuel.length?`€${fuel.reduce((sum,item)=>sum+(Number(item.amount)||0),0).toFixed(2)}`:"€0.00","Fuel spend"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  const types=[["all","All"],["fuel","Fuel"],["campsite","Campsites"],["toll","Tolls"],["ferry","Ferries"],["supplies","Supplies"],["service","Service"],["other","Other"]];
+  $("#expenseFilters").innerHTML=types.map(([id,label])=>`<button class="chip ${expenseFilter===id?"active":""}" data-expense-filter="${id}">${label}</button>`).join("");
+  const visible=expenses.filter(item=>expenseFilter==="all"||item.type===expenseFilter);
+  $("#expenseList").innerHTML=visible.length?visible.map(item=>{const trip=(state.trips||[]).find(entry=>entry.id===item.tripId);return `<article class="panel expense-card">
+    <span class="expense-icon">${expenseIcon(item.type)}</span><div><span class="meta">${esc(formatTripDate(item.date))} • ${esc(item.type)}</span><strong>${esc(item.vendor||"Touring expense")}</strong><small>${trip?`Trip: ${esc(trip.title||trip.destination)}`:"No linked trip"}${item.litres?` • ${Number(item.litres).toFixed(1)} L`:""}${item.mileage!==null&&item.mileage!==undefined&&item.mileage!==""?` • ${Number(item.mileage).toLocaleString()} km`:""}</small>${item.notes?`<p>${esc(item.notes)}</p>`:""}</div><strong class="expense-amount">€${(Number(item.amount)||0).toFixed(2)}</strong><div class="expense-actions"><button class="secondary-btn" data-expense-edit="${esc(item.id)}">Edit</button><button class="danger-btn" data-expense-delete="${esc(item.id)}">Delete</button></div>
+  </article>`}).join(""):'<article class="panel trip-empty"><p>No touring expenses match this view.</p><button class="primary-btn" data-expense-add>Add first expense</button></article>';
+}
+function openExpenseEditor(id=null){
+  editingExpenseId=id;const item=(state.expenses||[]).find(entry=>entry.id===id)||{};$("#expenseDialogTitle").textContent=id?"Edit expense":"Add expense";$("#expenseDate").value=item.date||new Date().toISOString().slice(0,10);$("#expenseType").value=item.type||"fuel";$("#expenseAmount").value=item.amount??"";$("#expenseTrip").innerHTML='<option value="">No linked trip</option>'+(state.trips||[]).map(trip=>`<option value="${esc(trip.id)}">${esc(trip.title||trip.destination||"Touring trip")}</option>`).join("");$("#expenseTrip").value=item.tripId||"";$("#expenseLitres").value=item.litres??"";$("#expenseMileage").value=item.mileage??state.currentMileage??"";$("#expenseVendor").value=item.vendor||"";$("#expenseNotes").value=item.notes||"";const dialog=$("#expenseDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");setTimeout(()=>$("#expenseAmount").focus(),0);
+}
+function closeExpenseEditor(){const dialog=$("#expenseDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");editingExpenseId=null}
+function saveExpense(event){event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget)),existing=(state.expenses||[]).find(item=>item.id===editingExpenseId);const expense={id:existing?.id||`expense-${Date.now()}`,date:values.date,type:values.type,amount:Number(values.amount)||0,tripId:values.tripId||"",litres:values.litres===""?null:Number(values.litres),mileage:values.mileage===""?null:Number(values.mileage),vendor:values.vendor.trim(),notes:values.notes.trim(),createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};state.expenses=existing?state.expenses.map(item=>item.id===existing.id?expense:item):[expense,...(state.expenses||[])];saveState();closeExpenseEditor();renderExpenses();renderHome();toast(existing?"Expense updated":"Expense added")}
+function deleteExpense(id){const item=(state.expenses||[]).find(entry=>entry.id===id);if(!item||!confirm("Delete this expense?"))return;state.expenses=state.expenses.filter(entry=>entry.id!==id);saveState();renderExpenses();renderHome();toast("Expense deleted")}
 function packingId(prefix){return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`}
 function packingWeight(item){return (Number(item.quantity)||0)*(Number(item.unitWeight)||0)}
 function packingListMetrics(list){
@@ -1414,6 +1436,11 @@ document.addEventListener("click",e=>{
   const tripEdit=e.target.closest("[data-trip-edit]");if(tripEdit)openTripEditor(tripEdit.dataset.tripEdit);
   const tripDelete=e.target.closest("[data-trip-delete]");if(tripDelete)deleteTrip(tripDelete.dataset.tripDelete);
   if(e.target.closest("[data-trip-cancel]"))closeTripEditor();
+  if(e.target.closest("[data-expense-add]"))openExpenseEditor();
+  const expenseFilterButton=e.target.closest("[data-expense-filter]");if(expenseFilterButton){expenseFilter=expenseFilterButton.dataset.expenseFilter;renderExpenses()}
+  const expenseEdit=e.target.closest("[data-expense-edit]");if(expenseEdit)openExpenseEditor(expenseEdit.dataset.expenseEdit);
+  const expenseDelete=e.target.closest("[data-expense-delete]");if(expenseDelete)deleteExpense(expenseDelete.dataset.expenseDelete);
+  if(e.target.closest("[data-expense-cancel]"))closeExpenseEditor();
   if(e.target.closest("[data-campsite-add]"))openCampsiteEditor();
   const campsiteEdit=e.target.closest("[data-campsite-edit]");if(campsiteEdit)openCampsiteEditor(campsiteEdit.dataset.campsiteEdit);
   const campsiteDelete=e.target.closest("[data-campsite-delete]");if(campsiteDelete)deleteCampsite(campsiteDelete.dataset.campsiteDelete);
@@ -1497,6 +1524,8 @@ $("#importBackup").onchange=async e=>{try{if(e.target.files[0])await restoreBack
 $("#clearCache").onclick=clearCache;
 $("#addTrip").onclick=()=>openTripEditor();
 $("#tripForm").addEventListener("submit",saveTrip);
+$("#addExpense").onclick=()=>openExpenseEditor();
+$("#expenseForm").addEventListener("submit",saveExpense);
 $("#addCampsite").onclick=()=>openCampsiteEditor();
 $("#campsiteForm").addEventListener("submit",saveCampsite);
 $("#campsiteSearch").addEventListener("input",renderCampsites);
@@ -1517,7 +1546,7 @@ $("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#partsSearch").addEventListener("input",renderPartsStock);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 

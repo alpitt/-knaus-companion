@@ -1,6 +1,6 @@
 {
-  "version": "5.5.0",
-  "releaseName": "Parts & Spares Stockroom",
+  "version": "5.6.0",
+  "releaseName": "Touring Expense Log",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -106,7 +106,13 @@
     "One-tap parts usage and replenishment actions",
     "Editable storage locations and stock notes",
     "Low-stock alerts on the operations dashboard",
-    "Parts stock included in global search and backups"
+    "Parts stock included in global search and backups",
+    "Offline fuel and touring expense records",
+    "Fuel, campsite, toll, ferry, supplies, service and other categories",
+    "Optional trip, litres, mileage and vendor links",
+    "Total-spend, fuel-volume and fuel-spend summaries",
+    "Editable expense history with category filters",
+    "Touring expenses included in recent activity, search and backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
