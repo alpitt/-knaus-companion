@@ -21,7 +21,9 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
-Version 5.0.0 adds Vehicle Records: structured identity and specifications, document references with expiry alerts, and a searchable onboard equipment and spares inventory. All records remain offline and participate in search and backup exports.
+Version 5.1.0 adds the Operations Dashboard. Home now combines maintenance and document alerts, open faults, packing allowance warnings, journey readiness and recent activity with direct links into each workflow.
+
+Version 5.0.0 added Vehicle Records: structured identity and specifications, document references with expiry alerts, and a searchable onboard equipment and spares inventory. All records remain offline and participate in search and backup exports.
 
 Version 4.9.0 introduced the Maintenance Scheduler. Calendar and mileage intervals calculate overdue, due-soon and upcoming tasks from linked service records, with current-mileage tracking and structured provider, cost and service-note history.
 
