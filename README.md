@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 5.5.0 adds the Parts & Spares Stockroom. Track the ten preserved emergency-stock lines with current and target quantities, record storage locations and notes, use one-tap consume/restock actions, and surface low-stock items on the Operations Dashboard.
+
 Version 5.4.0 restores the preserved Vehicle Reference Gallery. Search and inspect all six installed-equipment photographs, open a large offline view, and save searchable titles, locations and inspection notes without modifying the original images.
 
 Version 5.3.0 adds the Upgrade Planner. Create improvement projects with system, priority, status, target date, budget and actual spend; link workshop chapters and official manual pages, surface blocked or over-budget work on the Operations Dashboard, and retain every plan in offline backups and search.
