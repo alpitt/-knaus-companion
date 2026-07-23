@@ -1,7 +1,7 @@
 
-const APP_VERSION="4.9.0";
+const APP_VERSION="5.0.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[],touringOperations:null,packingTemplates:null};
 let state=loadState();
@@ -26,6 +26,8 @@ let editingCampsiteId=null;
 let activePackingListId=null;
 let editingPackingItemId=null;
 let maintenanceFilter="all";
+let editingVehicleDocumentId=null;
+let editingInventoryId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -95,6 +97,9 @@ function assistantIndex(){
   DATA.maintenanceTasks.forEach(d=>docs.push({type:"maintenance",title:d.title||d.name||"Maintenance task",text:JSON.stringify(d)}));
   (state.logs||[]).forEach(d=>docs.push({type:"service record",title:d.title||d.category||"Service record",text:JSON.stringify(d)}));
   (state.faults||[]).forEach(d=>docs.push({type:"fault",title:d.title||"Fault record",text:JSON.stringify(d)}));
+  if(Object.values(state.vehicleProfile||{}).some(Boolean))docs.push({type:"vehicle",title:`${state.vehicleProfile.make||""} ${state.vehicleProfile.model||"Vehicle details"}`.trim(),text:JSON.stringify(state.vehicleProfile),raw:state.vehicleProfile});
+  (state.vehicleDocuments||[]).forEach(d=>docs.push({type:"vehicle document",title:d.type||"Vehicle document",text:JSON.stringify(d),raw:d}));
+  (state.inventory||[]).forEach(d=>docs.push({type:"inventory",title:d.name||"Onboard item",text:JSON.stringify(d),raw:d}));
   (state.trips||[]).forEach(d=>docs.push({type:"trip",title:d.title||d.destination||"Touring trip",text:JSON.stringify(d),raw:d}));
   (state.savedCampsites||[]).forEach(d=>docs.push({type:"campsite",title:d.name||"Saved campsite",text:JSON.stringify(d),raw:d}));
   (state.packingLists||[]).forEach(d=>docs.push({type:"packing list",title:d.title||"Packing list",text:JSON.stringify(d),raw:d}));
@@ -1111,7 +1116,64 @@ function renderGas(){
   renderGasInspector();
 }
 
+function vehicleDocumentStatus(document){
+  if(!document.expiry)return {status:"no-expiry",label:"No expiry"};
+  const today=new Date(`${new Date().toISOString().slice(0,10)}T00:00:00Z`),expiry=new Date(`${document.expiry}T00:00:00Z`),days=Math.ceil((expiry-today)/86400000);
+  if(days<0)return {status:"expired",label:`Expired ${Math.abs(days)} days ago`};
+  if(days<=30)return {status:"expiring",label:`Expires in ${days} days`};
+  return {status:"valid",label:`Valid for ${days} days`};
+}
+function renderVehicleRecords(){
+  const profile=state.vehicleProfile||{},documents=state.vehicleDocuments||[],inventory=state.inventory||[];
+  const statuses=documents.map(vehicleDocumentStatus),alerts=statuses.filter(item=>["expired","expiring"].includes(item.status)).length;
+  const profileFields=["registration","vin","make","model","year","baseVehicle","maxMass","length"],complete=profileFields.filter(key=>profile[key]).length;
+  $("#vehicleRecordSummary").innerHTML=[[`${complete}/${profileFields.length}`,"Identity fields"],[documents.length,"Documents"],[alerts,"Expiry alerts"],[inventory.reduce((sum,item)=>sum+(Number(item.quantity)||0),0),"Inventory quantity"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  $("#vehicleProfile").innerHTML=`<div class="section-heading"><div><span class="eyebrow">Vehicle identity</span><h2>${esc([profile.make,profile.model].filter(Boolean).join(" ")||"Motorhome details")}</h2></div><button class="secondary-btn" data-vehicle-profile-edit>Edit</button></div><dl class="vehicle-profile-grid">
+    <div><dt>Registration</dt><dd>${esc(profile.registration||"Not recorded")}</dd></div><div><dt>VIN</dt><dd>${esc(profile.vin||"Not recorded")}</dd></div>
+    <div><dt>Model year</dt><dd>${esc(profile.year||"Not recorded")}</dd></div><div><dt>Base vehicle</dt><dd>${esc(profile.baseVehicle||"Not recorded")}</dd></div>
+    <div><dt>Maximum mass</dt><dd>${profile.maxMass?`${Number(profile.maxMass).toLocaleString()} kg`:"Not recorded"}</dd></div><div><dt>Length</dt><dd>${profile.length?`${Number(profile.length).toFixed(2)} m`:"Not recorded"}</dd></div>
+  </dl>`;
+  $("#vehicleDocuments").innerHTML=documents.length?documents.map(document=>{const status=vehicleDocumentStatus(document);return `<article class="vehicle-document status-${status.status}"><div><span class="maintenance-status">${esc(status.label)}</span><strong>${esc(document.type)}</strong><small>${esc(document.provider||document.reference||"Reference not recorded")}</small></div><div class="vehicle-record-actions"><button class="secondary-btn" data-vehicle-document-edit="${esc(document.id)}">Edit</button><button class="danger-btn" data-vehicle-document-delete="${esc(document.id)}">Delete</button></div></article>`}).join(""):'<div class="trip-empty"><p>No vehicle documents recorded.</p><button class="primary-btn" data-vehicle-document-add>Add first document</button></div>';
+  const query=($("#inventorySearch")?.value||"").trim().toLowerCase(),visible=inventory.filter(item=>!query||[item.name,item.category,item.location,item.notes].join(" ").toLowerCase().includes(query));
+  $("#vehicleInventory").innerHTML=visible.length?visible.map(item=>`<article class="panel inventory-card"><span class="meta">${esc(item.category)}</span><h3>${esc(item.name)}</h3><p><strong>${Number(item.quantity)||0}</strong> onboard${item.location?` • ${esc(item.location)}`:""}</p>${item.notes?`<p class="trip-notes">${esc(item.notes)}</p>`:""}<div class="trip-card-actions"><button class="secondary-btn" data-inventory-edit="${esc(item.id)}">Edit</button><button class="danger-btn" data-inventory-delete="${esc(item.id)}">Delete</button></div></article>`).join(""):`<article class="panel trip-empty"><p>${inventory.length?"No matching inventory item.":"No onboard equipment recorded."}</p>${inventory.length?"":'<button class="primary-btn" data-inventory-add>Add first item</button>'}</article>`;
+}
+function openVehicleProfileEditor(){
+  const profile=state.vehicleProfile||{};
+  $("#vehicleRegistration").value=profile.registration||"";$("#vehicleVin").value=profile.vin||"";$("#vehicleMake").value=profile.make||"Knaus";$("#vehicleModel").value=profile.model||"Sun Traveller";$("#vehicleYear").value=profile.year||"";$("#vehicleBase").value=profile.baseVehicle||"";$("#vehicleMass").value=profile.maxMass||"";$("#vehicleLength").value=profile.length||"";
+  const dialog=$("#vehicleProfileDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+}
+function closeVehicleProfileEditor(){const dialog=$("#vehicleProfileDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open")}
+function saveVehicleProfile(event){
+  event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget));
+  state.vehicleProfile={registration:values.registration.trim(),vin:values.vin.trim(),make:values.make.trim(),model:values.model.trim(),year:values.year?Number(values.year):null,baseVehicle:values.baseVehicle.trim(),maxMass:values.maxMass?Number(values.maxMass):null,length:values.length?Number(values.length):null};
+  saveState();closeVehicleProfileEditor();renderVehicle();toast("Vehicle details saved");
+}
+function openVehicleDocumentEditor(id=null){
+  editingVehicleDocumentId=id;const document=(state.vehicleDocuments||[]).find(item=>item.id===id)||{};
+  $("#vehicleDocumentDialogTitle").textContent=id?"Edit document":"Add document";$("#vehicleDocumentType").value=document.type||"";$("#vehicleDocumentReference").value=document.reference||"";$("#vehicleDocumentProvider").value=document.provider||"";$("#vehicleDocumentExpiry").value=document.expiry||"";$("#vehicleDocumentNotes").value=document.notes||"";
+  const dialog=$("#vehicleDocumentDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+}
+function closeVehicleDocumentEditor(){const dialog=$("#vehicleDocumentDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");editingVehicleDocumentId=null}
+function saveVehicleDocument(event){
+  event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget)),existing=(state.vehicleDocuments||[]).find(item=>item.id===editingVehicleDocumentId);
+  const document={id:existing?.id||`document-${Date.now()}`,type:values.type.trim(),reference:values.reference.trim(),provider:values.provider.trim(),expiry:values.expiry,notes:values.notes.trim(),createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  state.vehicleDocuments=existing?state.vehicleDocuments.map(item=>item.id===existing.id?document:item):[document,...(state.vehicleDocuments||[])];saveState();closeVehicleDocumentEditor();renderVehicle();toast(existing?"Document updated":"Document added");
+}
+function deleteVehicleDocument(id){const document=(state.vehicleDocuments||[]).find(item=>item.id===id);if(!document||!confirm(`Delete “${document.type}”? This cannot be undone.`))return;state.vehicleDocuments=state.vehicleDocuments.filter(item=>item.id!==id);saveState();renderVehicle();toast("Document deleted")}
+function openInventoryEditor(id=null){
+  editingInventoryId=id;const item=(state.inventory||[]).find(entry=>entry.id===id)||{};
+  $("#inventoryDialogTitle").textContent=id?"Edit inventory item":"Add inventory item";$("#inventoryName").value=item.name||"";$("#inventoryCategory").value=item.category||"";$("#inventoryQuantity").value=item.quantity??1;$("#inventoryLocation").value=item.location||"";$("#inventoryNotes").value=item.notes||"";
+  const dialog=$("#inventoryDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+}
+function closeInventoryEditor(){const dialog=$("#inventoryDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");editingInventoryId=null}
+function saveInventoryItem(event){
+  event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget)),existing=(state.inventory||[]).find(item=>item.id===editingInventoryId);
+  const item={id:existing?.id||`inventory-${Date.now()}`,name:values.name.trim(),category:values.category.trim(),quantity:Number(values.quantity)||1,location:values.location.trim(),notes:values.notes.trim(),createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  state.inventory=existing?state.inventory.map(entry=>entry.id===existing.id?item:entry):[item,...(state.inventory||[])];saveState();closeInventoryEditor();renderVehicle();toast(existing?"Inventory updated":"Inventory item added");
+}
+function deleteInventoryItem(id){const item=(state.inventory||[]).find(entry=>entry.id===id);if(!item||!confirm(`Delete “${item.name}”?`))return;state.inventory=state.inventory.filter(entry=>entry.id!==id);saveState();renderVehicle();toast("Inventory item deleted")}
 function renderVehicle(){
+  renderVehicleRecords();
   $("#vehicleCards").innerHTML=[
     moduleCard("electrical","⚡","Interactive electrical","Trace supplies, protection and connected loads"),
     moduleCard("fuses","▥","Fuse & circuit finder","Locate VB06-1 and VB04 protection"),
@@ -1222,6 +1284,16 @@ document.addEventListener("click",e=>{
   const gasComponent=e.target.closest("[data-gas-component]");if(gasComponent){activeGasComponent=gasComponent.dataset.gasComponent;renderGas()}
   const vehicleViewButton=e.target.closest("[data-vehicle-view]");if(vehicleViewButton){vehicleMapView=vehicleViewButton.dataset.vehicleView;const first=DATA.vehicleExplorer.find(x=>x.view===vehicleMapView);if(first)activeVehicleHotspot=first.id;renderVehicleMap()}
   const vehicleHotspot=e.target.closest("[data-vehicle-hotspot]");if(vehicleHotspot){activeVehicleHotspot=vehicleHotspot.dataset.vehicleHotspot;renderVehicleMap()}
+  if(e.target.closest("[data-vehicle-profile-edit]"))openVehicleProfileEditor();
+  if(e.target.closest("[data-vehicle-profile-cancel]"))closeVehicleProfileEditor();
+  if(e.target.closest("[data-vehicle-document-add]"))openVehicleDocumentEditor();
+  const vehicleDocumentEdit=e.target.closest("[data-vehicle-document-edit]");if(vehicleDocumentEdit)openVehicleDocumentEditor(vehicleDocumentEdit.dataset.vehicleDocumentEdit);
+  const vehicleDocumentDelete=e.target.closest("[data-vehicle-document-delete]");if(vehicleDocumentDelete)deleteVehicleDocument(vehicleDocumentDelete.dataset.vehicleDocumentDelete);
+  if(e.target.closest("[data-vehicle-document-cancel]"))closeVehicleDocumentEditor();
+  if(e.target.closest("[data-inventory-add]"))openInventoryEditor();
+  const inventoryEdit=e.target.closest("[data-inventory-edit]");if(inventoryEdit)openInventoryEditor(inventoryEdit.dataset.inventoryEdit);
+  const inventoryDelete=e.target.closest("[data-inventory-delete]");if(inventoryDelete)deleteInventoryItem(inventoryDelete.dataset.inventoryDelete);
+  if(e.target.closest("[data-inventory-cancel]"))closeInventoryEditor();
   if(e.target.closest("[data-diagnostic-back]"))backDiagnostic();
   if(e.target.closest("[data-diagnostic-restart]"))restartDiagnostic();
   if(e.target.closest("[data-diagnostic-save]"))saveDiagnosticReport();
@@ -1248,7 +1320,13 @@ $("#campsiteSearch").addEventListener("input",renderCampsites);
 $("#addPackingList").onclick=openPackingListEditor;
 $("#packingListForm").addEventListener("submit",createPackingList);
 $("#packingItemForm").addEventListener("submit",savePackingItem);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord()}});
+$("#vehicleProfileForm").addEventListener("submit",saveVehicleProfile);
+$("#vehicleDocumentForm").addEventListener("submit",saveVehicleDocument);
+$("#inventoryForm").addEventListener("submit",saveInventoryItem);
+$("#addVehicleDocument").onclick=()=>openVehicleDocumentEditor();
+$("#addInventoryItem").onclick=()=>openInventoryEditor();
+$("#inventorySearch").addEventListener("input",renderVehicleRecords);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 

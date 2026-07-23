@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 4.9.0</title>
+  <title>Knaus Companion 5.0.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.9.0-maintenance">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.0.0-records">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 4.9.0</span>
+        <span>Version 5.0.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -187,10 +187,24 @@
 
       <section class="screen" data-screen="vehicle">
         <div class="page-head">
-          <span class="eyebrow">Vehicle explorer</span>
+          <span class="eyebrow">Vehicle records</span>
           <h1>My motorhome</h1>
-          <p>Known systems, photos, components and upgrades.</p>
+          <p>Identity, specifications, documents, onboard inventory and interactive systems.</p>
         </div>
+        <div id="vehicleRecordSummary" class="status-grid"></div>
+        <div class="vehicle-record-layout">
+          <section class="panel vehicle-profile" id="vehicleProfile"></section>
+          <section class="panel">
+            <div class="section-heading"><div><span class="eyebrow">Documents</span><h2>Renewals and references</h2></div><button class="primary-btn" id="addVehicleDocument">Add document</button></div>
+            <div id="vehicleDocuments" class="vehicle-record-list"></div>
+          </section>
+        </div>
+        <section class="section-block">
+          <div class="section-heading"><div><span class="eyebrow">Onboard inventory</span><h2>Equipment and spares</h2></div><button class="primary-btn" id="addInventoryItem">Add item</button></div>
+          <label class="campsite-search">Search inventory<input id="inventorySearch" type="search" placeholder="Name, category, location or notes"></label>
+          <div id="vehicleInventory" class="inventory-grid"></div>
+        </section>
+        <div class="section-heading touring-tools-heading"><div><span class="eyebrow">Vehicle systems</span><h2>Explore and maintain</h2></div></div>
         <div id="vehicleCards" class="module-grid"></div>
         <section class="section-block vehicle-explorer-block">
           <div class="section-heading"><div><span class="eyebrow">Interactive vehicle map</span><h2>Where is everything?</h2></div></div>
@@ -282,6 +296,51 @@
       <button data-route="diagnostics">Checks</button>
       <button data-route="search">Search</button>
     </nav>
+
+    <dialog id="vehicleProfileDialog" class="detail-dialog trip-dialog">
+      <form id="vehicleProfileForm">
+        <div class="dialog-head"><div><span class="eyebrow">Vehicle identity</span><h2>Edit motorhome details</h2></div><button class="icon-btn" type="button" data-vehicle-profile-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Registration<input id="vehicleRegistration" name="registration" maxlength="30"></label>
+          <label class="trip-field">VIN<input id="vehicleVin" name="vin" maxlength="50"></label>
+          <label class="trip-field">Manufacturer<input id="vehicleMake" name="make" maxlength="80" value="Knaus"></label>
+          <label class="trip-field">Model<input id="vehicleModel" name="model" maxlength="100" value="Sun Traveller"></label>
+          <label class="trip-field">Model year<input id="vehicleYear" name="year" type="number" min="1950" max="2100"></label>
+          <label class="trip-field">Base vehicle<input id="vehicleBase" name="baseVehicle" maxlength="100"></label>
+          <label class="trip-field">Maximum authorised mass (kg)<input id="vehicleMass" name="maxMass" type="number" min="0" step="1"></label>
+          <label class="trip-field">Length (m)<input id="vehicleLength" name="length" type="number" min="0" step="0.01"></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-vehicle-profile-cancel>Cancel</button><button class="primary-btn" type="submit">Save details</button></div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="vehicleDocumentDialog" class="detail-dialog trip-dialog">
+      <form id="vehicleDocumentForm">
+        <div class="dialog-head"><div><span class="eyebrow">Vehicle document</span><h2 id="vehicleDocumentDialogTitle">Add document</h2></div><button class="icon-btn" type="button" data-vehicle-document-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Document type<input id="vehicleDocumentType" name="type" required maxlength="100" placeholder="Insurance, test, tax…"></label>
+          <label class="trip-field">Reference<input id="vehicleDocumentReference" name="reference" maxlength="100"></label>
+          <label class="trip-field">Provider<input id="vehicleDocumentProvider" name="provider" maxlength="120"></label>
+          <label class="trip-field">Expiry date<input id="vehicleDocumentExpiry" name="expiry" type="date"></label>
+          <label class="trip-field trip-field-wide">Notes<textarea id="vehicleDocumentNotes" name="notes" maxlength="1500"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-vehicle-document-cancel>Cancel</button><button class="primary-btn" type="submit">Save document</button></div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="inventoryDialog" class="detail-dialog trip-dialog">
+      <form id="inventoryForm">
+        <div class="dialog-head"><div><span class="eyebrow">Onboard inventory</span><h2 id="inventoryDialogTitle">Add item</h2></div><button class="icon-btn" type="button" data-inventory-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">Item name<input id="inventoryName" name="name" required maxlength="120"></label>
+          <label class="trip-field">Category<input id="inventoryCategory" name="category" required maxlength="60" placeholder="Tools, spares, safety…"></label>
+          <label class="trip-field">Quantity<input id="inventoryQuantity" name="quantity" type="number" min="0.1" step="0.1" value="1"></label>
+          <label class="trip-field trip-field-wide">Stored location<input id="inventoryLocation" name="location" maxlength="120" placeholder="Garage locker, cab, kitchen…"></label>
+          <label class="trip-field trip-field-wide">Notes<textarea id="inventoryNotes" name="notes" maxlength="1500"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-inventory-cancel>Cancel</button><button class="primary-btn" type="submit">Save item</button></div>
+        </div>
+      </form>
+    </dialog>
 
     <dialog id="serviceRecordDialog" class="detail-dialog trip-dialog">
       <form id="serviceRecordForm">
@@ -407,7 +466,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=4.9.0-maintenance"></script>
+  <script src="assets/js/app-v4.js?v=5.0.0-records"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
