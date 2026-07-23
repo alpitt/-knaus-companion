@@ -1,9 +1,9 @@
 
-const APP_VERSION="4.7.0";
+const APP_VERSION="4.8.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
-const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[],touringOperations:null};
+const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[],touringOperations:null,packingTemplates:null};
 let state=loadState();
 let libraryMode="chapters";
 let activeManualPage=1;
@@ -23,6 +23,8 @@ let activeFuseIndex=0;
 let activeTouringStage="departure";
 let editingTripId=null;
 let editingCampsiteId=null;
+let activePackingListId=null;
+let editingPackingItemId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -94,6 +96,7 @@ function assistantIndex(){
   (state.faults||[]).forEach(d=>docs.push({type:"fault",title:d.title||"Fault record",text:JSON.stringify(d)}));
   (state.trips||[]).forEach(d=>docs.push({type:"trip",title:d.title||d.destination||"Touring trip",text:JSON.stringify(d),raw:d}));
   (state.savedCampsites||[]).forEach(d=>docs.push({type:"campsite",title:d.name||"Saved campsite",text:JSON.stringify(d),raw:d}));
+  (state.packingLists||[]).forEach(d=>docs.push({type:"packing list",title:d.title||"Packing list",text:JSON.stringify(d),raw:d}));
   return docs;
 }
 function searchDocs(q){
@@ -218,6 +221,7 @@ function renderTouring(){
   $("#touringCards").innerHTML=cards.map(([id,icon,title,desc])=>`<button class="module-card" data-touring="${id}"><div class="icon">${icon}</div><h3>${title}</h3><p>${desc}</p></button>`).join("");
   renderTravelJournal();
   renderCampsites();
+  renderPacking();
 }
 
 function tripMetrics(trip){
@@ -287,6 +291,92 @@ function deleteTrip(id){
   const trip=(state.trips||[]).find(item=>item.id===id);
   if(!trip||!confirm(`Delete “${trip.title||"this trip"}”? This cannot be undone.`))return;
   state.trips=state.trips.filter(item=>item.id!==id);saveState();renderTouring();toast("Trip deleted");
+}
+function packingId(prefix){return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`}
+function packingWeight(item){return (Number(item.quantity)||0)*(Number(item.unitWeight)||0)}
+function packingListMetrics(list){
+  const total=list.items.reduce((sum,item)=>sum+packingWeight(item),0);
+  const packed=list.items.filter(item=>item.packed);
+  return {total,packedWeight:packed.reduce((sum,item)=>sum+packingWeight(item),0),packedCount:packed.length,totalCount:list.items.length};
+}
+function renderPacking(){
+  const lists=state.packingLists||[];
+  if(!lists.some(list=>list.id===activePackingListId))activePackingListId=lists[0]?.id||null;
+  const active=lists.find(list=>list.id===activePackingListId);
+  const allItems=lists.flatMap(list=>list.items||[]);
+  const packedItems=allItems.filter(item=>item.packed);
+  $("#packingSummary").innerHTML=[[lists.length,"Packing lists"],[packedItems.length,`of ${allItems.length} items packed`],[`${lists.reduce((sum,list)=>sum+packingListMetrics(list).total,0).toFixed(1)} kg`,"Estimated across lists"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  $("#packingLists").innerHTML=lists.length?`<span class="meta">Your lists</span><div class="packing-list-buttons">${lists.map(list=>{const m=packingListMetrics(list);return `<button class="${list.id===activePackingListId?"active":""}" data-packing-list="${esc(list.id)}"><strong>${esc(list.title)}</strong><span>${m.packedCount}/${m.totalCount} packed</span></button>`}).join("")}</div>`:'<div class="trip-empty"><span aria-hidden="true">🎒</span><h3>No packing lists</h3><p>Create a blank list or start from a reusable template.</p><button class="primary-btn" data-packing-add>Create first list</button></div>';
+  if(!active){
+    $("#packingDetail").innerHTML='<div class="trip-empty"><h3>Ready for the next trip</h3><p>Use a template to create an offline packing list with weight estimates.</p></div>';
+    return;
+  }
+  const metrics=packingListMetrics(active),limit=Number(active.weightLimit)||0;
+  const trip=(state.trips||[]).find(item=>item.id===active.tripId);
+  const categories=[...new Set(active.items.map(item=>item.category||"Other"))];
+  $("#packingDetail").innerHTML=`<div class="packing-head">
+    <div><span class="meta">${trip?`Trip: ${esc(trip.title)}`:"Reusable packing list"}</span><h3>${esc(active.title)}</h3></div>
+    <div class="packing-actions"><button class="secondary-btn" data-packing-duplicate="${esc(active.id)}">Duplicate</button><button class="danger-btn" data-packing-delete="${esc(active.id)}">Delete list</button></div>
+  </div>
+  <div class="packing-progress"><div><strong>${metrics.packedCount} of ${metrics.totalCount} packed</strong><span>${metrics.packedWeight.toFixed(1)} of ${metrics.total.toFixed(1)} kg packed</span></div><div class="touring-progress-bar"><span style="width:${metrics.totalCount?metrics.packedCount/metrics.totalCount*100:0}%"></span></div></div>
+  <div class="packing-weight ${limit&&metrics.total>limit?"over":""}"><span>Estimated packing weight</span><strong>${metrics.total.toFixed(1)} kg</strong><small>${limit?`${Math.abs(limit-metrics.total).toFixed(1)} kg ${metrics.total>limit?"over":"remaining from"} ${limit.toFixed(1)} kg allowance`:"No allowance set"}</small></div>
+  ${limit&&metrics.total>limit?'<div class="packing-warning"><strong>Packing allowance exceeded.</strong><span>Review item quantities and confirm the vehicle’s actual available payload before travel.</span></div>':""}
+  <div class="packing-category-list">${categories.map(category=>`<section><h4>${esc(category)}</h4>${active.items.filter(item=>(item.category||"Other")===category).map(item=>`<div class="packing-item ${item.packed?"packed":""}">
+    <button class="packing-toggle" data-packing-toggle="${esc(item.id)}" role="checkbox" aria-checked="${Boolean(item.packed)}"><span>${item.packed?"✓":""}</span><strong>${esc(item.name)}</strong><small>${Number(item.quantity)} × ${Number(item.unitWeight).toFixed(1)} kg</small></button>
+    <button class="icon-btn" data-packing-item-edit="${esc(item.id)}" aria-label="Edit ${esc(item.name)}">✎</button>
+    <button class="icon-btn packing-remove" data-packing-item-delete="${esc(item.id)}" aria-label="Delete ${esc(item.name)}">×</button>
+  </div>`).join("")}</section>`).join("")}</div>
+  <button class="primary-btn packing-add-item" data-packing-item-add>Add item</button>`;
+}
+function openPackingListEditor(){
+  $("#packingTemplate").innerHTML='<option value="">Blank list</option>'+((DATA.packingTemplates?.templates||[]).map(template=>`<option value="${esc(template.id)}">${esc(template.title)}</option>`).join(""));
+  $("#packingTrip").innerHTML='<option value="">No trip</option>'+((state.trips||[]).map(trip=>`<option value="${esc(trip.id)}">${esc(trip.title||trip.destination)}</option>`).join(""));
+  $("#packingListForm").reset();$("#packingWeightLimit").value="100";
+  const dialog=$("#packingListDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+  setTimeout(()=>$("#packingListTitle").focus(),0);
+}
+function closePackingListEditor(){
+  const dialog=$("#packingListDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");
+}
+function createPackingList(event){
+  event.preventDefault();
+  const values=Object.fromEntries(new FormData(event.currentTarget));
+  const template=(DATA.packingTemplates?.templates||[]).find(item=>item.id===values.template);
+  const list={id:packingId("packing"),title:values.title.trim(),tripId:values.tripId||"",weightLimit:Number(values.weightLimit)||0,createdAt:new Date().toISOString(),items:(template?.items||[]).map(item=>({...item,id:packingId("item"),packed:false}))};
+  state.packingLists=[list,...(state.packingLists||[])];activePackingListId=list.id;saveState();closePackingListEditor();renderPacking();toast("Packing list created");
+}
+function openPackingItemEditor(id=null){
+  const list=(state.packingLists||[]).find(item=>item.id===activePackingListId);if(!list)return;
+  editingPackingItemId=id;
+  const item=list.items.find(entry=>entry.id===id)||{};
+  $("#packingItemDialogTitle").textContent=id?"Edit item":"Add item";
+  $("#packingItemName").value=item.name||"";$("#packingItemCategory").value=item.category||"";$("#packingItemQuantity").value=item.quantity??1;$("#packingItemWeight").value=item.unitWeight??0;
+  const dialog=$("#packingItemDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+  setTimeout(()=>$("#packingItemName").focus(),0);
+}
+function closePackingItemEditor(){
+  const dialog=$("#packingItemDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");editingPackingItemId=null;
+}
+function savePackingItem(event){
+  event.preventDefault();
+  const list=(state.packingLists||[]).find(item=>item.id===activePackingListId);if(!list)return;
+  const values=Object.fromEntries(new FormData(event.currentTarget)),existing=list.items.find(item=>item.id===editingPackingItemId);
+  const item={id:existing?.id||packingId("item"),name:values.name.trim(),category:values.category.trim(),quantity:Number(values.quantity)||1,unitWeight:Number(values.unitWeight)||0,packed:Boolean(existing?.packed)};
+  list.items=existing?list.items.map(entry=>entry.id===existing.id?item:entry):[...list.items,item];saveState();closePackingItemEditor();renderPacking();toast(existing?"Packing item updated":"Packing item added");
+}
+function duplicatePackingList(id){
+  const source=(state.packingLists||[]).find(list=>list.id===id);if(!source)return;
+  const copy={...source,id:packingId("packing"),title:`${source.title} copy`,tripId:"",createdAt:new Date().toISOString(),items:source.items.map(item=>({...item,id:packingId("item"),packed:false}))};
+  state.packingLists=[copy,...state.packingLists];activePackingListId=copy.id;saveState();renderPacking();toast("Packing list duplicated");
+}
+function deletePackingList(id){
+  const list=(state.packingLists||[]).find(item=>item.id===id);if(!list||!confirm(`Delete “${list.title}”? This cannot be undone.`))return;
+  state.packingLists=state.packingLists.filter(item=>item.id!==id);activePackingListId=state.packingLists[0]?.id||null;saveState();renderPacking();toast("Packing list deleted");
+}
+function deletePackingItem(id){
+  const list=(state.packingLists||[]).find(item=>item.id===activePackingListId),item=list?.items.find(entry=>entry.id===id);
+  if(!item||!confirm(`Delete “${item.name}”?`))return;
+  list.items=list.items.filter(entry=>entry.id!==id);saveState();renderPacking();toast("Packing item deleted");
 }
 function normaliseWebsite(value){
   const input=String(value||"").trim();
@@ -818,6 +908,7 @@ function openTouringSection(id){
     campsites:{type:"touring",title:"Saved campsites",raw:{campsites:DATA.campsites.length?DATA.campsites:["No campsites saved yet."]}},
     "travel-log":{type:"touring",title:"Touring journal",raw:{note:"Add, edit and review trip records in the Touring Journal below."}}
   };
+  if(id==="packing"){closeDetail();$("#packingPlanner").scrollIntoView({behavior:"smooth",block:"start"});return}
   if(id==="travel-log"){closeDetail();$("#tripJournal").scrollIntoView({behavior:"smooth",block:"start"});return}
   if(id==="campsites"){closeDetail();$("#campsitePlanner").scrollIntoView({behavior:"smooth",block:"start"});return}
   openDetail(sections[id]);
@@ -1008,12 +1099,12 @@ async function clearCache(){
 async function init(){
   [
     DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
-    DATA.electrical,DATA.electricalRelations,DATA.fuses,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.campsites,DATA.touringChecks,DATA.touringOperations
+    DATA.electrical,DATA.electricalRelations,DATA.fuses,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.campsites,DATA.touringChecks,DATA.touringOperations,DATA.packingTemplates
   ]=await Promise.all([
     loadJSON("data/chapters.json"),loadJSON("data/manual_pages.json"),loadJSON("data/smart_diagnostics.json"),
     loadJSON("data/maintenance_tasks.json"),loadJSON("data/assistant_prompts.json"),loadJSON("data/build.json",{}),
     loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),
-    loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{})
+    loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
   applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
@@ -1038,6 +1129,16 @@ document.addEventListener("click",e=>{
   const campsiteFavourite=e.target.closest("[data-campsite-favourite]");if(campsiteFavourite){const site=(state.savedCampsites||[]).find(item=>item.id===campsiteFavourite.dataset.campsiteFavourite);if(site){site.favourite=!site.favourite;saveState();renderCampsites()}}
   const campsiteTrip=e.target.closest("[data-campsite-trip]");if(campsiteTrip)useCampsiteForTrip(campsiteTrip.dataset.campsiteTrip);
   if(e.target.closest("[data-campsite-cancel]"))closeCampsiteEditor();
+  if(e.target.closest("[data-packing-add]"))openPackingListEditor();
+  const packingList=e.target.closest("[data-packing-list]");if(packingList){activePackingListId=packingList.dataset.packingList;renderPacking()}
+  const packingToggle=e.target.closest("[data-packing-toggle]");if(packingToggle){const list=(state.packingLists||[]).find(item=>item.id===activePackingListId),item=list?.items.find(entry=>entry.id===packingToggle.dataset.packingToggle);if(item){item.packed=!item.packed;saveState();renderPacking()}}
+  if(e.target.closest("[data-packing-item-add]"))openPackingItemEditor();
+  const packingItemEdit=e.target.closest("[data-packing-item-edit]");if(packingItemEdit)openPackingItemEditor(packingItemEdit.dataset.packingItemEdit);
+  const packingItemDelete=e.target.closest("[data-packing-item-delete]");if(packingItemDelete)deletePackingItem(packingItemDelete.dataset.packingItemDelete);
+  const packingDuplicate=e.target.closest("[data-packing-duplicate]");if(packingDuplicate)duplicatePackingList(packingDuplicate.dataset.packingDuplicate);
+  const packingDelete=e.target.closest("[data-packing-delete]");if(packingDelete)deletePackingList(packingDelete.dataset.packingDelete);
+  if(e.target.closest("[data-packing-list-cancel]"))closePackingListEditor();
+  if(e.target.closest("[data-packing-item-cancel]"))closePackingItemEditor();
   const manual=e.target.closest("[data-manual-page],[data-manual-nav],[data-page]");if(manual)openManualPage(manual.dataset.manualPage||manual.dataset.manualNav||manual.dataset.page);
   const chapter=e.target.closest("[data-chapter-nav]");if(chapter)openChapter(chapter.dataset.chapterNav);
   const diagnosticStart=e.target.closest("[data-diagnostic-start]");if(diagnosticStart)startDiagnostic(diagnosticStart.dataset.diagnosticStart);
@@ -1079,7 +1180,10 @@ $("#tripForm").addEventListener("submit",saveTrip);
 $("#addCampsite").onclick=()=>openCampsiteEditor();
 $("#campsiteForm").addEventListener("submit",saveCampsite);
 $("#campsiteSearch").addEventListener("input",renderCampsites);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor()}});
+$("#addPackingList").onclick=openPackingListEditor;
+$("#packingListForm").addEventListener("submit",createPackingList);
+$("#packingItemForm").addEventListener("submit",savePackingItem);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 

@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 4.7.0</title>
+  <title>Knaus Companion 4.8.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.7.0-campsites">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.8.0-packing">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 4.7.0</span>
+        <span>Version 4.8.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -146,6 +146,17 @@
         </div>
         <div class="section-heading touring-tools-heading"><div><span class="eyebrow">More touring tools</span><h2>Plan and record</h2></div></div>
         <div id="touringCards" class="module-grid"></div>
+        <section class="section-block" id="packingPlanner">
+          <div class="section-heading">
+            <div><span class="eyebrow">Packing planner</span><h2>Pack by trip</h2></div>
+            <button class="primary-btn" id="addPackingList">New packing list</button>
+          </div>
+          <div id="packingSummary" class="status-grid"></div>
+          <div class="packing-layout">
+            <aside class="panel packing-sidebar" id="packingLists"></aside>
+            <section class="panel packing-detail" id="packingDetail"></section>
+          </div>
+        </section>
         <section class="section-block" id="tripJournal">
           <div class="section-heading">
             <div><span class="eyebrow">Touring journal</span><h2>Trip history</h2></div>
@@ -263,6 +274,44 @@
       <button data-route="search">Search</button>
     </nav>
 
+    <dialog id="packingListDialog" class="detail-dialog trip-dialog">
+      <form id="packingListForm">
+        <div class="dialog-head">
+          <div><span class="eyebrow">Packing planner</span><h2>New packing list</h2></div>
+          <button class="icon-btn" type="button" data-packing-list-cancel aria-label="Close">×</button>
+        </div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">List name<input id="packingListTitle" name="title" required maxlength="100" placeholder="Summer tour"></label>
+          <label class="trip-field">Start from<select id="packingTemplate" name="template"><option value="">Blank list</option></select></label>
+          <label class="trip-field">Associate with trip<select id="packingTrip" name="tripId"><option value="">No trip</option></select></label>
+          <label class="trip-field trip-field-wide">Packing weight allowance (kg)<input id="packingWeightLimit" name="weightLimit" type="number" min="0" step="0.1" value="100"></label>
+          <div class="trip-form-actions trip-field-wide">
+            <button class="secondary-btn" type="button" data-packing-list-cancel>Cancel</button>
+            <button class="primary-btn" type="submit">Create list</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="packingItemDialog" class="detail-dialog trip-dialog">
+      <form id="packingItemForm">
+        <div class="dialog-head">
+          <div><span class="eyebrow">Packing item</span><h2 id="packingItemDialogTitle">Add item</h2></div>
+          <button class="icon-btn" type="button" data-packing-item-cancel aria-label="Close">×</button>
+        </div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">Item<input id="packingItemName" name="name" required maxlength="120"></label>
+          <label class="trip-field">Category<input id="packingItemCategory" name="category" required maxlength="60" placeholder="Safety, clothing, food…"></label>
+          <label class="trip-field">Quantity<input id="packingItemQuantity" name="quantity" type="number" min="0.1" step="0.1" value="1" required></label>
+          <label class="trip-field trip-field-wide">Weight per item (kg)<input id="packingItemWeight" name="unitWeight" type="number" min="0" step="0.1" value="0"></label>
+          <div class="trip-form-actions trip-field-wide">
+            <button class="secondary-btn" type="button" data-packing-item-cancel>Cancel</button>
+            <button class="primary-btn" type="submit">Save item</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="campsiteDialog" class="detail-dialog trip-dialog">
       <form id="campsiteForm">
         <div class="dialog-head">
@@ -327,7 +376,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=4.7.0-campsites"></script>
+  <script src="assets/js/app-v4.js?v=4.8.0-packing"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

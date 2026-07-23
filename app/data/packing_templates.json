@@ -1,7 +1,50 @@
 {
+  "version": "4.8.0",
   "templates": [
-    "Weekend",
-    "One Week",
-    "Winter"
+    {
+      "id": "weekend-essential",
+      "title": "Weekend essentials",
+      "description": "Core equipment for a short serviced-site trip.",
+      "items": [
+        {"name": "Driving documents and insurance", "category": "Documents", "quantity": 1, "unitWeight": 0.2},
+        {"name": "Electric hook-up cable", "category": "Utilities", "quantity": 1, "unitWeight": 6},
+        {"name": "Fresh-water hose and fittings", "category": "Utilities", "quantity": 1, "unitWeight": 4},
+        {"name": "Levelling ramps", "category": "Pitch", "quantity": 1, "unitWeight": 8},
+        {"name": "Basic tool kit and spare fuses", "category": "Tools", "quantity": 1, "unitWeight": 5},
+        {"name": "First-aid kit", "category": "Safety", "quantity": 1, "unitWeight": 1},
+        {"name": "Food and drinking water", "category": "Living", "quantity": 1, "unitWeight": 15},
+        {"name": "Clothing and wash kit", "category": "Personal", "quantity": 1, "unitWeight": 8}
+      ]
+    },
+    {
+      "id": "wild-camping",
+      "title": "Off-grid stop",
+      "description": "Extra supplies for a self-contained overnight stop.",
+      "items": [
+        {"name": "Fresh drinking water", "category": "Utilities", "quantity": 20, "unitWeight": 1},
+        {"name": "Charged leisure battery", "category": "Electrical", "quantity": 1, "unitWeight": 0},
+        {"name": "Full LPG cylinder", "category": "Utilities", "quantity": 1, "unitWeight": 13},
+        {"name": "Torch and spare batteries", "category": "Safety", "quantity": 1, "unitWeight": 1},
+        {"name": "Waste-water container", "category": "Utilities", "quantity": 1, "unitWeight": 4},
+        {"name": "Levelling ramps", "category": "Pitch", "quantity": 1, "unitWeight": 8},
+        {"name": "Food supplies", "category": "Living", "quantity": 1, "unitWeight": 12},
+        {"name": "Offline maps", "category": "Navigation", "quantity": 1, "unitWeight": 0}
+      ]
+    },
+    {
+      "id": "winter-tour",
+      "title": "Winter touring",
+      "description": "Cold-weather additions for serviced touring.",
+      "items": [
+        {"name": "Insulated external screen", "category": "Comfort", "quantity": 1, "unitWeight": 5},
+        {"name": "Winter bedding", "category": "Living", "quantity": 1, "unitWeight": 6},
+        {"name": "Approved LPG reserve", "category": "Utilities", "quantity": 1, "unitWeight": 13},
+        {"name": "Ice scraper and de-icer", "category": "Vehicle", "quantity": 1, "unitWeight": 1},
+        {"name": "Snow shovel", "category": "Vehicle", "quantity": 1, "unitWeight": 2},
+        {"name": "Warm waterproof clothing", "category": "Personal", "quantity": 1, "unitWeight": 8},
+        {"name": "Torch and emergency light", "category": "Safety", "quantity": 1, "unitWeight": 1},
+        {"name": "Fresh-water frost protection supplies", "category": "Utilities", "quantity": 1, "unitWeight": 2}
+      ]
+    }
   ]
 }

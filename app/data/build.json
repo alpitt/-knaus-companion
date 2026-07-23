@@ -1,6 +1,6 @@
 {
-  "version": "4.7.0",
-  "releaseName": "Campsite Planner",
+  "version": "4.8.0",
+  "releaseName": "Packing Planner",
   "buildDate": "2026-07-23",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -69,7 +69,11 @@
     "Trip records included in local search and backups",
     "Offline campsite directory with facilities and ratings",
     "Campsite search, favourites and map links",
-    "Reuse saved campsites when creating trip records"
+    "Reuse saved campsites when creating trip records",
+    "Offline packing lists linked to touring journal trips",
+    "Reusable weekend, off-grid and winter packing templates",
+    "Quantity, packed-state and estimated-weight tracking",
+    "Configurable packing allowance with payload warning"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
