@@ -76,6 +76,18 @@ jobs:
               assert relation["from"] in gas_ids, f"Unknown gas relation source: {relation['from']}"
               assert relation["to"] in gas_ids, f"Unknown gas relation target: {relation['to']}"
           print(f"Validated {len(gas_components)} gas components and {len(gas_relations)} relations.")
+
+          hotspots = json.loads((data / "vehicle_explorer.json").read_text(encoding="utf-8"))
+          hotspot_ids = {hotspot["id"] for hotspot in hotspots}
+          assert len(hotspot_ids) == len(hotspots), "Vehicle hotspot IDs must be unique"
+          systems = {"electrical": component_ids, "water": water_ids, "gas": gas_ids}
+          for hotspot in hotspots:
+              assert hotspot["view"] in {"interior", "exterior", "roof"}, f"Unknown vehicle view: {hotspot['view']}"
+              for key in ("x", "y", "w", "h"):
+                  assert 0 <= hotspot[key] <= 100, f"Invalid {key} for hotspot {hotspot['id']}"
+              if hotspot.get("component") and hotspot["system"] in systems:
+                  assert hotspot["component"] in systems[hotspot["system"]], f"Unknown component for hotspot {hotspot['id']}"
+          print(f"Validated {len(hotspots)} interactive vehicle hotspots.")
           PY
 
       - name: Configure GitHub Pages

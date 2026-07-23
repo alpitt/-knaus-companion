@@ -27,6 +27,8 @@ The water-system explorer adds filtered fresh, hot, waste and monitoring flows w
 
 The gas-system explorer covers LPG supply, heating, cooking, refrigeration, flues and safety, with clear boundaries between user checks and work for a competent gas technician.
 
+The interactive vehicle map provides interior, exterior and roof hotspots linked directly to the system explorers and preserved workshop references.
+
 ## iPhone installation
 
 Open the site in Safari, tap Share, then tap Add to Home Screen. Open the installed app and select Download offline pack.
