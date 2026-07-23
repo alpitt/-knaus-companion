@@ -1,7 +1,7 @@
 
-const APP_VERSION="4.5.0";
+const APP_VERSION="4.6.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[],touringOperations:null};
 let state=loadState();
@@ -21,6 +21,7 @@ let activeVehicleHotspot="electrical-compartment";
 let fuseBoxFilter="all";
 let activeFuseIndex=0;
 let activeTouringStage="departure";
+let editingTripId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -90,6 +91,7 @@ function assistantIndex(){
   DATA.maintenanceTasks.forEach(d=>docs.push({type:"maintenance",title:d.title||d.name||"Maintenance task",text:JSON.stringify(d)}));
   (state.logs||[]).forEach(d=>docs.push({type:"service record",title:d.title||d.category||"Service record",text:JSON.stringify(d)}));
   (state.faults||[]).forEach(d=>docs.push({type:"fault",title:d.title||"Fault record",text:JSON.stringify(d)}));
+  (state.trips||[]).forEach(d=>docs.push({type:"trip",title:d.title||d.destination||"Touring trip",text:JSON.stringify(d),raw:d}));
   return docs;
 }
 function searchDocs(q){
@@ -212,6 +214,76 @@ function renderTouring(){
     ["travel-log","📝","Travel log","Record trips and useful notes"]
   ];
   $("#touringCards").innerHTML=cards.map(([id,icon,title,desc])=>`<button class="module-card" data-touring="${id}"><div class="icon">${icon}</div><h3>${title}</h3><p>${desc}</p></button>`).join("");
+  renderTravelJournal();
+}
+
+function tripMetrics(trip){
+  const start=trip.startDate?new Date(`${trip.startDate}T00:00:00Z`):null;
+  const end=trip.endDate?new Date(`${trip.endDate}T00:00:00Z`):null;
+  const nights=start&&end&&end>=start?Math.round((end-start)/86400000):0;
+  const startMileage=Number(trip.startMileage),endMileage=Number(trip.endMileage);
+  const distance=Number.isFinite(startMileage)&&Number.isFinite(endMileage)&&endMileage>=startMileage?endMileage-startMileage:0;
+  return {nights,distance};
+}
+function formatTripDate(value){
+  if(!value)return "Date not set";
+  return new Intl.DateTimeFormat(undefined,{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}).format(new Date(`${value}T00:00:00Z`));
+}
+function renderTravelJournal(){
+  const trips=[...(state.trips||[])].sort((a,b)=>String(b.startDate||"").localeCompare(String(a.startDate||"")));
+  const totals=trips.reduce((sum,trip)=>{const m=tripMetrics(trip);sum.nights+=m.nights;sum.distance+=m.distance;return sum},{nights:0,distance:0});
+  $("#tripSummary").innerHTML=[[trips.length,"Trips recorded"],[totals.nights,"Nights away"],[`${totals.distance} km`,"Distance recorded"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  if(!trips.length){
+    $("#tripList").innerHTML='<article class="panel trip-empty"><span aria-hidden="true">📝</span><h3>No trips recorded yet</h3><p>Add the first journey to build an offline touring history.</p><button class="primary-btn" data-trip-add>Add first trip</button></article>';
+    return;
+  }
+  $("#tripList").innerHTML=trips.map(trip=>{
+    const metrics=tripMetrics(trip);
+    return `<article class="panel trip-card">
+      <div class="trip-card-head"><div><span class="meta">${esc(formatTripDate(trip.startDate))} – ${esc(formatTripDate(trip.endDate))}</span><h3>${esc(trip.title||"Touring trip")}</h3><p>${esc(trip.destination||"Destination not recorded")}</p></div><span class="trip-distance">${metrics.distance} km</span></div>
+      <div class="diagnostic-meta"><span>${metrics.nights} ${metrics.nights===1?"night":"nights"}</span>${trip.campsite?`<span>🏕️ ${esc(trip.campsite)}</span>`:""}</div>
+      ${trip.notes?`<p class="trip-notes">${esc(trip.notes)}</p>`:""}
+      <div class="trip-card-actions"><button class="secondary-btn" data-trip-edit="${esc(trip.id)}">Edit</button><button class="danger-btn" data-trip-delete="${esc(trip.id)}">Delete</button></div>
+    </article>`;
+  }).join("");
+}
+function openTripEditor(id=null){
+  editingTripId=id;
+  const trip=(state.trips||[]).find(item=>item.id===id)||{};
+  $("#tripDialogTitle").textContent=id?"Edit trip":"Add trip";
+  $("#tripTitle").value=trip.title||"";
+  $("#tripDestination").value=trip.destination||"";
+  $("#tripStartDate").value=trip.startDate||new Date().toISOString().slice(0,10);
+  $("#tripEndDate").value=trip.endDate||trip.startDate||new Date().toISOString().slice(0,10);
+  $("#tripStartMileage").value=trip.startMileage??"";
+  $("#tripEndMileage").value=trip.endMileage??"";
+  $("#tripCampsite").value=trip.campsite||"";
+  $("#tripNotes").value=trip.notes||"";
+  const dialog=$("#tripDialog");
+  if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+  setTimeout(()=>$("#tripTitle").focus(),0);
+}
+function closeTripEditor(){
+  const dialog=$("#tripDialog");
+  if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");
+  editingTripId=null;
+}
+function saveTrip(event){
+  event.preventDefault();
+  const values=Object.fromEntries(new FormData(event.currentTarget));
+  if(values.endDate<values.startDate){toast("End date must be on or after the start date");return}
+  const startMileage=values.startMileage===""?null:Number(values.startMileage);
+  const endMileage=values.endMileage===""?null:Number(values.endMileage);
+  if(startMileage!==null&&endMileage!==null&&endMileage<startMileage){toast("End mileage must be at least the start mileage");return}
+  const existing=(state.trips||[]).find(item=>item.id===editingTripId);
+  const trip={id:existing?.id||`trip-${Date.now()}`,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString(),title:values.title.trim(),destination:values.destination.trim(),startDate:values.startDate,endDate:values.endDate,startMileage,endMileage,campsite:values.campsite.trim(),notes:values.notes.trim()};
+  state.trips=existing?(state.trips||[]).map(item=>item.id===existing.id?trip:item):[trip,...(state.trips||[])];
+  saveState();closeTripEditor();renderTouring();toast(existing?"Trip updated":"Trip added");
+}
+function deleteTrip(id){
+  const trip=(state.trips||[]).find(item=>item.id===id);
+  if(!trip||!confirm(`Delete “${trip.title||"this trip"}”? This cannot be undone.`))return;
+  state.trips=state.trips.filter(item=>item.id!==id);saveState();renderTouring();toast("Trip deleted");
 }
 
 function detailList(title,items){
@@ -673,8 +745,9 @@ function openTouringSection(id){
     departure:{type:"touring",title:"Departure checks",raw:{checks:DATA.touringChecks.length?DATA.touringChecks:fallbackDeparture}},
     packing:{type:"touring",title:"Packing essentials",raw:{checks:["Driving documents and insurance","Hook-up cable and adapters","Fresh-water hose and fittings","Levelling ramps","Basic tools and spare fuses","First-aid kit","Torch and batteries","Medication and chargers"]}},
     campsites:{type:"touring",title:"Saved campsites",raw:{campsites:DATA.campsites.length?DATA.campsites:["No campsites saved yet."]}},
-    "travel-log":{type:"touring",title:"Travel log",raw:{note:"Travel-log editing will be added in the next touring upgrade. Existing touring data remains preserved."}}
+    "travel-log":{type:"touring",title:"Touring journal",raw:{note:"Add, edit and review trip records in the Touring Journal below."}}
   };
+  if(id==="travel-log"){closeDetail();$("#tripJournal").scrollIntoView({behavior:"smooth",block:"start"});return}
   openDetail(sections[id]);
 }
 
@@ -883,6 +956,10 @@ document.addEventListener("click",e=>{
   const touringStage=e.target.closest("[data-touring-stage]");if(touringStage){activeTouringStage=touringStage.dataset.touringStage;renderTouring()}
   const touringCheck=e.target.closest("[data-touring-check]");if(touringCheck){const key=`${activeTouringStage}:${touringCheck.dataset.touringCheck}`;state.touringProgress={...(state.touringProgress||{}),[key]:!state.touringProgress?.[key]};saveState();renderTouring()}
   const touringReset=e.target.closest("[data-touring-reset]");if(touringReset){const prefix=`${touringReset.dataset.touringReset}:`;state.touringProgress=Object.fromEntries(Object.entries(state.touringProgress||{}).filter(([key])=>!key.startsWith(prefix)));saveState();renderTouring();toast("Touring stage reset")}
+  if(e.target.closest("[data-trip-add]"))openTripEditor();
+  const tripEdit=e.target.closest("[data-trip-edit]");if(tripEdit)openTripEditor(tripEdit.dataset.tripEdit);
+  const tripDelete=e.target.closest("[data-trip-delete]");if(tripDelete)deleteTrip(tripDelete.dataset.tripDelete);
+  if(e.target.closest("[data-trip-cancel]"))closeTripEditor();
   const manual=e.target.closest("[data-manual-page],[data-manual-nav],[data-page]");if(manual)openManualPage(manual.dataset.manualPage||manual.dataset.manualNav||manual.dataset.page);
   const chapter=e.target.closest("[data-chapter-nav]");if(chapter)openChapter(chapter.dataset.chapterNav);
   const diagnosticStart=e.target.closest("[data-diagnostic-start]");if(diagnosticStart)startDiagnostic(diagnosticStart.dataset.diagnosticStart);
@@ -919,7 +996,9 @@ $("#addServiceRecord").onclick=()=>{
 $("#exportBackup").onclick=exportBackup;
 $("#importBackup").onchange=async e=>{try{if(e.target.files[0])await restoreBackup(e.target.files[0])}catch(err){toast(err.message)}finally{e.target.value=""}};
 $("#clearCache").onclick=clearCache;
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail()}});
+$("#addTrip").onclick=()=>openTripEditor();
+$("#tripForm").addEventListener("submit",saveTrip);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 

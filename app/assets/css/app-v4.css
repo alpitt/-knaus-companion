@@ -368,3 +368,28 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 @media(max-width:850px){.touring-ops-layout{grid-template-columns:1fr}.touring-stage-info{position:static}}
 @media(max-width:600px){.touring-check{padding:11px 13px}.touring-check-box{width:34px;height:34px}}
 
+/* v4.6 touring journal */
+.trip-list{display:grid;gap:14px}
+.trip-card{display:grid;gap:14px}
+.trip-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.trip-card-head h3{font-size:1.25rem;margin:.3rem 0 .2rem}
+.trip-card-head p,.trip-notes{margin:0;color:var(--muted)}
+.trip-distance{flex:0 0 auto;padding:9px 12px;border-radius:12px;background:var(--panel-2);font-size:1.05rem;font-weight:900}
+.trip-notes{padding-top:12px;border-top:1px solid var(--line);white-space:pre-wrap}
+.trip-card-actions,.trip-form-actions{display:flex;gap:9px;justify-content:flex-end}
+.trip-empty{text-align:center;padding:34px}
+.trip-empty>span{font-size:2.3rem}.trip-empty h3{margin:.5rem 0}.trip-empty p{color:var(--muted)}
+.trip-dialog{width:min(720px,calc(100% - 20px))}
+.trip-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.trip-field{display:grid;gap:7px;color:var(--text);font-weight:800}
+.trip-field-wide{grid-column:1/-1}
+.trip-field input,.trip-field textarea{width:100%;min-height:48px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--text);padding:11px 13px;font-size:16px}
+.trip-field textarea{min-height:112px;resize:vertical}
+@media(max-width:600px){
+  .trip-form-grid{grid-template-columns:1fr}
+  .trip-field-wide{grid-column:auto}
+  .trip-card-head{display:grid}
+  .trip-distance{justify-self:start}
+  .trip-card-actions,.trip-form-actions{display:grid;grid-template-columns:1fr}
+}
+

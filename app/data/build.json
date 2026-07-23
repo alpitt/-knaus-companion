@@ -1,6 +1,6 @@
 {
-  "version": "4.5.0",
-  "releaseName": "Touring Operations",
+  "version": "4.6.0",
+  "releaseName": "Touring Journal",
   "buildDate": "2026-07-23",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -63,7 +63,10 @@
     "Fuse-board filters, search, ratings and safe test sequence",
     "Persistent four-stage journey checklist",
     "Departure, arrival, leaving-site and return workflows",
-    "Offline touring progress and manual references"
+    "Offline touring progress and manual references",
+    "Persistent touring journal with editable trip records",
+    "Automatic trip nights and distance summaries",
+    "Trip records included in local search and backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

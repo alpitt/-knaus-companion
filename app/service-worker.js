@@ -1,5 +1,5 @@
-const CACHE='knaus-companion-v4-5-0-touring';
-const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css?v=4.5.0-touring','./assets/js/app-v4.js?v=4.5.0-touring','./data/build.json','./data/touring_operations.json'];
+const CACHE='knaus-companion-v4-6-0-journal';
+const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css?v=4.6.0-journal','./assets/js/app-v4.js?v=4.6.0-journal','./data/build.json','./data/touring_operations.json'];
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting()});
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

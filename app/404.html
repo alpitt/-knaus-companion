@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 4.5.0</title>
+  <title>Knaus Companion 4.6.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.5.0-touring">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.6.0-journal">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 4.5.0</span>
+        <span>Version 4.6.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -146,6 +146,14 @@
         </div>
         <div class="section-heading touring-tools-heading"><div><span class="eyebrow">More touring tools</span><h2>Plan and record</h2></div></div>
         <div id="touringCards" class="module-grid"></div>
+        <section class="section-block" id="tripJournal">
+          <div class="section-heading">
+            <div><span class="eyebrow">Touring journal</span><h2>Trip history</h2></div>
+            <button class="primary-btn" id="addTrip">Add trip</button>
+          </div>
+          <div id="tripSummary" class="status-grid"></div>
+          <div id="tripList" class="trip-list"></div>
+        </section>
       </section>
 
       <section class="screen" data-screen="vehicle">
@@ -246,6 +254,29 @@
       <button data-route="search">Search</button>
     </nav>
 
+    <dialog id="tripDialog" class="detail-dialog trip-dialog">
+      <form id="tripForm">
+        <div class="dialog-head">
+          <div><span class="eyebrow">Touring journal</span><h2 id="tripDialogTitle">Add trip</h2></div>
+          <button class="icon-btn" type="button" data-trip-cancel aria-label="Close">×</button>
+        </div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">Trip name<input id="tripTitle" name="title" required maxlength="80" placeholder="West coast weekend"></label>
+          <label class="trip-field trip-field-wide">Destination<input id="tripDestination" name="destination" required maxlength="120" placeholder="Town, region or route"></label>
+          <label class="trip-field">Start date<input id="tripStartDate" name="startDate" type="date" required></label>
+          <label class="trip-field">End date<input id="tripEndDate" name="endDate" type="date" required></label>
+          <label class="trip-field">Start mileage (km)<input id="tripStartMileage" name="startMileage" type="number" min="0" step="1" inputmode="numeric"></label>
+          <label class="trip-field">End mileage (km)<input id="tripEndMileage" name="endMileage" type="number" min="0" step="1" inputmode="numeric"></label>
+          <label class="trip-field trip-field-wide">Campsite or stop<input id="tripCampsite" name="campsite" maxlength="120" placeholder="Optional"></label>
+          <label class="trip-field trip-field-wide">Notes<textarea id="tripNotes" name="notes" maxlength="2000" placeholder="Route, facilities, highlights and useful details"></textarea></label>
+          <div class="trip-form-actions trip-field-wide">
+            <button class="secondary-btn" type="button" data-trip-cancel>Cancel</button>
+            <button class="primary-btn" type="submit">Save trip</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="detailDialog" class="detail-dialog">
       <div class="dialog-head">
         <div><span class="eyebrow" id="detailType">Details</span><h2 id="detailTitle">Details</h2></div>
@@ -256,7 +287,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=4.5.0-touring"></script>
+  <script src="assets/js/app-v4.js?v=4.6.0-journal"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
