@@ -1,6 +1,6 @@
 {
-  "version": "5.6.0",
-  "releaseName": "Touring Expense Log",
+  "version": "5.7.0",
+  "releaseName": "Touring Cost Insights",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -112,7 +112,12 @@
     "Optional trip, litres, mileage and vendor links",
     "Total-spend, fuel-volume and fuel-spend summaries",
     "Editable expense history with category filters",
-    "Touring expenses included in recent activity, search and backups"
+    "Touring expenses included in recent activity, search and backups",
+    "All-time, 12-month and 30-day cost analysis",
+    "Visual spend breakdown by expense category",
+    "Per-trip total and cost-per-kilometre calculations",
+    "Trip fuel economy in litres per 100 km when data is available",
+    "Period-aware touring expense CSV export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

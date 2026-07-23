@@ -1,5 +1,5 @@
 
-const APP_VERSION="5.6.0";
+const APP_VERSION="5.7.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],expenses:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -45,6 +45,7 @@ let activeVehiclePhotoId=null;
 let partsFilter="all";
 let activePartId=null;
 let expenseFilter="all";
+let expensePeriod="all";
 let editingExpenseId=null;
 
 function $(s,r=document){return r.querySelector(s)}
@@ -459,15 +460,28 @@ function deleteTrip(id){
   state.trips=state.trips.filter(item=>item.id!==id);saveState();renderTouring();toast("Trip deleted");
 }
 function expenseIcon(type){return ({fuel:"⛽",campsite:"🏕️",toll:"🛣️",ferry:"⛴️",supplies:"🛒",service:"🔧",other:"💶"}[type]||"💶")}
+function expensesForPeriod(){
+  const expenses=[...(state.expenses||[])],now=new Date(),cutoff=expensePeriod==="30d"?new Date(now.getTime()-30*86400000):expensePeriod==="12m"?new Date(Date.UTC(now.getUTCFullYear()-1,now.getUTCMonth(),now.getUTCDate())):null;
+  return expenses.filter(item=>!cutoff||new Date(`${item.date}T23:59:59Z`)>=cutoff).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
+}
 function renderExpenses(){
-  const expenses=[...(state.expenses||[])].sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))),fuel=expenses.filter(item=>item.type==="fuel"),total=expenses.reduce((sum,item)=>sum+(Number(item.amount)||0),0),litres=fuel.reduce((sum,item)=>sum+(Number(item.litres)||0),0);
+  const expenses=expensesForPeriod(),fuel=expenses.filter(item=>item.type==="fuel"),total=expenses.reduce((sum,item)=>sum+(Number(item.amount)||0),0),litres=fuel.reduce((sum,item)=>sum+(Number(item.litres)||0),0);
   $("#expenseSummary").innerHTML=[[expenses.length,"Entries"],[`€${total.toFixed(2)}`,"Total spend"],[`${litres.toFixed(1)} L`,"Fuel recorded"],[fuel.length?`€${fuel.reduce((sum,item)=>sum+(Number(item.amount)||0),0).toFixed(2)}`:"€0.00","Fuel spend"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  const periods=[["all","All time"],["12m","Last 12 months"],["30d","Last 30 days"]];
+  $("#expensePeriodFilters").innerHTML=periods.map(([id,label])=>`<button class="chip ${expensePeriod===id?"active":""}" data-expense-period="${id}">${label}</button>`).join("");
   const types=[["all","All"],["fuel","Fuel"],["campsite","Campsites"],["toll","Tolls"],["ferry","Ferries"],["supplies","Supplies"],["service","Service"],["other","Other"]];
   $("#expenseFilters").innerHTML=types.map(([id,label])=>`<button class="chip ${expenseFilter===id?"active":""}" data-expense-filter="${id}">${label}</button>`).join("");
+  const categoryTotals=types.slice(1).map(([id,label])=>({id,label,total:expenses.filter(item=>item.type===id).reduce((sum,item)=>sum+(Number(item.amount)||0),0)})).filter(item=>item.total>0).sort((a,b)=>b.total-a.total);
+  const tripCosts=(state.trips||[]).map(trip=>{const entries=expenses.filter(item=>item.tripId===trip.id),cost=entries.reduce((sum,item)=>sum+(Number(item.amount)||0),0),fuelLitres=entries.filter(item=>item.type==="fuel").reduce((sum,item)=>sum+(Number(item.litres)||0),0),distance=tripMetrics(trip).distance;return {trip,cost,fuelLitres,distance}}).filter(item=>item.cost>0).sort((a,b)=>b.cost-a.cost);
+  $("#expenseInsights").innerHTML=`<article class="panel cost-breakdown"><h3>Spend by category</h3>${categoryTotals.length?categoryTotals.map(item=>`<div class="cost-row"><span>${expenseIcon(item.id)} ${esc(item.label)}</span><div><i style="width:${total?Math.max(2,item.total/total*100):0}%"></i></div><strong>€${item.total.toFixed(2)}</strong></div>`).join(""):"<p>No category data for this period.</p>"}</article><article class="panel trip-costs"><h3>Cost by trip</h3>${tripCosts.length?tripCosts.slice(0,8).map(item=>`<div class="trip-cost-row"><span><strong>${esc(item.trip.title||item.trip.destination||"Touring trip")}</strong><small>${item.distance?`${item.distance.toLocaleString()} km • €${(item.cost/item.distance).toFixed(2)}/km`:"Distance not recorded"}${item.distance&&item.fuelLitres?` • ${(item.fuelLitres/item.distance*100).toFixed(1)} L/100 km`:""}</small></span><b>€${item.cost.toFixed(2)}</b></div>`).join(""):"<p>Link expenses to trips to compare journey costs.</p>"}</article>`;
   const visible=expenses.filter(item=>expenseFilter==="all"||item.type===expenseFilter);
   $("#expenseList").innerHTML=visible.length?visible.map(item=>{const trip=(state.trips||[]).find(entry=>entry.id===item.tripId);return `<article class="panel expense-card">
     <span class="expense-icon">${expenseIcon(item.type)}</span><div><span class="meta">${esc(formatTripDate(item.date))} • ${esc(item.type)}</span><strong>${esc(item.vendor||"Touring expense")}</strong><small>${trip?`Trip: ${esc(trip.title||trip.destination)}`:"No linked trip"}${item.litres?` • ${Number(item.litres).toFixed(1)} L`:""}${item.mileage!==null&&item.mileage!==undefined&&item.mileage!==""?` • ${Number(item.mileage).toLocaleString()} km`:""}</small>${item.notes?`<p>${esc(item.notes)}</p>`:""}</div><strong class="expense-amount">€${(Number(item.amount)||0).toFixed(2)}</strong><div class="expense-actions"><button class="secondary-btn" data-expense-edit="${esc(item.id)}">Edit</button><button class="danger-btn" data-expense-delete="${esc(item.id)}">Delete</button></div>
   </article>`}).join(""):'<article class="panel trip-empty"><p>No touring expenses match this view.</p><button class="primary-btn" data-expense-add>Add first expense</button></article>';
+}
+function exportExpenseCsv(){
+  const quote=value=>`"${String(value??"").replace(/"/g,'""')}"`,header=["Date","Type","Amount EUR","Trip","Litres","Mileage km","Vendor","Notes"],rows=expensesForPeriod().map(item=>{const trip=(state.trips||[]).find(entry=>entry.id===item.tripId);return [item.date,item.type,Number(item.amount||0).toFixed(2),trip?.title||trip?.destination||"",item.litres??"",item.mileage??"",item.vendor||"",item.notes||""]});
+  const blob=new Blob([[header,...rows].map(row=>row.map(quote).join(",")).join("\r\n")],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-touring-expenses-${expensePeriod}-${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Expense CSV exported");
 }
 function openExpenseEditor(id=null){
   editingExpenseId=id;const item=(state.expenses||[]).find(entry=>entry.id===id)||{};$("#expenseDialogTitle").textContent=id?"Edit expense":"Add expense";$("#expenseDate").value=item.date||new Date().toISOString().slice(0,10);$("#expenseType").value=item.type||"fuel";$("#expenseAmount").value=item.amount??"";$("#expenseTrip").innerHTML='<option value="">No linked trip</option>'+(state.trips||[]).map(trip=>`<option value="${esc(trip.id)}">${esc(trip.title||trip.destination||"Touring trip")}</option>`).join("");$("#expenseTrip").value=item.tripId||"";$("#expenseLitres").value=item.litres??"";$("#expenseMileage").value=item.mileage??state.currentMileage??"";$("#expenseVendor").value=item.vendor||"";$("#expenseNotes").value=item.notes||"";const dialog=$("#expenseDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");setTimeout(()=>$("#expenseAmount").focus(),0);
@@ -1438,6 +1452,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-trip-cancel]"))closeTripEditor();
   if(e.target.closest("[data-expense-add]"))openExpenseEditor();
   const expenseFilterButton=e.target.closest("[data-expense-filter]");if(expenseFilterButton){expenseFilter=expenseFilterButton.dataset.expenseFilter;renderExpenses()}
+  const expensePeriodButton=e.target.closest("[data-expense-period]");if(expensePeriodButton){expensePeriod=expensePeriodButton.dataset.expensePeriod;renderExpenses()}
   const expenseEdit=e.target.closest("[data-expense-edit]");if(expenseEdit)openExpenseEditor(expenseEdit.dataset.expenseEdit);
   const expenseDelete=e.target.closest("[data-expense-delete]");if(expenseDelete)deleteExpense(expenseDelete.dataset.expenseDelete);
   if(e.target.closest("[data-expense-cancel]"))closeExpenseEditor();
@@ -1526,6 +1541,7 @@ $("#addTrip").onclick=()=>openTripEditor();
 $("#tripForm").addEventListener("submit",saveTrip);
 $("#addExpense").onclick=()=>openExpenseEditor();
 $("#expenseForm").addEventListener("submit",saveExpense);
+$("#exportExpenses").onclick=exportExpenseCsv;
 $("#addCampsite").onclick=()=>openCampsiteEditor();
 $("#campsiteForm").addEventListener("submit",saveCampsite);
 $("#campsiteSearch").addEventListener("input",renderCampsites);

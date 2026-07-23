@@ -527,3 +527,10 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .expense-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--panel-2);font-size:1.35rem}.expense-card>div:nth-child(2){display:grid;gap:3px}.expense-card small,.expense-card p{margin:0;color:var(--muted)}.expense-card p{white-space:pre-wrap}.expense-amount{font-size:1.1rem;white-space:nowrap}.expense-actions{display:flex;gap:7px}.expense-actions button{min-height:40px;padding:8px 11px}
 @media(max-width:700px){.expense-card{grid-template-columns:42px 1fr auto}.expense-actions{grid-column:2/4;display:grid;grid-template-columns:1fr 1fr}.expense-actions button{width:100%}}@media(max-width:440px){.expense-card{grid-template-columns:42px 1fr}.expense-amount{grid-column:2}.expense-actions{grid-column:1/3}}
 
+/* v5.7 touring cost insights */
+.expense-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.expense-toolbar .chips{margin:0}
+.expense-insights{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-bottom:14px}.expense-insights h3{margin:0 0 12px}.expense-insights p{color:var(--muted)}
+.cost-row{display:grid;grid-template-columns:minmax(105px,.7fr) minmax(90px,1.3fr) auto;align-items:center;gap:9px;margin:9px 0}.cost-row>div{height:9px;overflow:hidden;border-radius:999px;background:var(--panel-2)}.cost-row i{display:block;height:100%;border-radius:inherit;background:var(--accent)}
+.trip-costs{display:grid;align-content:start}.trip-cost-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.trip-cost-row:last-child{border-bottom:0}.trip-cost-row>span{display:grid;gap:3px}.trip-cost-row small{color:var(--muted)}
+@media(max-width:850px){.expense-insights{grid-template-columns:1fr}}@media(max-width:520px){.expense-toolbar{display:grid}.expense-toolbar button{width:100%}.cost-row{grid-template-columns:1fr auto}.cost-row>div{grid-column:1/3}}
+
