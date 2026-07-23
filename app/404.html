@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 4.8.0</title>
+  <title>Knaus Companion 4.9.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.8.0-packing">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.9.0-maintenance">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 4.8.0</span>
+        <span>Version 4.9.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -112,7 +112,16 @@
           <button class="secondary-btn" data-route="settings">Export records</button>
         </div>
         <div id="maintenanceSummary" class="status-grid"></div>
-        <div id="maintenanceList"></div>
+        <section class="panel maintenance-controls">
+          <label>Current mileage (km)<input id="maintenanceMileage" type="number" min="0" step="1" inputmode="numeric"></label>
+          <button class="secondary-btn" id="saveMaintenanceMileage">Update mileage</button>
+          <div class="chips" id="maintenanceFilters" aria-label="Maintenance status filter"></div>
+        </section>
+        <div id="maintenanceList" class="maintenance-grid"></div>
+        <section class="section-block">
+          <div class="section-heading"><div><span class="eyebrow">Service records</span><h2>Completed work</h2></div></div>
+          <div id="serviceHistory" class="service-history"></div>
+        </section>
       </section>
 
       <section class="screen" data-screen="diagnostics">
@@ -274,6 +283,28 @@
       <button data-route="search">Search</button>
     </nav>
 
+    <dialog id="serviceRecordDialog" class="detail-dialog trip-dialog">
+      <form id="serviceRecordForm">
+        <div class="dialog-head">
+          <div><span class="eyebrow">Maintenance record</span><h2 id="serviceRecordDialogTitle">Add service record</h2></div>
+          <button class="icon-btn" type="button" data-service-cancel aria-label="Close">×</button>
+        </div>
+        <div class="dialog-body trip-form-grid">
+          <input id="serviceTaskId" name="taskId" type="hidden">
+          <label class="trip-field trip-field-wide">Work completed<input id="serviceTitle" name="title" required maxlength="140"></label>
+          <label class="trip-field">Date<input id="serviceDate" name="date" type="date" required></label>
+          <label class="trip-field">Mileage (km)<input id="serviceMileage" name="mileage" type="number" min="0" step="1"></label>
+          <label class="trip-field">Service provider<input id="serviceProvider" name="provider" maxlength="120" placeholder="Owner or workshop"></label>
+          <label class="trip-field">Cost<input id="serviceCost" name="cost" type="number" min="0" step="0.01" placeholder="Optional"></label>
+          <label class="trip-field trip-field-wide">Notes<textarea id="serviceNotes" name="notes" maxlength="2000" placeholder="Parts, findings and follow-up work"></textarea></label>
+          <div class="trip-form-actions trip-field-wide">
+            <button class="secondary-btn" type="button" data-service-cancel>Cancel</button>
+            <button class="primary-btn" type="submit">Save record</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="packingListDialog" class="detail-dialog trip-dialog">
       <form id="packingListForm">
         <div class="dialog-head">
@@ -376,7 +407,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=4.8.0-packing"></script>
+  <script src="assets/js/app-v4.js?v=4.9.0-maintenance"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

@@ -1,5 +1,5 @@
-const CACHE='knaus-companion-v4-8-0-packing';
-const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css?v=4.8.0-packing','./assets/js/app-v4.js?v=4.8.0-packing','./data/build.json','./data/touring_operations.json','./data/packing_templates.json'];
+const CACHE='knaus-companion-v4-9-0-maintenance';
+const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css?v=4.9.0-maintenance','./assets/js/app-v4.js?v=4.9.0-maintenance','./data/build.json','./data/touring_operations.json','./data/packing_templates.json','./data/maintenance_tasks.json'];
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting()});
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

@@ -1,6 +1,6 @@
 {
-  "version": "4.8.0",
-  "releaseName": "Packing Planner",
+  "version": "4.9.0",
+  "releaseName": "Maintenance Scheduler",
   "buildDate": "2026-07-23",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -73,7 +73,11 @@
     "Offline packing lists linked to touring journal trips",
     "Reusable weekend, off-grid and winter packing templates",
     "Quantity, packed-state and estimated-weight tracking",
-    "Configurable packing allowance with payload warning"
+    "Configurable packing allowance with payload warning",
+    "Calendar and mileage-based maintenance scheduling",
+    "Overdue, due-soon, upcoming and baseline status filters",
+    "Task completion captured directly into service history",
+    "Provider, cost, mileage and service-note records"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

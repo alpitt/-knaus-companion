@@ -1,5 +1,5 @@
 
-const APP_VERSION="4.8.0";
+const APP_VERSION="4.9.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -25,6 +25,7 @@ let editingTripId=null;
 let editingCampsiteId=null;
 let activePackingListId=null;
 let editingPackingItemId=null;
+let maintenanceFilter="all";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -130,11 +131,73 @@ function renderLibrary(){
 function renderMaintenance(){
   const logs=state.logs||[];
   const tasks=DATA.maintenanceTasks||[];
+  const scheduled=tasks.map(task=>maintenanceTaskStatus(task));
+  const counts={overdue:scheduled.filter(item=>item.status==="overdue").length,soon:scheduled.filter(item=>item.status==="soon").length,baseline:scheduled.filter(item=>item.status==="baseline").length};
   $("#maintenanceSummary").innerHTML=[
-    [logs.length,"Service records"],[tasks.length,"Maintenance tasks"],[state.currentMileage||0,"Current km"]
+    [counts.overdue,"Overdue"],[counts.soon,"Due soon"],[logs.length,"Service records"],[state.currentMileage||0,"Current km"]
   ].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
-  const items=logs.map(x=>({type:"service record",title:x.title||x.category||"Completed work",text:JSON.stringify(x)}));
-  renderResults("#maintenanceList",items,"No service records have been added yet.");
+  $("#maintenanceMileage").value=state.currentMileage||"";
+  const filters=[["all","All"],["overdue","Overdue"],["soon","Due soon"],["upcoming","Upcoming"],["baseline","Set baseline"]];
+  $("#maintenanceFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${maintenanceFilter===id?"active":""}" data-maintenance-filter="${id}">${label}</button>`).join("");
+  const visible=scheduled.filter(item=>maintenanceFilter==="all"||item.status===maintenanceFilter);
+  $("#maintenanceList").innerHTML=visible.length?visible.map(item=>{
+    const task=item.task;
+    return `<article class="panel maintenance-card status-${item.status}">
+      <div class="maintenance-card-head"><div><span class="maintenance-status">${esc(item.label)}</span><h2>${esc(task.name||task.title)}</h2><p>${esc(task.category||task.system||"Vehicle")}</p></div><span aria-hidden="true">${diagnosticIcon(task.system)}</span></div>
+      <div class="maintenance-due">${item.dueDate?`<div><span>Due date</span><strong>${esc(formatTripDate(item.dueDate))}</strong></div>`:""}${item.dueMileage!==null?`<div><span>Due mileage</span><strong>${item.dueMileage.toLocaleString()} km</strong></div>`:""}${item.status==="baseline"?'<div><span>Schedule</span><strong>Complete once to start</strong></div>':""}</div>
+      <p class="maintenance-interval">${esc(maintenanceInterval(task))}</p>
+      <div class="trip-card-actions"><button class="primary-btn" data-maintenance-complete="${esc(task.id)}">Record completion</button>${task.chapter?`<button class="secondary-btn" data-chapter-nav="${Number(task.chapter)}">Chapter ${Number(task.chapter)}</button>`:""}</div>
+    </article>`;
+  }).join(""):'<article class="panel"><h2>No tasks in this view</h2><p>Choose another status filter.</p></article>';
+  $("#serviceHistory").innerHTML=logs.length?logs.map((record,index)=>`<button class="panel service-record" data-service-record="${index}"><span class="meta">${esc(formatTripDate(record.date))}${record.mileage!==null&&record.mileage!==undefined&&record.mileage!==""?` • ${Number(record.mileage).toLocaleString()} km`:""}</span><strong>${esc(record.title||"Completed work")}</strong><span>${esc(record.provider||"Provider not recorded")}</span></button>`).join(""):'<article class="panel"><p>No service records have been added yet.</p></article>';
+}
+function addMonths(dateValue,months){
+  const date=new Date(`${dateValue}T00:00:00Z`),day=date.getUTCDate();
+  date.setUTCDate(1);date.setUTCMonth(date.getUTCMonth()+Number(months));const last=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth()+1,0)).getUTCDate();date.setUTCDate(Math.min(day,last));
+  return date.toISOString().slice(0,10);
+}
+function maintenanceInterval(task){
+  const parts=[];if(Number(task.intervalMonths))parts.push(`every ${Number(task.intervalMonths)} months`);if(Number(task.intervalKm))parts.push(`every ${Number(task.intervalKm).toLocaleString()} km`);
+  return parts.length?parts.join(" or "):"Inspect as required";
+}
+function maintenanceTaskStatus(task){
+  const record=(state.logs||[]).filter(item=>item.taskId===task.id).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")))[0];
+  if(!record)return {task,status:"baseline",label:"Baseline needed",dueDate:null,dueMileage:null};
+  const dueDate=Number(task.intervalMonths)&&record.date?addMonths(record.date,task.intervalMonths):null;
+  const mileage=record.mileage===""||record.mileage===null||record.mileage===undefined?null:Number(record.mileage);
+  const dueMileage=Number(task.intervalKm)&&mileage!==null?mileage+Number(task.intervalKm):null;
+  const today=new Date(`${new Date().toISOString().slice(0,10)}T00:00:00Z`);
+  const days=dueDate?Math.ceil((new Date(`${dueDate}T00:00:00Z`)-today)/86400000):null;
+  const km=dueMileage!==null?dueMileage-(Number(state.currentMileage)||0):null;
+  if((days!==null&&days<0)||(km!==null&&km<0))return {task,status:"overdue",label:"Overdue",dueDate,dueMileage};
+  if((days!==null&&days<=30)||(km!==null&&km<=1000))return {task,status:"soon",label:"Due soon",dueDate,dueMileage};
+  return {task,status:"upcoming",label:"Upcoming",dueDate,dueMileage};
+}
+function openServiceRecord(taskId=""){
+  const task=DATA.maintenanceTasks.find(item=>item.id===taskId);
+  $("#serviceRecordDialogTitle").textContent=task?"Record task completion":"Add service record";
+  $("#serviceTaskId").value=task?.id||"";
+  $("#serviceTitle").value=task?.name||"";
+  $("#serviceDate").value=new Date().toISOString().slice(0,10);
+  $("#serviceMileage").value=state.currentMileage||"";
+  $("#serviceProvider").value="";$("#serviceCost").value="";$("#serviceNotes").value="";
+  const dialog=$("#serviceRecordDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+  setTimeout(()=>$("#serviceTitle").focus(),0);
+}
+function closeServiceRecord(){
+  const dialog=$("#serviceRecordDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");
+}
+function saveServiceRecord(event){
+  event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget));
+  const mileage=values.mileage===""?null:Number(values.mileage),cost=values.cost===""?null:Number(values.cost);
+  const record={id:`service-${Date.now()}`,taskId:values.taskId||"",title:values.title.trim(),date:values.date,mileage,provider:values.provider.trim(),cost,notes:values.notes.trim(),createdAt:new Date().toISOString()};
+  state.logs=[record,...(state.logs||[])];if(mileage!==null&&mileage>(Number(state.currentMileage)||0))state.currentMileage=mileage;
+  saveState();closeServiceRecord();renderMaintenance();renderHome();toast("Service record saved");
+}
+function openServiceRecordDetail(index){
+  const record=(state.logs||[])[Number(index)];if(!record)return;
+  const task=DATA.maintenanceTasks.find(item=>item.id===record.taskId);
+  showDialog("Service record",record.title,`<div class="diagnostic-meta"><span>${esc(formatTripDate(record.date))}</span>${record.mileage!==null&&record.mileage!==undefined&&record.mileage!==""?`<span>${Number(record.mileage).toLocaleString()} km</span>`:""}${record.cost!==null&&record.cost!==undefined&&record.cost!==""?`<span>€${Number(record.cost).toFixed(2)}</span>`:""}</div><dl class="component-facts"><div><dt>Provider</dt><dd>${esc(record.provider||"Not recorded")}</dd></div><div><dt>Schedule</dt><dd>${esc(task?maintenanceInterval(task):"General service record")}</dd></div></dl>${record.notes?`<section class="detail-section"><h3>Notes</h3><p>${esc(record.notes)}</p></section>`:""}${task?.chapter?`<div class="diagnostic-link-row"><button class="secondary-btn" data-chapter-nav="${Number(task.chapter)}">Chapter ${Number(task.chapter)}</button></div>`:""}`);
 }
 function diagnosticSystems(){
   return [...new Set(DATA.diagnostics.flatMap(x=>Array.isArray(x.systems)?x.systems:[]).map(x=>String(x).toLowerCase()))].sort();
@@ -1145,6 +1208,10 @@ document.addEventListener("click",e=>{
   const diagnosticBegin=e.target.closest("[data-diagnostic-begin]");if(diagnosticBegin)beginDiagnostic(diagnosticBegin.dataset.diagnosticBegin);
   const diagnosticAnswer=e.target.closest("[data-diagnostic-answer]");if(diagnosticAnswer)answerDiagnostic(diagnosticAnswer.dataset.diagnosticAnswer);
   const diagnosticFilterButton=e.target.closest("[data-diagnostic-filter]");if(diagnosticFilterButton){diagnosticFilter=diagnosticFilterButton.dataset.diagnosticFilter;renderDiagnostics()}
+  const maintenanceFilterButton=e.target.closest("[data-maintenance-filter]");if(maintenanceFilterButton){maintenanceFilter=maintenanceFilterButton.dataset.maintenanceFilter;renderMaintenance()}
+  const maintenanceComplete=e.target.closest("[data-maintenance-complete]");if(maintenanceComplete)openServiceRecord(maintenanceComplete.dataset.maintenanceComplete);
+  const serviceRecord=e.target.closest("[data-service-record]");if(serviceRecord)openServiceRecordDetail(serviceRecord.dataset.serviceRecord);
+  if(e.target.closest("[data-service-cancel]"))closeServiceRecord();
   const electricalFilterButton=e.target.closest("[data-electrical-filter]");if(electricalFilterButton){electricalFilter=electricalFilterButton.dataset.electricalFilter;const first=electricalComponents()[0];if(first)activeElectricalComponent=first.id;renderElectrical()}
   const electricalComponent=e.target.closest("[data-electrical-component]");if(electricalComponent){activeElectricalComponent=electricalComponent.dataset.electricalComponent;renderElectrical()}
   const fuseBoxButton=e.target.closest("[data-fuse-box]");if(fuseBoxButton){fuseBoxFilter=fuseBoxButton.dataset.fuseBox;renderFuses()}
@@ -1167,11 +1234,9 @@ $("#themeButton").onclick=()=>{state.theme=state.theme==="dark"?"light":"dark";s
 $("#assistantAsk").onclick=askAssistant;$("#assistantInput").addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Enter")askAssistant()});
 $("#runSearch").onclick=()=>renderResults("#searchResults",searchDocs($("#globalSearch").value));
 $("#globalSearch").addEventListener("keydown",e=>{if(e.key==="Enter")$("#runSearch").click()});
-$("#addServiceRecord").onclick=()=>{
-  const title=prompt("What work was completed?");if(!title)return;
-  const mileage=prompt("Mileage (optional)","");
-  state.logs.unshift({title,mileage,date:new Date().toISOString().slice(0,10)});saveState();renderMaintenance();renderHome();toast("Service record added");
-};
+$("#addServiceRecord").onclick=()=>openServiceRecord();
+$("#serviceRecordForm").addEventListener("submit",saveServiceRecord);
+$("#saveMaintenanceMileage").onclick=()=>{const value=Number($("#maintenanceMileage").value);if(!Number.isFinite(value)||value<0){toast("Enter a valid mileage");return}state.currentMileage=Math.round(value);saveState();renderMaintenance();renderHome();toast("Mileage updated")};
 $("#exportBackup").onclick=exportBackup;
 $("#importBackup").onchange=async e=>{try{if(e.target.files[0])await restoreBackup(e.target.files[0])}catch(err){toast(err.message)}finally{e.target.value=""}};
 $("#clearCache").onclick=clearCache;
@@ -1183,7 +1248,7 @@ $("#campsiteSearch").addEventListener("input",renderCampsites);
 $("#addPackingList").onclick=openPackingListEditor;
 $("#packingListForm").addEventListener("submit",createPackingList);
 $("#packingItemForm").addEventListener("submit",savePackingItem);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 
