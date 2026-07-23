@@ -73,288 +73,693 @@ function assistantIndex(){
   const docs=[];
   DATA.chapters.forEach(c=>docs.push({type:"chapter",title:`Chapter ${c.n}. ${c.title}`,text:`${c.title} ${c.summary||""}`,chapterNumber:c.n,raw:c}));
   DATA.pages.forEach(p=>docs.push({type:"manual",title:`Page ${p.page}. ${p.title||"Official manual"}`,text:p.text||"",page:Number(p.page),raw:p}));
-  DATA.diagnostics.forEach(d=>docs.push({type:"diagnostic",title:d.title||"Diagnostic",te…10935 tokens truncated…38px rgba(0,0,0,.28);
+  DATA.diagnostics.forEach(d=>docs.push({type:"diagnostic",title:d.title||"Diagnostic",text:JSON.stringify(d)}));
+  DATA.maintenanceTasks.forEach(d=>docs.push({type:"maintenance",title:d.title||d.name||"Maintenance task",text:JSON.stringify(d)}));
+  (state.logs||[]).forEach(d=>docs.push({type:"service record",title:d.title||d.category||"Service record",text:JSON.stringify(d)}));
+  (state.faults||[]).forEach(d=>docs.push({type:"fault",title:d.title||"Fault record",text:JSON.stringify(d)}));
+  return docs;
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  line-height:1.55;
-  -webkit-font-smoothing:antialiased;
+function searchDocs(q){
+  const terms=q.toLowerCase().split(/\s+/).filter(x=>x.length>2);
+  return assistantIndex().map(d=>{const hay=(d.title+" "+d.text).toLowerCase();return {...d,score:terms.reduce((n,t)=>n+(hay.includes(t)?1:0),0)}})
+    .filter(d=>d.score>0).sort((a,b)=>b.score-a.score).slice(0,30);
 }
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-.skip-link{position:fixed;left:12px;top:-80px;z-index:9999;background:var(--panel);color:var(--text);padding:10px 14px;border-radius:10px}
-.skip-link:focus{top:12px}
-.app-shell{min-height:100dvh}
-.topbar{
-  position:sticky;top:0;z-index:60;
-  display:flex;align-items:center;gap:12px;
-  min-height:66px;padding:10px 14px;
-  background:color-mix(in srgb,var(--panel) 92%,transparent);
-  border-bottom:1px solid var(--line);
-  backdrop-filter:blur(16px);
+function renderResults(target,items,empty="No matching results."){
+  const root=$(target);
+  if(!items.length){root.innerHTML=`<article class="panel"><p>${esc(empty)}</p></article>`;return}
+  root.innerHTML=items.map((x,i)=>`<article class="result-card" data-result="${i}" tabindex="0" role="button"><span class="meta">${esc(x.type)}</span><h3>${esc(x.title)}</h3><p>${esc(String(x.text||"").slice(0,280))}</p><span class="open-hint">Tap to open</span></article>`).join("");
+  root.querySelectorAll("[data-result]").forEach((el,i)=>{el.onclick=()=>openDetail(items[i]);el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openDetail(items[i])}}});
 }
-.brand{display:flex;flex-direction:column;line-height:1.1;flex:1}
-.brand strong{font-size:1rem}
-.brand span{font-size:.72rem;color:var(--muted);margin-top:4px}
-.icon-btn{
-  width:44px;height:44px;border:1px solid var(--line);border-radius:13px;
-  background:var(--panel);color:var(--text);font-size:1.25rem;
+function renderAssistant(){
+  const prompts=DATA.assistantPrompts.length?DATA.assistantPrompts:[
+    {prompt:"Where is the boiler drain valve?"},{prompt:"What maintenance is due?"},{prompt:"Show open faults"},{prompt:"What should I check before leaving?"}
+  ];
+  $("#assistantPrompts").innerHTML=prompts.slice(0,8).map(p=>`<button class="chip" data-prompt="${esc(p.prompt)}">${esc(p.prompt)}</button>`).join("");
 }
-.drawer{
-  position:fixed;inset:0 auto 0 0;z-index:90;width:min(86vw,360px);
-  transform:translateX(-105%);transition:transform .22s ease;
-  background:var(--panel);border-right:1px solid var(--line);
-  display:flex;flex-direction:column;box-shadow:24px 0 60px rgba(0,0,0,.24);
+function askAssistant(){
+  const q=$("#assistantInput").value.trim();if(!q)return;
+  const results=searchDocs(q);renderResults("#assistantResults",results,"No strong local match was found.");
+  state.assistantHistory.unshift({question:q,at:new Date().toISOString()});state.assistantHistory=state.assistantHistory.slice(0,20);saveState();
 }
-.drawer.open{transform:translateX(0)}
-.drawer-head{display:flex;justify-content:space-between;gap:12px;padding:18px;border-bottom:1px solid var(--line)}
-.drawer-head>div{display:flex;flex-direction:column}
-.drawer-head span{color:var(--muted);font-size:.82rem}
-.drawer nav{display:grid;gap:6px;padding:14px;overflow:auto}
-.drawer nav button{
-  min-height:48px;border:0;border-radius:13px;padding:12px 14px;text-align:left;
-  background:transparent;color:var(--text);font-weight:750;
+function renderLibrary(){
+  const list=libraryMode==="chapters"
+    ?DATA.chapters.map(c=>({type:"chapter",title:`Chapter ${c.n}. ${c.title}`,text:c.summary||"",chapterNumber:Number(c.n),raw:c}))
+    :DATA.pages.map(p=>({type:"manual",title:`Page ${p.page}. ${p.title||"Official manual"}`,text:String(p.text||"").replace(/\s+/g," ").trim(),page:Number(p.page),raw:p}));
+  renderResults("#libraryList",list);
 }
-.drawer nav button.active{background:var(--panel-2);box-shadow:inset 4px 0 0 var(--accent)}
-.drawer-foot{padding:14px;margin-top:auto;border-top:1px solid var(--line)}
-.scrim{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.38)}
-main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
-.screen{display:none}
-.screen.active{display:block}
-.hero{
-  background:linear-gradient(135deg,var(--brand),#21566f);
-  color:#fff;border-radius:26px;padding:clamp(24px,5vw,48px);
-  box-shadow:var(--shadow);overflow:hidden;position:relative;
+function renderMaintenance(){
+  const logs=state.logs||[];
+  const tasks=DATA.maintenanceTasks||[];
+  $("#maintenanceSummary").innerHTML=[
+    [logs.length,"Service records"],[tasks.length,"Maintenance tasks"],[state.currentMileage||0,"Current km"]
+  ].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  const items=logs.map(x=>({type:"service record",title:x.title||x.category||"Completed work",text:JSON.stringify(x)}));
+  renderResults("#maintenanceList",items,"No service records have been added yet.");
 }
-.hero:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-70px;top:-80px;background:rgba(255,255,255,.08)}
-.hero h1,.page-head h1{margin:.3rem 0 .7rem;font-size:clamp(2rem,6vw,3.6rem);line-height:1.03;letter-spacing:-.045em}
-.hero p{max-width:760px;font-size:1.05rem;color:rgba(255,255,255,.82)}
-.eyebrow{text-transform:uppercase;letter-spacing:.13em;font-weight:850;font-size:.72rem;color:var(--accent)}
-.hero .eyebrow{color:#ffd08f}
-.hero-actions,.toolbar,.stack,.search-bar,.assistant-box{display:flex;gap:10px;flex-wrap:wrap}
-.primary-btn,.secondary-btn,.danger-btn,.tab,.chip{
-  min-height:46px;border-radius:13px;padding:11px 15px;font-weight:800;border:1px solid transparent;
+function diagnosticSystems(){
+  return [...new Set(DATA.diagnostics.flatMap(x=>Array.isArray(x.systems)?x.systems:[]).map(x=>String(x).toLowerCase()))].sort();
 }
-.primary-btn{background:var(--accent);color:white}
-.secondary-btn{background:var(--panel);color:var(--text);border-color:var(--line)}
-.danger-btn{background:transparent;color:var(--danger);border-color:var(--danger)}
-.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:18px 0}
-.stat-card,.panel,.result-card,.module-card{
-  background:var(--panel);border:1px solid var(--line);border-radius:19px;
-  box-shadow:var(--shadow);
+function diagnosticIcon(system){
+  return ({electrical:"⚡",water:"💧",gas:"🔥",heating:"♨️",appliance:"🧊",body:"🚐",camera:"📷"}[String(system||"").toLowerCase()]||"🧰");
 }
-.stat-card{padding:18px}
-.stat-card strong{display:block;font-size:1.8rem;letter-spacing:-.03em}
-.stat-card span{color:var(--muted);font-weight:700}
-.section-block{margin-top:28px}
-.section-heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:14px}
-.section-heading h2,.panel h2{margin:.25rem 0 0}
-.module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.module-card{padding:20px;text-align:left;color:var(--text)}
-.module-card h3{margin:.2rem 0 .45rem}
-.module-card p{margin:0;color:var(--muted)}
-.module-card .icon{font-size:1.8rem}
-.page-head{margin:6px 0 20px}
-.page-head p{max-width:760px;color:var(--muted);font-size:1.03rem}
-.assistant-box textarea{
-  min-height:120px;flex:1;min-width:240px;resize:vertical;
-  background:var(--panel);color:var(--text);border:1px solid var(--line);
-  border-radius:16px;padding:15px;font-size:16px;
+function renderDiagnostics(){
+  const query=($("#diagnosticSearch")?.value||"").trim().toLowerCase();
+  const systems=diagnosticSystems();
+  $("#diagnosticFilters").innerHTML=[
+    `<button class="chip ${diagnosticFilter==="all"?"active":""}" data-diagnostic-filter="all">All</button>`,
+    ...systems.map(s=>`<button class="chip ${diagnosticFilter===s?"active":""}" data-diagnostic-filter="${esc(s)}">${diagnosticIcon(s)} ${esc(s[0].toUpperCase()+s.slice(1))}</button>`)
+  ].join("");
+
+  const filtered=DATA.diagnostics.filter(x=>{
+    const matchesSystem=diagnosticFilter==="all"||(x.systems||[]).map(s=>String(s).toLowerCase()).includes(diagnosticFilter);
+    const hay=[x.title,x.description,x.summary,(x.keywords||[]).join(" "),(x.systems||[]).join(" ")].join(" ").toLowerCase();
+    return matchesSystem&&(!query||hay.includes(query));
+  });
+
+  $("#diagnosticSummary").innerHTML=[
+    [DATA.diagnostics.length,"Guided diagnostics"],
+    [systems.length,"Vehicle systems"],
+    [(state.diagnosticReports||[]).length,"Saved reports"]
+  ].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+
+  if(!filtered.length){
+    $("#diagnosticList").innerHTML=`<article class="panel"><h2>No matching diagnostic</h2><p>Try a broader symptom or choose All systems.</p></article>`;
+    return;
+  }
+
+  $("#diagnosticList").innerHTML=filtered.map(x=>{
+    const system=(x.systems||[])[0]||"vehicle";
+    const safety=Array.isArray(x.safety)&&x.safety.length;
+    return `<article class="diagnostic-card">
+      <div class="diagnostic-card-icon" aria-hidden="true">${diagnosticIcon(system)}</div>
+      <div class="diagnostic-card-body">
+        <span class="meta">${esc((x.systems||["Vehicle"]).join(" • "))}</span>
+        <h2>${esc(x.title||"Diagnostic")}</h2>
+        <p>${esc(x.summary||x.description||`A guided ${x.steps?.length||0}-check decision tree.`)}</p>
+        <div class="diagnostic-meta">
+          ${x.difficulty?`<span>${esc(x.difficulty)}</span>`:""}
+          ${x.time?`<span>${esc(x.time)}</span>`:""}
+          <span>${x.steps?.length||0} checks</span>
+          ${safety?`<span>Safety guidance</span>`:""}
+        </div>
+        <button class="primary-btn diagnostic-start" data-diagnostic-start="${esc(x.id)}">Start diagnosis</button>
+      </div>
+    </article>`;
+  }).join("");
 }
-.search-bar input{
-  flex:1;min-width:220px;min-height:48px;border:1px solid var(--line);
-  background:var(--panel);color:var(--text);border-radius:14px;padding:0 15px;font-size:16px;
-}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-.chip{background:var(--panel-2);color:var(--text);border-color:var(--line);font-size:.9rem}
-.result-card{padding:18px;margin:12px 0}
-.result-card h3{margin:0 0 6px}
-.result-card p{color:var(--muted);margin:.25rem 0}
-.meta{font-size:.78rem;color:var(--accent);font-weight:850;text-transform:uppercase;letter-spacing:.08em}
-.tab-row{display:flex;gap:8px;overflow:auto;margin:0 0 14px}
-.tab{background:var(--panel);color:var(--text);border-color:var(--line);white-space:nowrap}
-.tab.active{background:var(--brand);color:white}
-.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.panel{padding:20px}
-.file-label{display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.file-label input{position:absolute;inset:0;opacity:0}
-.bottom-nav{
-  position:fixed;left:0;right:0;bottom:0;z-index:55;
-  display:grid;grid-template-columns:repeat(5,1fr);gap:4px;
-  padding:7px 7px max(7px,env(safe-area-inset-bottom));
-  background:color-mix(in srgb,var(--panel) 94%,transparent);
-  border-top:1px solid var(--line);backdrop-filter:blur(16px);
-}
-.bottom-nav button{
-  min-height:50px;border:0;border-radius:12px;background:transparent;color:var(--muted);
-  font-size:.72rem;font-weight:800;
-}
-.bottom-nav button.active{background:var(--panel-2);color:var(--text)}
-.toast-host{position:fixed;right:14px;bottom:82px;z-index:110;display:grid;gap:8px}
-.toast{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:13px;padding:12px 14px;box-shadow:var(--shadow)}
-@media(min-width:900px){
-  .topbar{padding-inline:24px}
-  main{padding-top:30px}
-  .drawer{position:fixed;transform:none;width:260px;top:66px;box-shadow:none;z-index:40}
-  .drawer-head,.drawer-foot,.scrim,#menuButton{display:none!important}
-  .drawer nav{padding-top:20px}
-  main{margin-left:260px;width:calc(100% - 260px);max-width:none;padding-left:28px;padding-right:28px}
-  .bottom-nav{display:none}
-}
-@media(max-width:600px){
-  main{padding-inline:12px}
-  .hero{border-radius:20px}
-  .hero-actions,.toolbar,.search-bar,.assistant-box,.stack{display:grid;grid-template-columns:1fr}
-  .primary-btn,.secondary-btn,.danger-btn{width:100%}
-  .status-grid{grid-template-columns:1fr 1fr}
-  .stat-card strong{font-size:1.5rem}
+function renderTouring(){
+  const cards=[
+    ["departure","✅","Departure checks","Before leaving home or a campsite"],
+    ["packing","🎒","Packing","Templates and essential equipment"],
+    ["campsites","🏕️","Campsites","Saved campsite information"],
+    ["travel-log","📝","Travel log","Record trips and useful notes"]
+  ];
+  $("#touringCards").innerHTML=cards.map(([id,icon,title,desc])=>`<button class="module-card" data-touring="${id}"><div class="icon">${icon}</div><h3>${title}</h3><p>${desc}</p></button>`).join("");
 }
 
-.detail-dialog{width:min(760px,calc(100% - 20px));max-height:88dvh;padding:0;border:1px solid var(--line);border-radius:22px;background:var(--panel);color:var(--text);box-shadow:0 24px 80px rgba(0,0,0,.35)}
-.detail-dialog::backdrop{background:rgba(0,0,0,.55)}
-.dialog-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
-.dialog-head h2{margin:.25rem 0 0}
-.dialog-body{padding:18px}
-.detail-section{margin:18px 0}.detail-section h3{margin:0 0 8px}.detail-section li{margin:.6rem 0}
-.diagnostic-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.diagnostic-meta span{padding:6px 10px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);font-size:.8rem;font-weight:800}
-.open-hint{display:inline-block;margin-top:8px;color:var(--accent);font-size:.78rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
-.result-card[role="button"]{cursor:pointer}
+function detailList(title,items){
+  if(!Array.isArray(items)||!items.length)return "";
+  return `<section class="detail-section"><h3>${esc(title)}</h3><ol>${items.map(x=>`<li>${esc(typeof x==="string"?x:(x.step||x.text||x.title||x.name||JSON.stringify(x)))}</li>`).join("")}</ol></section>`;
+}
+function showDialog(type,title,html,wide=false){
+  $("#detailType").textContent=type||"Details";
+  $("#detailTitle").textContent=title||"Details";
+  $("#detailBody").innerHTML=html||"<p>No additional details are available.</p>";
+  $("#detailDialog").classList.toggle("reader-dialog",wide);
+  const d=$("#detailDialog");
+  if(d.open)return;
+  if(typeof d.showModal==="function")d.showModal();else d.setAttribute("open","");
+}
+async function openChapter(number){
+  const n=Number(number);
+  activeChapterNumber=n;
+  showDialog("Chapter",`Chapter ${n}`,'<div class="reader-loading">Loading complete chapter…</div>',true);
+  const path=`chapters/${String(n).padStart(2,"0")}.json`;
+  const chapter=await loadJSON(path,null);
+  if(!chapter){
+    $("#detailTitle").textContent=`Chapter ${n}`;
+    $("#detailBody").innerHTML='<div class="data-warning">The complete chapter could not be loaded.</div>';
+    return;
+  }
+  $("#detailTitle").textContent=`Chapter ${chapter.n}. ${chapter.title}`;
+  const official=chapter.officialPage?`<button class="secondary-btn chapter-manual-link" data-manual-page="${Number(chapter.officialPage)}">Open official manual page ${Number(chapter.officialPage)}</button>`:"";
+  $("#detailBody").innerHTML=`<div class="chapter-reader">
+    <div class="chapter-summary">${esc(chapter.summary||"")}</div>
+    ${official}
+    <div class="chapter-content">${sanitizeTrustedHtml(chapter.content||"")}</div>
+    <div class="reader-footer">
+      <button class="secondary-btn" data-chapter-nav="${Math.max(1,n-1)}" ${n<=1?"disabled":""}>Previous chapter</button>
+      <span>Chapter ${n} of ${DATA.chapters.length}</span>
+      <button class="secondary-btn" data-chapter-nav="${Math.min(DATA.chapters.length,n+1)}" ${n>=DATA.chapters.length?"disabled":""}>Next chapter</button>
+    </div>
+  </div>`;
+}
+function manualReaderHtml(page){
+  const p=pageMeta(page);
+  const bookmarked=(state.manualBookmarks||[]).includes(Number(page));
+  const cleanText=String(p.text||"").replace(/[\\u0000-\\u001f\\u007f]/g," ").replace(/\\s+\\n/g,"\\n").trim();
+  return `<div class="manual-reader">
+    <div class="manual-toolbar">
+      <button class="secondary-btn" data-manual-nav="${Math.max(1,page-1)}" ${page<=1?"disabled":""}>‹ Previous</button>
+      <label class="page-jump">Page <input id="manualPageInput" type="number" min="1" max="${DATA.pages.length}" value="${page}" inputmode="numeric"> of ${DATA.pages.length}</label>
+      <button class="secondary-btn" data-manual-nav="${Math.min(DATA.pages.length,page+1)}" ${page>=DATA.pages.length?"disabled":""}>Next ›</button>
+    </div>
+    <div class="manual-actions">
+      <button class="secondary-btn" id="manualZoomOut" aria-label="Zoom out">−</button>
+      <button class="secondary-btn" id="manualZoomReset">Fit</button>
+      <button class="secondary-btn" id="manualZoomIn" aria-label="Zoom in">+</button>
+      <button class="secondary-btn" id="manualOcrToggle">${state.manualOcrVisible?"Hide":"Show"} OCR text</button>
+      <button class="secondary-btn" id="manualBookmarkToggle">${bookmarked?"★ Bookmarked":"☆ Bookmark"}</button>
+    </div>
+    <div class="manual-page-stage" id="manualPageStage" aria-label="Manual page viewer. Pinch to zoom and drag to move.">
+      <div class="manual-page-canvas" id="manualPageCanvas">
+        <img id="manualPageImage" src="manual/pages/${padPage(page)}.jpg" alt="Official Knaus manual page ${page}" draggable="false">
+      </div>
+    </div>
+    <p class="manual-gesture-hint">Pinch to zoom • Drag to move • Double-tap to zoom</p>
+    <section class="manual-ocr" id="manualOcrPanel" ${state.manualOcrVisible?"":"hidden"}>
+      <h3>${esc(p.title||`Official manual page ${page}`)}</h3>
+      <pre>${esc(cleanText||"No OCR text is available for this page.")}</pre>
+    </section>
+    <div class="reader-footer">
+      <button class="secondary-btn" data-manual-nav="${Math.max(1,page-1)}" ${page<=1?"disabled":""}>Previous page</button>
+      <span>Official manual page ${page}</span>
+      <button class="secondary-btn" data-manual-nav="${Math.min(DATA.pages.length,page+1)}" ${page>=DATA.pages.length?"disabled":""}>Next page</button>
+    </div>
+  </div>`;
+}
+function wireManualReader(){
+  let scale=1;
+  const minScale=1;
+  const maxScale=4;
+  const image=$("#manualPageImage");
+  const stage=$("#manualPageStage");
+  const canvas=$("#manualPageCanvas");
+  const pointers=new Map();
+  let baseWidth=0;
+  let pinch=null;
+  let drag=null;
+  let lastTap=0;
 
-/* v4.2 full chapter and official-manual readers */
-.reader-dialog{width:min(1100px,calc(100% - 16px));max-height:94dvh}
-.reader-dialog .dialog-body{padding:0;overflow:auto}
-.reader-loading{padding:32px;text-align:center;color:var(--muted)}
-.chapter-reader{padding:clamp(16px,4vw,34px)}
-.chapter-summary{font-size:1.08rem;color:var(--muted);padding:16px;border-radius:14px;background:var(--panel-2);margin-bottom:14px}
-.chapter-manual-link{margin-bottom:20px}
-.chapter-content{font-size:1rem;line-height:1.7}
-.chapter-content h1,.chapter-content h2,.chapter-content h3{line-height:1.2;letter-spacing:-.025em;margin-top:1.5em}
-.chapter-content table{width:100%;border-collapse:collapse;display:block;overflow:auto}
-.chapter-content th,.chapter-content td{border:1px solid var(--line);padding:9px;text-align:left;min-width:110px}
-.chapter-content img{max-width:100%;height:auto}
-.chapter-content .chapter-callout,.chapter-content .note,.chapter-content blockquote{padding:14px 16px;border-left:5px solid var(--accent);background:var(--panel-2);border-radius:12px}
-.chapter-content button{min-height:44px;border-radius:12px;padding:9px 13px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-weight:800}
-.manual-reader{padding:14px}
-.manual-toolbar,.manual-actions,.reader-footer{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
-.manual-toolbar{position:sticky;top:0;z-index:4;padding:10px;background:color-mix(in srgb,var(--panel) 94%,transparent);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
-.manual-actions{padding:10px 0}
-.page-jump{display:flex;align-items:center;gap:7px;font-weight:800}
-.page-jump input{width:74px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);padding:6px;text-align:center}
-.manual-page-stage{overflow:auto;position:relative;background:#d7dde0;border-radius:14px;height:min(68dvh,760px);min-height:360px;padding:12px;touch-action:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none}
-.manual-page-stage:active{cursor:grabbing}
-.manual-page-canvas{width:min(100%,900px);min-width:100%;margin:0 auto;transform-origin:top left}
-.manual-page-canvas img{display:block;width:100%;height:auto;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.22);background:white;-webkit-user-drag:none}
-.manual-page-stage.zoomed .manual-page-canvas{min-width:0;margin:0}
-.manual-gesture-hint{text-align:center;color:var(--muted);font-size:.86rem;margin:8px 0 2px}
-.manual-ocr{margin-top:14px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-.manual-ocr pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;line-height:1.55;color:var(--text);margin:0}
-.reader-footer{padding:20px 0 8px;color:var(--muted);font-weight:800}
-@media(max-width:600px){
-  .reader-dialog{width:calc(100% - 8px);max-height:96dvh}
-  .reader-dialog .dialog-head{padding:14px}
-  .manual-reader{padding:8px}
-  .manual-toolbar{display:grid;grid-template-columns:1fr auto 1fr}
-  .manual-toolbar .secondary-btn{width:auto}
-  .manual-actions{display:grid;grid-template-columns:repeat(3,1fr)}
-  .manual-actions #manualOcrToggle,.manual-actions #manualBookmarkToggle{grid-column:span 3}
-  .reader-footer{display:grid;grid-template-columns:1fr;text-align:center}
+  const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+  const fitWidth=()=>{
+    const available=Math.max(240,stage.clientWidth-24);
+    baseWidth=Math.min(900,available);
+    canvas.style.width=`${baseWidth*scale}px`;
+  };
+  const applyScale=(next,anchor)=>{
+    const oldScale=scale;
+    scale=clamp(next,minScale,maxScale);
+    const point=anchor||{x:stage.clientWidth/2,y:stage.clientHeight/2};
+    const contentX=(stage.scrollLeft+point.x)/oldScale;
+    const contentY=(stage.scrollTop+point.y)/oldScale;
+    canvas.style.width=`${baseWidth*scale}px`;
+    requestAnimationFrame(()=>{
+      stage.scrollLeft=contentX*scale-point.x;
+      stage.scrollTop=contentY*scale-point.y;
+      stage.classList.toggle("zoomed",scale>1.01);
+      $("#manualZoomReset").textContent=scale>1.01?`${Math.round(scale*100)}%`:"Fit";
+    });
+  };
+  const resetView=()=>{
+    scale=1;
+    fitWidth();
+    stage.scrollLeft=0;
+    stage.scrollTop=0;
+    stage.classList.remove("zoomed");
+    $("#manualZoomReset").textContent="Fit";
+  };
+  const midpoint=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+  const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+
+  image.addEventListener("load",resetView,{once:true});
+  if(image.complete)resetView();
+
+  $("#manualZoomIn").onclick=()=>applyScale(scale+.25);
+  $("#manualZoomOut").onclick=()=>applyScale(scale-.25);
+  $("#manualZoomReset").onclick=resetView;
+
+  stage.addEventListener("pointerdown",e=>{
+    if(e.pointerType==="mouse"&&e.button!==0)return;
+    stage.setPointerCapture?.(e.pointerId);
+    pointers.set(e.pointerId,{x:e.clientX-stage.getBoundingClientRect().left,y:e.clientY-stage.getBoundingClientRect().top});
+    if(pointers.size===1){
+      drag={
+        pointerId:e.pointerId,
+        x:e.clientX,
+        y:e.clientY,
+        scrollLeft:stage.scrollLeft,
+        scrollTop:stage.scrollTop
+      };
+    }else if(pointers.size===2){
+      const [a,b]=[...pointers.values()];
+      const mid=midpoint(a,b);
+      pinch={
+        distance:Math.max(1,distance(a,b)),
+        scale,
+        anchorX:(stage.scrollLeft+mid.x)/scale,
+        anchorY:(stage.scrollTop+mid.y)/scale
+      };
+      drag=null;
+    }
+    e.preventDefault();
+  });
+
+  stage.addEventListener("pointermove",e=>{
+    if(!pointers.has(e.pointerId))return;
+    const rect=stage.getBoundingClientRect();
+    pointers.set(e.pointerId,{x:e.clientX-rect.left,y:e.clientY-rect.top});
+    if(pointers.size>=2&&pinch){
+      const [a,b]=[...pointers.values()].slice(0,2);
+      const mid=midpoint(a,b);
+      const next=clamp(pinch.scale*(distance(a,b)/pinch.distance),minScale,maxScale);
+      scale=next;
+      canvas.style.width=`${baseWidth*scale}px`;
+      stage.scrollLeft=pinch.anchorX*scale-mid.x;
+      stage.scrollTop=pinch.anchorY*scale-mid.y;
+      stage.classList.toggle("zoomed",scale>1.01);
+      $("#manualZoomReset").textContent=scale>1.01?`${Math.round(scale*100)}%`:"Fit";
+    }else if(pointers.size===1&&drag&&drag.pointerId===e.pointerId){
+      stage.scrollLeft=drag.scrollLeft-(e.clientX-drag.x);
+      stage.scrollTop=drag.scrollTop-(e.clientY-drag.y);
+    }
+    e.preventDefault();
+  });
+
+  const endPointer=e=>{
+    pointers.delete(e.pointerId);
+    if(pointers.size<2)pinch=null;
+    if(pointers.size===1){
+      const [id]=pointers.keys();
+      const p=[...pointers.values()][0];
+      drag={pointerId:id,x:p.x+stage.getBoundingClientRect().left,y:p.y+stage.getBoundingClientRect().top,scrollLeft:stage.scrollLeft,scrollTop:stage.scrollTop};
+    }else if(pointers.size===0){
+      drag=null;
+    }
+  };
+  stage.addEventListener("pointerup",endPointer);
+  stage.addEventListener("pointercancel",endPointer);
+  stage.addEventListener("lostpointercapture",endPointer);
+
+  stage.addEventListener("dblclick",e=>{
+    const rect=stage.getBoundingClientRect();
+    applyScale(scale>1.01?1:2,{x:e.clientX-rect.left,y:e.clientY-rect.top});
+  });
+  stage.addEventListener("pointerup",e=>{
+    if(e.pointerType!=="touch")return;
+    const now=Date.now();
+    if(now-lastTap<320){
+      const rect=stage.getBoundingClientRect();
+      applyScale(scale>1.01?1:2,{x:e.clientX-rect.left,y:e.clientY-rect.top});
+      lastTap=0;
+    }else lastTap=now;
+  });
+
+  window.addEventListener("resize",()=>{
+    const previous=baseWidth;
+    fitWidth();
+    if(previous&&scale>1)canvas.style.width=`${baseWidth*scale}px`;
+  },{passive:true});
+
+  $("#manualOcrToggle").onclick=()=>{
+    state.manualOcrVisible=!state.manualOcrVisible;saveState();
+    $("#manualOcrPanel").hidden=!state.manualOcrVisible;
+    $("#manualOcrToggle").textContent=state.manualOcrVisible?"Hide OCR text":"Show OCR text";
+  };
+  $("#manualBookmarkToggle").onclick=()=>{
+    const set=new Set(state.manualBookmarks||[]);
+    set.has(activeManualPage)?set.delete(activeManualPage):set.add(activeManualPage);
+    state.manualBookmarks=[...set].sort((a,b)=>a-b);saveState();
+    $("#manualBookmarkToggle").textContent=set.has(activeManualPage)?"★ Bookmarked":"☆ Bookmark";
+    toast(set.has(activeManualPage)?"Page bookmarked":"Bookmark removed");
+  };
+  $("#manualPageInput").addEventListener("change",e=>openManualPage(Math.max(1,Math.min(DATA.pages.length,Number(e.target.value)||1))));
+  image.addEventListener("error",()=>{stage.innerHTML='<div class="data-warning">The scanned image for this page could not be loaded.</div>'},{once:true});
+}
+function openManualPage(page){
+  activeManualPage=Math.max(1,Math.min(DATA.pages.length,Number(page)||1));
+  const meta=pageMeta(activeManualPage);
+  showDialog("Official manual",`Page ${activeManualPage}. ${meta.title||"Knaus manual"}`,manualReaderHtml(activeManualPage),true);
+  wireManualReader();
 }
 
-@media(max-width:600px){
-  .manual-page-stage{height:64dvh;min-height:420px;padding:8px}
-  .manual-gesture-hint{font-size:.8rem}
+function getDiagnostic(id){
+  return DATA.diagnostics.find(x=>String(x.id)===String(id));
+}
+function diagnosticReferenceLinks(d){
+  const chapter=d.chapter?`<button class="secondary-btn" data-chapter-nav="${Number(d.chapter)}">Open Companion chapter ${Number(d.chapter)}</button>`:"";
+  const pages=(d.manualPages||[]).map(p=>`<button class="secondary-btn" data-manual-page="${Number(p)}">Manual page ${Number(p)}</button>`).join("");
+  if(!chapter&&!pages)return "";
+  return `<section class="diagnostic-reference"><h3>Related information</h3><div class="diagnostic-link-row">${chapter}${pages}</div></section>`;
+}
+function diagnosticIntroHtml(d){
+  const safety=Array.isArray(d.safety)?d.safety:[];
+  const tools=Array.isArray(d.tools||d.requiredTools)?(d.tools||d.requiredTools):[];
+  const parts=Array.isArray(d.parts)?d.parts:[];
+  return `<div class="diagnostic-engine">
+    <div class="diagnostic-hero">
+      <div class="diagnostic-hero-icon">${diagnosticIcon((d.systems||[])[0])}</div>
+      <div>
+        <span class="meta">${esc((d.systems||["Vehicle"]).join(" • "))}</span>
+        <h3>${esc(d.title)}</h3>
+        <p>${esc(d.summary||d.description||"Follow the checks in order. Stop whenever a safety concern is found.")}</p>
+      </div>
+    </div>
+    <div class="diagnostic-meta">
+      ${d.difficulty?`<span>Difficulty: ${esc(d.difficulty)}</span>`:""}
+      ${d.time?`<span>Typical time: ${esc(d.time)}</span>`:""}
+      <span>${d.steps?.length||0} checks</span>
+    </div>
+    ${safety.length?`<section class="diagnostic-safety"><h3>⚠ Safety first</h3><ul>${safety.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>`:""}
+    ${tools.length?`<section class="detail-section"><h3>Useful tools</h3><div class="diagnostic-tag-list">${tools.map(x=>`<span>${esc(x)}</span>`).join("")}</div></section>`:""}
+    ${parts.length?`<section class="detail-section"><h3>Possible parts or consumables</h3><div class="diagnostic-tag-list">${parts.map(x=>`<span>${esc(x)}</span>`).join("")}</div></section>`:""}
+    <div class="diagnostic-actions">
+      <button class="primary-btn" data-diagnostic-begin="${esc(d.id)}">Begin guided checks</button>
+      <button class="secondary-btn" data-diagnostic-cancel>Cancel</button>
+    </div>
+    ${diagnosticReferenceLinks(d)}
+  </div>`;
+}
+function startDiagnostic(id){
+  const d=getDiagnostic(id);
+  if(!d)return toast("Diagnostic could not be loaded");
+  activeDiagnosticSession={id:d.id,step:0,history:[],startedAt:new Date().toISOString(),outcome:null};
+  showDialog("Guided diagnostic",d.title,diagnosticIntroHtml(d),true);
+}
+function beginDiagnostic(id){
+  const d=getDiagnostic(id);
+  if(!d)return;
+  if(!activeDiagnosticSession||activeDiagnosticSession.id!==d.id){
+    activeDiagnosticSession={id:d.id,step:0,history:[],startedAt:new Date().toISOString(),outcome:null};
+  }
+  renderDiagnosticStep();
+}
+function diagnosticTrailHtml(session,d){
+  if(!session.history.length)return "";
+  return `<details class="diagnostic-trail"><summary>Checks already answered (${session.history.length})</summary><ol>${
+    session.history.map(h=>`<li><span>${esc(d.steps[h.step]?.q||"Check")}</span><strong>${h.answer==="yes"?"Yes":"No"}</strong></li>`).join("")
+  }</ol></details>`;
+}
+function renderDiagnosticStep(){
+  const session=activeDiagnosticSession;
+  const d=session&&getDiagnostic(session.id);
+  if(!d)return;
+  const step=d.steps?.[session.step];
+  if(!step){finishDiagnostic("The diagnostic data ended without a final result.");return}
+  const progress=Math.round(((session.step+1)/Math.max(1,d.steps.length))*100);
+  const html=`<div class="diagnostic-engine">
+    <div class="diagnostic-progress-head">
+      <span>Check ${session.step+1} of ${d.steps.length}</span>
+      <strong>${progress}%</strong>
+    </div>
+    <div class="diagnostic-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}">
+      <span style="width:${progress}%"></span>
+    </div>
+    <article class="diagnostic-question">
+      <span class="meta">${esc((d.systems||["Vehicle"]).join(" • "))}</span>
+      <h3>${esc(step.q||"Complete this check")}</h3>
+      <p>Choose the answer that best matches what you can see or measure now.</p>
+      <div class="diagnostic-answer-grid">
+        <button class="diagnostic-answer yes" data-diagnostic-answer="yes"><span>✓</span><strong>Yes</strong></button>
+        <button class="diagnostic-answer no" data-diagnostic-answer="no"><span>×</span><strong>No</strong></button>
+      </div>
+    </article>
+    ${diagnosticTrailHtml(session,d)}
+    <div class="diagnostic-actions">
+      <button class="secondary-btn" data-diagnostic-back ${session.history.length?"":"disabled"}>← Back</button>
+      <button class="secondary-btn" data-diagnostic-restart>Restart</button>
+      <button class="secondary-btn" data-diagnostic-exit>Exit</button>
+    </div>
+  </div>`;
+  showDialog("Guided diagnostic",d.title,html,true);
+}
+function answerDiagnostic(answer){
+  const session=activeDiagnosticSession;
+  const d=session&&getDiagnostic(session.id);
+  const step=d?.steps?.[session.step];
+  if(!step)return;
+  const destination=step[answer];
+  session.history.push({step:session.step,answer,question:step.q,at:new Date().toISOString()});
+  if(Number.isInteger(destination)){
+    session.step=destination;
+    renderDiagnosticStep();
+  }else{
+    finishDiagnostic(String(destination||"No outcome was supplied."));
+  }
+}
+function diagnosticNextActions(outcome){
+  const lower=String(outcome).toLowerCase();
+  if(/stop|competent|professional|service|technician|gas|230 v|mains/.test(lower)){
+    return [
+      "Do not bypass protective devices or continue repeated ignition attempts.",
+      "Record what you observed and arrange competent testing where advised.",
+      "Use the linked chapter and official-manual pages for identification only."
+    ];
+  }
+  return [
+    "Carry out the suggested correction, then test the system again.",
+    "Use the correct fuse rating and approved replacement parts only.",
+    "If the symptom returns, save this report and investigate the circuit or component under load."
+  ];
+}
+function finishDiagnostic(outcome){
+  const session=activeDiagnosticSession;
+  const d=session&&getDiagnostic(session.id);
+  if(!d)return;
+  session.outcome=outcome;
+  session.completedAt=new Date().toISOString();
+  const path=session.history.map((h,i)=>`<li><span>${esc(d.steps[h.step]?.q||h.question)}</span><strong>${h.answer==="yes"?"Yes":"No"}</strong></li>`).join("");
+  const html=`<div class="diagnostic-engine diagnostic-result">
+    <div class="result-status">Likely result</div>
+    <h3>${esc(outcome)}</h3>
+    <p>This result is based on the answers supplied. Confirm with measurements where appropriate before replacing parts.</p>
+    <section class="diagnostic-result-box">
+      <h3>Recommended next actions</h3>
+      <ol>${diagnosticNextActions(outcome).map(x=>`<li>${esc(x)}</li>`).join("")}</ol>
+    </section>
+    <details class="diagnostic-trail" open>
+      <summary>Your diagnostic path (${session.history.length} answers)</summary>
+      <ol>${path}</ol>
+    </details>
+    ${diagnosticReferenceLinks(d)}
+    <div class="diagnostic-actions">
+      <button class="primary-btn" data-diagnostic-save>Save report</button>
+      <button class="secondary-btn" data-diagnostic-fault>Add to fault log</button>
+      <button class="secondary-btn" data-diagnostic-restart>Run again</button>
+      <button class="secondary-btn" data-diagnostic-exit>Close</button>
+    </div>
+  </div>`;
+  showDialog("Diagnostic result",d.title,html,true);
+}
+function backDiagnostic(){
+  const session=activeDiagnosticSession;
+  if(!session?.history.length)return;
+  const previous=session.history.pop();
+  session.step=previous.step;
+  session.outcome=null;
+  renderDiagnosticStep();
+}
+function restartDiagnostic(){
+  const d=activeDiagnosticSession&&getDiagnostic(activeDiagnosticSession.id);
+  if(d)startDiagnostic(d.id);
+}
+function diagnosticReportPayload(){
+  const session=activeDiagnosticSession;
+  const d=session&&getDiagnostic(session.id);
+  if(!d||!session.outcome)return null;
+  return {
+    id:`diag-${Date.now()}`,
+    diagnosticId:d.id,
+    title:d.title,
+    systems:d.systems||[],
+    startedAt:session.startedAt,
+    completedAt:session.completedAt||new Date().toISOString(),
+    outcome:session.outcome,
+    answers:session.history.map(h=>({question:d.steps[h.step]?.q||h.question,answer:h.answer})),
+    chapter:d.chapter||null,
+    manualPages:d.manualPages||[]
+  };
+}
+function saveDiagnosticReport(){
+  const report=diagnosticReportPayload();
+  if(!report)return;
+  state.diagnosticReports=state.diagnosticReports||[];
+  state.diagnosticReports.unshift(report);
+  state.diagnosticReports=state.diagnosticReports.slice(0,100);
+  saveState();renderDiagnostics();toast("Diagnostic report saved");
+}
+function addDiagnosticToFaultLog(){
+  const report=diagnosticReportPayload();
+  if(!report)return;
+  state.faults=state.faults||[];
+  state.faults.unshift({
+    id:`fault-${Date.now()}`,
+    title:report.title,
+    status:"open",
+    createdAt:new Date().toISOString(),
+    diagnosticOutcome:report.outcome,
+    diagnosticReport:report
+  });
+  saveState();renderHome();toast("Added to open faults");
+}
+function openDetail(item){
+  if(!item)return;
+  if(item.type==="chapter"||item.chapterNumber){openChapter(item.chapterNumber||item.raw?.n);return}
+  if(item.type==="manual"||item.page){openManualPage(item.page||item.raw?.page);return}
+  $("#detailDialog").classList.remove("reader-dialog");
+  $("#detailType").textContent=item.type||"Details";
+  $("#detailTitle").textContent=item.title||"Details";
+  let html="";
+  if(item.type==="diagnostic"&&item.raw){
+    startDiagnostic(item.raw.id);
+    return;
+  }else{
+    const x=item.raw||{};
+    html+=detailList("Items",x.steps||x.checks||x.campsites||[]);
+    if(x.note)html+=`<p>${esc(x.note)}</p>`;
+    if(!html&&item.text)html=`<p>${esc(item.text)}</p>`;
+  }
+  showDialog(item.type||"Details",item.title||"Details",html,false);
+}
+function closeDetail(){
+  const d=$("#detailDialog");
+  $("#detailDialog").classList.remove("reader-dialog");
+  if(typeof d.close==="function"&&d.open)d.close();else d.removeAttribute("open");
+}
+function openTouringSection(id){
+  const fallbackDeparture=[
+    "External doors, lockers and windows secured","Hook-up cable disconnected and stored",
+    "Water and waste caps secured","Aerial and satellite dish lowered","Steps, ramps and awning stored",
+    "Gas appliances off for travel","Loose items secured inside","Tyres, lights and mirrors checked"
+  ];
+  const sections={
+    departure:{type:"touring",title:"Departure checks",raw:{checks:DATA.touringChecks.length?DATA.touringChecks:fallbackDeparture}},
+    packing:{type:"touring",title:"Packing essentials",raw:{checks:["Driving documents and insurance","Hook-up cable and adapters","Fresh-water hose and fittings","Levelling ramps","Basic tools and spare fuses","First-aid kit","Torch and batteries","Medication and chargers"]}},
+    campsites:{type:"touring",title:"Saved campsites",raw:{campsites:DATA.campsites.length?DATA.campsites:["No campsites saved yet."]}},
+    "travel-log":{type:"touring",title:"Travel log",raw:{note:"Travel-log editing will be added in the next touring upgrade. Existing touring data remains preserved."}}
+  };
+  openDetail(sections[id]);
 }
 
-
-/* v4.3 interactive diagnostic decision-tree engine */
-.diagnostic-controls{display:flex;gap:16px;align-items:end;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
-.diagnostic-search{display:grid;gap:7px;flex:1;min-width:min(100%,300px);font-weight:850}
-.diagnostic-search input{min-height:48px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:14px;padding:0 15px;font-size:16px}
-.diagnostic-controls .chips{margin:0}
-.chip.active{background:var(--brand);color:white;border-color:var(--brand)}
-.diagnostic-summary{margin-bottom:16px}
-.diagnostic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
-.diagnostic-card{display:flex;gap:15px;padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}
-.diagnostic-card-icon,.diagnostic-hero-icon{display:grid;place-items:center;flex:0 0 52px;width:52px;height:52px;border-radius:16px;background:var(--panel-2);font-size:1.65rem}
-.diagnostic-card-body{min-width:0;flex:1}
-.diagnostic-card h2{font-size:1.15rem;margin:.35rem 0 .45rem}
-.diagnostic-card p{color:var(--muted);margin:.2rem 0 .8rem}
-.diagnostic-start{width:100%;margin-top:6px}
-.diagnostic-engine{padding:clamp(16px,4vw,30px);max-width:900px;margin:0 auto}
-.diagnostic-hero{display:flex;gap:16px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid var(--line)}
-.diagnostic-hero h3{font-size:clamp(1.35rem,4vw,2rem);margin:.25rem 0 .5rem}
-.diagnostic-hero p{color:var(--muted);margin:0;line-height:1.55}
-.diagnostic-safety{padding:16px 18px;border:1px solid color-mix(in srgb,#dc2626 45%,var(--line));background:color-mix(in srgb,#dc2626 8%,var(--panel));border-radius:16px;margin:18px 0}
-.diagnostic-safety h3{margin:0 0 9px;color:#b91c1c}
-[data-theme="dark"] .diagnostic-safety h3{color:#fca5a5}
-.diagnostic-safety li{margin:.45rem 0}
-.diagnostic-tag-list{display:flex;gap:8px;flex-wrap:wrap}
-.diagnostic-tag-list span{padding:7px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel-2);font-size:.86rem;font-weight:750}
-.diagnostic-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
-.diagnostic-reference{margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
-.diagnostic-reference h3{margin:0 0 10px}
-.diagnostic-link-row{display:flex;gap:8px;flex-wrap:wrap}
-.diagnostic-progress-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--muted);font-weight:850}
-.diagnostic-progress{height:10px;border-radius:999px;overflow:hidden;background:var(--panel-2);border:1px solid var(--line)}
-.diagnostic-progress span{display:block;height:100%;border-radius:999px;background:var(--brand);transition:width .2s ease}
-.diagnostic-question{padding:clamp(18px,5vw,34px);margin:22px 0;border:1px solid var(--line);border-radius:20px;background:var(--panel-2);text-align:center}
-.diagnostic-question h3{font-size:clamp(1.35rem,4vw,2.1rem);line-height:1.25;margin:.6rem auto;max-width:720px}
-.diagnostic-question p{color:var(--muted)}
-.diagnostic-answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
-.diagnostic-answer{display:grid;place-items:center;gap:7px;min-height:116px;border-radius:18px;border:2px solid var(--line);background:var(--panel);color:var(--text);font-size:1.15rem}
-.diagnostic-answer span{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;font-size:1.5rem;font-weight:900}
-.diagnostic-answer.yes span{background:#dcfce7;color:#166534}
-.diagnostic-answer.no span{background:#fee2e2;color:#991b1b}
-.diagnostic-answer:hover,.diagnostic-answer:focus-visible{border-color:var(--brand);transform:translateY(-1px)}
-.diagnostic-trail{margin:18px 0;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
-.diagnostic-trail summary{padding:13px 15px;cursor:pointer;font-weight:850;background:var(--panel-2)}
-.diagnostic-trail ol{padding:4px 20px 10px 42px}
-.diagnostic-trail li{margin:.65rem 0}
-.diagnostic-trail li span{display:block;color:var(--muted)}
-.diagnostic-trail li strong{display:inline-block;margin-top:3px}
-.result-status{display:inline-flex;padding:7px 11px;border-radius:999px;background:#dcfce7;color:#166534;font-weight:900;text-transform:uppercase;font-size:.78rem;letter-spacing:.07em}
-.diagnostic-result>h3{font-size:clamp(1.45rem,4vw,2.2rem);line-height:1.25;margin:14px 0 9px}
-.diagnostic-result>p{color:var(--muted);line-height:1.55}
-.diagnostic-result-box{padding:17px;border-radius:16px;background:var(--panel-2);border:1px solid var(--line);margin:20px 0}
-.diagnostic-result-box h3{margin:0 0 8px}
-.diagnostic-result-box li{margin:.55rem 0}
-@media(max-width:600px){
-  .diagnostic-controls{display:grid}
-  .diagnostic-grid{grid-template-columns:1fr}
-  .diagnostic-card{padding:16px}
-  .diagnostic-answer-grid{grid-template-columns:1fr 1fr}
-  .diagnostic-answer{min-height:98px}
-  .diagnostic-actions{display:grid;grid-template-columns:1fr}
-  .diagnostic-actions button,.diagnostic-link-row button{width:100%}
-  .diagnostic-link-row{display:grid}
+function electricalView(component){
+  const status=String(component.status||"").toLowerCase();
+  const voltage=String(component.voltage||"").toLowerCase();
+  if(status.includes("planned")||status.includes("recommended")||component.id.includes("future"))return "future";
+  if(voltage.includes("230")||component.id==="hookup"||component.id==="consumer-unit")return "mains";
+  return "12v";
+}
+function electricalComponents(){return DATA.electrical.filter(component=>electricalFilter==="all"||electricalView(component)===electricalFilter)}
+function renderElectricalInspector(){
+  const component=DATA.electrical.find(item=>item.id===activeElectricalComponent)||electricalComponents()[0];
+  if(!component){$("#electricalInspector").innerHTML="<h2>Electrical data unavailable</h2><p>Reload the app while online to restore the installed reference data.</p>";return}
+  activeElectricalComponent=component.id;
+  const related=DATA.electricalRelations.filter(link=>link.from===component.id||link.to===component.id);
+  const readings=component.normalReadings||[component.expected].filter(Boolean);
+  $("#electricalInspector").innerHTML=`
+    <span class="meta">${esc(component.category||"Electrical component")}</span><h2>${esc(component.name)}</h2>
+    <div class="diagnostic-meta"><span>${esc(component.status||"Installed")}</span><span>${esc(component.voltage||"12 V DC")}</span></div>
+    <p>${esc(component.purpose||"")}</p>
+    <dl class="component-facts"><div><dt>Location</dt><dd>${esc(component.location||"Confirm on vehicle")}</dd></div><div><dt>Protection</dt><dd>${esc(component.fuses||"Confirm fitted protection")}</dd></div></dl>
+    ${readings.length?`<section class="detail-section"><h3>Normal readings</h3><ul>${readings.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>`:""}
+    ${(component.tests||[]).length?`<section class="detail-section"><h3>Checks</h3><ol>${component.tests.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>`:""}
+    ${related.length?`<section class="detail-section"><h3>Connected path</h3><ul>${related.map(link=>{const other=DATA.electrical.find(x=>x.id===(link.from===component.id?link.to:link.from));return `<li><strong>${esc(link.from===component.id?"To":"From")} ${esc(other?.name||"component")}</strong><br>${esc(link.label||link.type)}</li>`}).join("")}</ul></section>`:""}
+    <div class="diagnostic-link-row">${(component.chapters||[]).map(n=>`<button class="secondary-btn" data-chapter-nav="${Number(n)}">Chapter ${Number(n)}</button>`).join("")}${(component.officialPages||[]).map(n=>`<button class="secondary-btn" data-manual-nav="${Number(n)}">Manual p. ${Number(n)}</button>`).join("")}</div>`;
+}
+function renderElectrical(){
+  const filters=[["all","All paths"],["12v","12 V habitation"],["mains","230 V hook-up"],["future","Planned upgrades"]];
+  $("#electricalFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${electricalFilter===id?"active":""}" data-electrical-filter="${id}">${label}</button>`).join("");
+  const components=electricalComponents(),visibleIds=new Set(components.map(x=>x.id));
+  const links=DATA.electricalRelations.filter(x=>visibleIds.has(x.from)&&visibleIds.has(x.to));
+  $("#electricalSummary").innerHTML=[[components.length,"Components"],[links.length,"Visible connections"],[components.filter(x=>x.status==="Confirmed").length,"Confirmed items"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  $("#electricalLegend").innerHTML=`<span><i class="legend-dot source"></i>Source / storage</span><span><i class="legend-dot distribution"></i>Distribution</span><span><i class="legend-dot load"></i>Load</span><span><i class="legend-dot future"></i>Planned</span>`;
+  $("#electricalMap").innerHTML=components.map(component=>{
+    const outgoing=links.filter(x=>x.from===component.id);
+    const kind=electricalView(component)==="future"?"future":/(battery|hookup|alternator|anker)/.test(component.id)?"source":/(vb0|calira|consumer)/.test(component.id)?"distribution":"load";
+    return `<article class="electrical-node ${kind} ${activeElectricalComponent===component.id?"active":""}"><button data-electrical-component="${esc(component.id)}" aria-pressed="${activeElectricalComponent===component.id}"><span class="meta">${esc(component.voltage||component.category)}</span><strong>${esc(component.name)}</strong><small>${esc(component.fuses||component.status||"")}</small></button>${outgoing.map(link=>{const target=DATA.electrical.find(x=>x.id===link.to);return `<button class="power-link" data-electrical-component="${esc(link.to)}"><span>${esc(link.label||link.type)}</span><b>→ ${esc(target?.name||link.to)}</b></button>`}).join("")}</article>`;
+  }).join("")||`<article class="panel"><p>No components match this view.</p></article>`;
+  renderElectricalInspector();
 }
 
-/* v4.4 interactive electrical system */
-.system-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}
-.system-toolbar p{margin:.25rem 0 0;color:var(--muted)}
-.system-toolbar .chips{margin:0}
-.electrical-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,.8fr);gap:16px;align-items:start}
-.electrical-map-panel{padding:14px;overflow:hidden}
-.electrical-legend{display:flex;gap:14px;flex-wrap:wrap;padding:5px 5px 14px;color:var(--muted);font-size:.82rem;font-weight:800}
-.electrical-legend span{display:flex;align-items:center;gap:6px}
-.legend-dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.legend-dot.distribution{background:#2563eb}.legend-dot.load{background:#16a34a}.legend-dot.future{background:#7c3aed}
-.electrical-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;align-items:start}
-.electrical-node{border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:16px;background:var(--panel-2);overflow:hidden}
-.electrical-node.distribution{border-top-color:#2563eb}.electrical-node.load{border-top-color:#16a34a}.electrical-node.future{border-top-color:#7c3aed;border-style:dashed}
-.electrical-node.active{outline:3px solid color-mix(in srgb,var(--accent) 42%,transparent);outline-offset:2px}
-.electrical-node>button:first-child{display:grid;gap:5px;width:100%;padding:15px;border:0;background:transparent;color:var(--text);text-align:left}
-.electrical-node strong{font-size:1rem}.electrical-node small{color:var(--muted);line-height:1.35}
-.power-link{display:grid;gap:2px;width:100%;padding:10px 14px;border:0;border-top:1px solid var(--line);background:var(--panel);color:var(--text);text-align:left;font-size:.78rem}
-.power-link span{color:var(--muted)}.power-link b{color:var(--accent)}
-.electrical-inspector{position:sticky;top:84px;max-height:calc(100dvh - 105px);overflow:auto}
-.electrical-inspector h2{margin:.35rem 0}.electrical-inspector>p{color:var(--muted)}
-.component-facts{display:grid;gap:10px}.component-facts div{padding:11px;border-radius:12px;background:var(--panel-2)}
-.component-facts dt{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:900}.component-facts dd{margin:3px 0 0}
-@media(max-width:850px){.electrical-layout{grid-template-columns:1fr}.electrical-inspector{position:static;max-height:none}}
-@media(max-width:600px){.system-toolbar{display:grid}.electrical-map{grid-template-columns:1fr}}
+function renderVehicle(){
+  $("#vehicleCards").innerHTML=[
+    moduleCard("electrical","⚡","Interactive electrical","Trace supplies, protection and connected loads"),
+    moduleCard("manuals","📚","Documentation","Manuals, wiring notes and chapters"),
+    moduleCard("maintenance","🛠️","Service history","Work completed and due"),
+    moduleCard("diagnostics","⚠️","Faults & diagnostics","Known issues and guided checks"),
+    moduleCard("search","🔎","Find a component","Search all installed vehicle information")
+  ].join("");
+}
+function renderSettings(){
+  const b=DATA.build||{};
+  $("#buildInfo").innerHTML=`<p><strong>Version:</strong> ${esc(b.version||APP_VERSION)}</p><p><strong>Release:</strong> ${esc(b.releaseName||"Rebuilt application shell")}</p><p><strong>Build date:</strong> ${esc(b.buildDate||"2026-07-18")}</p><p><strong>Local records:</strong> ${(state.logs||[]).length}</p>`;
+}
+function exportBackup(){
+  const payload={app:"Knaus Companion",version:APP_VERSION,exportedAt:new Date().toISOString(),state};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-companion-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+async function restoreBackup(file){
+  const payload=JSON.parse(await file.text());const incoming=payload.state||payload;
+  if(!incoming||typeof incoming!=="object")throw new Error("Invalid backup");
+  state={...DEFAULT_STATE,...incoming};saveState();toast("Backup restored");setTimeout(()=>location.reload(),600);
+}
+async function clearCache(){
+  if("serviceWorker" in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.unregister()))}
+  if("caches" in window){const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)))}
+  toast("Cache cleared. Reloading…");setTimeout(()=>location.reload(),600);
+}
+async function init(){
+  [
+    DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
+    DATA.electrical,DATA.electricalRelations,DATA.water,DATA.gas,DATA.campsites,DATA.touringChecks
+  ]=await Promise.all([
+    loadJSON("data/chapters.json"),loadJSON("data/manual_pages.json"),loadJSON("data/smart_diagnostics.json"),
+    loadJSON("data/maintenance_tasks.json"),loadJSON("data/assistant_prompts.json"),loadJSON("data/build.json",{}),
+    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/water_components.json"),loadJSON("data/gas_components.json"),
+    loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json")
+  ]);
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderSettings();
+  $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
+  setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
+}
+document.addEventListener("click",e=>{
+  const routeButton=e.target.closest("[data-route]");if(routeButton){e.preventDefault();navigate(routeButton.dataset.route)}
+  const prompt=e.target.closest("[data-prompt]");if(prompt){$("#assistantInput").value=prompt.dataset.prompt;askAssistant()}
+  const tab=e.target.closest("[data-library]");if(tab){libraryMode=tab.dataset.library;$$(".tab").forEach(x=>x.classList.toggle("active",x===tab));renderLibrary()}
+  const touring=e.target.closest("[data-touring]");if(touring)openTouringSection(touring.dataset.touring);
+  const manual=e.target.closest("[data-manual-page],[data-manual-nav],[data-page]");if(manual)openManualPage(manual.dataset.manualPage||manual.dataset.manualNav||manual.dataset.page);
+  const chapter=e.target.closest("[data-chapter-nav]");if(chapter)openChapter(chapter.dataset.chapterNav);
+  const diagnosticStart=e.target.closest("[data-diagnostic-start]");if(diagnosticStart)startDiagnostic(diagnosticStart.dataset.diagnosticStart);
+  const diagnosticBegin=e.target.closest("[data-diagnostic-begin]");if(diagnosticBegin)beginDiagnostic(diagnosticBegin.dataset.diagnosticBegin);
+  const diagnosticAnswer=e.target.closest("[data-diagnostic-answer]");if(diagnosticAnswer)answerDiagnostic(diagnosticAnswer.dataset.diagnosticAnswer);
+  const diagnosticFilterButton=e.target.closest("[data-diagnostic-filter]");if(diagnosticFilterButton){diagnosticFilter=diagnosticFilterButton.dataset.diagnosticFilter;renderDiagnostics()}
+  const electricalFilterButton=e.target.closest("[data-electrical-filter]");if(electricalFilterButton){electricalFilter=electricalFilterButton.dataset.electricalFilter;const first=electricalComponents()[0];if(first)activeElectricalComponent=first.id;renderElectrical()}
+  const electricalComponent=e.target.closest("[data-electrical-component]");if(electricalComponent){activeElectricalComponent=electricalComponent.dataset.electricalComponent;renderElectrical()}
+  if(e.target.closest("[data-diagnostic-back]"))backDiagnostic();
+  if(e.target.closest("[data-diagnostic-restart]"))restartDiagnostic();
+  if(e.target.closest("[data-diagnostic-save]"))saveDiagnosticReport();
+  if(e.target.closest("[data-diagnostic-fault]"))addDiagnosticToFaultLog();
+  if(e.target.closest("[data-diagnostic-exit],[data-diagnostic-cancel]"))closeDetail();
+});
+window.addEventListener("hashchange",()=>setActiveRoute(NAV.some(x=>x[0]===route())?route():"home"));
+$("#menuButton").onclick=openDrawer;$("#closeDrawer").onclick=closeDrawer;$("#scrim").onclick=closeDrawer;
+$("#themeButton").onclick=()=>{state.theme=state.theme==="dark"?"light":"dark";saveState();applyTheme()};
+$("#assistantAsk").onclick=askAssistant;$("#assistantInput").addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Enter")askAssistant()});
+$("#runSearch").onclick=()=>renderResults("#searchResults",searchDocs($("#globalSearch").value));
+$("#globalSearch").addEventListener("keydown",e=>{if(e.key==="Enter")$("#runSearch").click()});
+$("#addServiceRecord").onclick=()=>{
+  const title=prompt("What work was completed?");if(!title)return;
+  const mileage=prompt("Mileage (optional)","");
+  state.logs.unshift({title,mileage,date:new Date().toISOString().slice(0,10)});saveState();renderMaintenance();renderHome();toast("Service record added");
+};
+$("#exportBackup").onclick=exportBackup;
+$("#importBackup").onchange=async e=>{try{if(e.target.files[0])await restoreBackup(e.target.files[0])}catch(err){toast(err.message)}finally{e.target.value=""}};
+$("#clearCache").onclick=clearCache;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail()}});
+$("#closeDetail").onclick=closeDetail;
+$("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
+
+init().catch(err=>{
+  console.error(err);
+  document.body.innerHTML=`<main style="padding:30px;font-family:system-ui"><h1>Knaus Companion could not start</h1><p>${esc(err.message)}</p><button onclick="location.reload()">Reload</button></main>`;
+});
