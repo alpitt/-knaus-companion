@@ -58,6 +58,15 @@ jobs:
               assert relation["from"] in component_ids, f"Unknown relation source: {relation['from']}"
               assert relation["to"] in component_ids, f"Unknown relation target: {relation['to']}"
           print(f"Validated {len(components)} electrical components and {len(relations)} relations.")
+
+          water_components = json.loads((data / "water_components.json").read_text(encoding="utf-8"))
+          water_relations = json.loads((data / "water_relations.json").read_text(encoding="utf-8"))
+          water_ids = {component["id"] for component in water_components}
+          assert len(water_ids) == len(water_components), "Water component IDs must be unique"
+          for relation in water_relations:
+              assert relation["from"] in water_ids, f"Unknown water relation source: {relation['from']}"
+              assert relation["to"] in water_ids, f"Unknown water relation target: {relation['to']}"
+          print(f"Validated {len(water_components)} water components and {len(water_relations)} relations.")
           PY
 
       - name: Configure GitHub Pages
