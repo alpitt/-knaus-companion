@@ -1,7 +1,7 @@
 
-const APP_VERSION="4.6.0";
+const APP_VERSION="4.7.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[],touringOperations:null};
 let state=loadState();
@@ -22,6 +22,7 @@ let fuseBoxFilter="all";
 let activeFuseIndex=0;
 let activeTouringStage="departure";
 let editingTripId=null;
+let editingCampsiteId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -92,6 +93,7 @@ function assistantIndex(){
   (state.logs||[]).forEach(d=>docs.push({type:"service record",title:d.title||d.category||"Service record",text:JSON.stringify(d)}));
   (state.faults||[]).forEach(d=>docs.push({type:"fault",title:d.title||"Fault record",text:JSON.stringify(d)}));
   (state.trips||[]).forEach(d=>docs.push({type:"trip",title:d.title||d.destination||"Touring trip",text:JSON.stringify(d),raw:d}));
+  (state.savedCampsites||[]).forEach(d=>docs.push({type:"campsite",title:d.name||"Saved campsite",text:JSON.stringify(d),raw:d}));
   return docs;
 }
 function searchDocs(q){
@@ -215,6 +217,7 @@ function renderTouring(){
   ];
   $("#touringCards").innerHTML=cards.map(([id,icon,title,desc])=>`<button class="module-card" data-touring="${id}"><div class="icon">${icon}</div><h3>${title}</h3><p>${desc}</p></button>`).join("");
   renderTravelJournal();
+  renderCampsites();
 }
 
 function tripMetrics(trip){
@@ -284,6 +287,74 @@ function deleteTrip(id){
   const trip=(state.trips||[]).find(item=>item.id===id);
   if(!trip||!confirm(`Delete “${trip.title||"this trip"}”? This cannot be undone.`))return;
   state.trips=state.trips.filter(item=>item.id!==id);saveState();renderTouring();toast("Trip deleted");
+}
+function normaliseWebsite(value){
+  const input=String(value||"").trim();
+  if(!input)return "";
+  try{const url=new URL(input);return ["http:","https:"].includes(url.protocol)?url.href:""}catch{return ""}
+}
+function renderCampsites(){
+  const all=state.savedCampsites||[];
+  const query=($("#campsiteSearch")?.value||"").trim().toLowerCase();
+  const campsites=all.filter(site=>!query||[site.name,site.location,site.pitch,site.notes,...(site.facilities||[])].join(" ").toLowerCase().includes(query));
+  $("#campsiteSummary").innerHTML=[[all.length,"Saved places"],[all.filter(site=>site.favourite).length,"Favourites"],[all.filter(site=>Number(site.rating)>=4).length,"Rated 4 stars or more"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  if(!campsites.length){
+    $("#campsiteList").innerHTML=`<article class="panel trip-empty"><span aria-hidden="true">🏕️</span><h3>${all.length?"No matching campsite":"No campsites saved yet"}</h3><p>${all.length?"Try a broader search.":"Save useful stops so their details remain available offline."}</p>${all.length?"":'<button class="primary-btn" data-campsite-add>Add first campsite</button>'}</article>`;
+    return;
+  }
+  $("#campsiteList").innerHTML=campsites.map(site=>{
+    const website=normaliseWebsite(site.website);
+    const map=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.location||site.name)}`;
+    return `<article class="panel campsite-card">
+      <div class="trip-card-head"><div><span class="meta">${site.favourite?"★ Favourite":"Saved campsite"}</span><h3>${esc(site.name)}</h3><p>${esc(site.location)}</p></div><span class="campsite-rating" aria-label="${Number(site.rating)||0} out of 5 stars">${site.rating?"★".repeat(Number(site.rating)):"Not rated"}</span></div>
+      ${site.pitch?`<p><strong>Pitch or area:</strong> ${esc(site.pitch)}</p>`:""}
+      ${(site.facilities||[]).length?`<div class="campsite-tags">${site.facilities.map(item=>`<span>${esc(item)}</span>`).join("")}</div>`:""}
+      ${site.notes?`<p class="trip-notes">${esc(site.notes)}</p>`:""}
+      <div class="campsite-links"><a class="secondary-btn" href="${esc(map)}" target="_blank" rel="noopener">Open map</a>${website?`<a class="secondary-btn" href="${esc(website)}" target="_blank" rel="noopener">Website</a>`:""}${site.phone?`<a class="secondary-btn" href="tel:${esc(site.phone.replace(/[^+\d]/g,""))}">Call</a>`:""}</div>
+      <div class="trip-card-actions"><button class="secondary-btn" data-campsite-trip="${esc(site.id)}">Use for new trip</button><button class="secondary-btn" data-campsite-favourite="${esc(site.id)}">${site.favourite?"Remove favourite":"Favourite"}</button><button class="secondary-btn" data-campsite-edit="${esc(site.id)}">Edit</button><button class="danger-btn" data-campsite-delete="${esc(site.id)}">Delete</button></div>
+    </article>`;
+  }).join("");
+}
+function openCampsiteEditor(id=null){
+  editingCampsiteId=id;
+  const site=(state.savedCampsites||[]).find(item=>item.id===id)||{};
+  $("#campsiteDialogTitle").textContent=id?"Edit campsite":"Add campsite";
+  $("#campsiteName").value=site.name||"";
+  $("#campsiteLocation").value=site.location||"";
+  $("#campsitePitch").value=site.pitch||"";
+  $("#campsiteRating").value=String(site.rating||0);
+  $("#campsiteWebsite").value=site.website||"";
+  $("#campsitePhone").value=site.phone||"";
+  $("#campsiteNotes").value=site.notes||"";
+  const selected=new Set(site.facilities||[]);
+  $$('#campsiteForm input[name="facilities"]').forEach(input=>input.checked=selected.has(input.value));
+  const dialog=$("#campsiteDialog");
+  if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+  setTimeout(()=>$("#campsiteName").focus(),0);
+}
+function closeCampsiteEditor(){
+  const dialog=$("#campsiteDialog");
+  if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");
+  editingCampsiteId=null;
+}
+function saveCampsite(event){
+  event.preventDefault();
+  const form=new FormData(event.currentTarget),values=Object.fromEntries(form);
+  const website=normaliseWebsite(values.website);
+  if(values.website.trim()&&!website){toast("Website must use http:// or https://");return}
+  const existing=(state.savedCampsites||[]).find(item=>item.id===editingCampsiteId);
+  const site={id:existing?.id||`campsite-${Date.now()}`,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString(),favourite:Boolean(existing?.favourite),name:values.name.trim(),location:values.location.trim(),pitch:values.pitch.trim(),rating:Number(values.rating)||0,website,phone:values.phone.trim(),facilities:form.getAll("facilities"),notes:values.notes.trim()};
+  state.savedCampsites=existing?state.savedCampsites.map(item=>item.id===existing.id?site:item):[site,...state.savedCampsites];
+  saveState();closeCampsiteEditor();renderCampsites();toast(existing?"Campsite updated":"Campsite added");
+}
+function deleteCampsite(id){
+  const site=(state.savedCampsites||[]).find(item=>item.id===id);
+  if(!site||!confirm(`Delete “${site.name||"this campsite"}”? This cannot be undone.`))return;
+  state.savedCampsites=state.savedCampsites.filter(item=>item.id!==id);saveState();renderCampsites();toast("Campsite deleted");
+}
+function useCampsiteForTrip(id){
+  const site=(state.savedCampsites||[]).find(item=>item.id===id);if(!site)return;
+  openTripEditor();$("#tripCampsite").value=site.name;$("#tripDestination").value=site.location;toast("Campsite added to new trip");
 }
 
 function detailList(title,items){
@@ -748,6 +819,7 @@ function openTouringSection(id){
     "travel-log":{type:"touring",title:"Touring journal",raw:{note:"Add, edit and review trip records in the Touring Journal below."}}
   };
   if(id==="travel-log"){closeDetail();$("#tripJournal").scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(id==="campsites"){closeDetail();$("#campsitePlanner").scrollIntoView({behavior:"smooth",block:"start"});return}
   openDetail(sections[id]);
 }
 
@@ -960,6 +1032,12 @@ document.addEventListener("click",e=>{
   const tripEdit=e.target.closest("[data-trip-edit]");if(tripEdit)openTripEditor(tripEdit.dataset.tripEdit);
   const tripDelete=e.target.closest("[data-trip-delete]");if(tripDelete)deleteTrip(tripDelete.dataset.tripDelete);
   if(e.target.closest("[data-trip-cancel]"))closeTripEditor();
+  if(e.target.closest("[data-campsite-add]"))openCampsiteEditor();
+  const campsiteEdit=e.target.closest("[data-campsite-edit]");if(campsiteEdit)openCampsiteEditor(campsiteEdit.dataset.campsiteEdit);
+  const campsiteDelete=e.target.closest("[data-campsite-delete]");if(campsiteDelete)deleteCampsite(campsiteDelete.dataset.campsiteDelete);
+  const campsiteFavourite=e.target.closest("[data-campsite-favourite]");if(campsiteFavourite){const site=(state.savedCampsites||[]).find(item=>item.id===campsiteFavourite.dataset.campsiteFavourite);if(site){site.favourite=!site.favourite;saveState();renderCampsites()}}
+  const campsiteTrip=e.target.closest("[data-campsite-trip]");if(campsiteTrip)useCampsiteForTrip(campsiteTrip.dataset.campsiteTrip);
+  if(e.target.closest("[data-campsite-cancel]"))closeCampsiteEditor();
   const manual=e.target.closest("[data-manual-page],[data-manual-nav],[data-page]");if(manual)openManualPage(manual.dataset.manualPage||manual.dataset.manualNav||manual.dataset.page);
   const chapter=e.target.closest("[data-chapter-nav]");if(chapter)openChapter(chapter.dataset.chapterNav);
   const diagnosticStart=e.target.closest("[data-diagnostic-start]");if(diagnosticStart)startDiagnostic(diagnosticStart.dataset.diagnosticStart);
@@ -998,7 +1076,10 @@ $("#importBackup").onchange=async e=>{try{if(e.target.files[0])await restoreBack
 $("#clearCache").onclick=clearCache;
 $("#addTrip").onclick=()=>openTripEditor();
 $("#tripForm").addEventListener("submit",saveTrip);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor()}});
+$("#addCampsite").onclick=()=>openCampsiteEditor();
+$("#campsiteForm").addEventListener("submit",saveCampsite);
+$("#campsiteSearch").addEventListener("input",renderCampsites);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 

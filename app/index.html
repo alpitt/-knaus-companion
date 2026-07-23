@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 4.6.0</title>
+  <title>Knaus Companion 4.7.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.6.0-journal">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.7.0-campsites">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 4.6.0</span>
+        <span>Version 4.7.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -154,6 +154,15 @@
           <div id="tripSummary" class="status-grid"></div>
           <div id="tripList" class="trip-list"></div>
         </section>
+        <section class="section-block" id="campsitePlanner">
+          <div class="section-heading">
+            <div><span class="eyebrow">Campsite planner</span><h2>Saved places</h2></div>
+            <button class="primary-btn" id="addCampsite">Add campsite</button>
+          </div>
+          <div id="campsiteSummary" class="status-grid"></div>
+          <label class="campsite-search">Search saved places<input id="campsiteSearch" type="search" placeholder="Name, location, facilities or notes"></label>
+          <div id="campsiteList" class="campsite-list"></div>
+        </section>
       </section>
 
       <section class="screen" data-screen="vehicle">
@@ -254,6 +263,37 @@
       <button data-route="search">Search</button>
     </nav>
 
+    <dialog id="campsiteDialog" class="detail-dialog trip-dialog">
+      <form id="campsiteForm">
+        <div class="dialog-head">
+          <div><span class="eyebrow">Campsite planner</span><h2 id="campsiteDialogTitle">Add campsite</h2></div>
+          <button class="icon-btn" type="button" data-campsite-cancel aria-label="Close">×</button>
+        </div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Campsite name<input id="campsiteName" name="name" required maxlength="100"></label>
+          <label class="trip-field">Location<input id="campsiteLocation" name="location" required maxlength="140" placeholder="Town, region or coordinates"></label>
+          <label class="trip-field">Pitch or area<input id="campsitePitch" name="pitch" maxlength="80" placeholder="Optional"></label>
+          <label class="trip-field">Rating<select id="campsiteRating" name="rating"><option value="0">Not rated</option><option value="1">1 star</option><option value="2">2 stars</option><option value="3">3 stars</option><option value="4">4 stars</option><option value="5">5 stars</option></select></label>
+          <label class="trip-field">Website<input id="campsiteWebsite" name="website" type="url" maxlength="240" placeholder="https://"></label>
+          <label class="trip-field">Phone<input id="campsitePhone" name="phone" type="tel" maxlength="40"></label>
+          <fieldset class="campsite-facilities trip-field-wide"><legend>Facilities</legend>
+            <label><input type="checkbox" name="facilities" value="Electric hook-up"> Electric hook-up</label>
+            <label><input type="checkbox" name="facilities" value="Fresh water"> Fresh water</label>
+            <label><input type="checkbox" name="facilities" value="Waste disposal"> Waste disposal</label>
+            <label><input type="checkbox" name="facilities" value="Wi-Fi"> Wi-Fi</label>
+            <label><input type="checkbox" name="facilities" value="Showers"> Showers</label>
+            <label><input type="checkbox" name="facilities" value="Laundry"> Laundry</label>
+            <label><input type="checkbox" name="facilities" value="Pets allowed"> Pets allowed</label>
+          </fieldset>
+          <label class="trip-field trip-field-wide">Notes<textarea id="campsiteNotes" name="notes" maxlength="2000" placeholder="Access, booking details, facilities and local tips"></textarea></label>
+          <div class="trip-form-actions trip-field-wide">
+            <button class="secondary-btn" type="button" data-campsite-cancel>Cancel</button>
+            <button class="primary-btn" type="submit">Save campsite</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="tripDialog" class="detail-dialog trip-dialog">
       <form id="tripForm">
         <div class="dialog-head">
@@ -287,7 +327,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=4.6.0-journal"></script>
+  <script src="assets/js/app-v4.js?v=4.7.0-campsites"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
