@@ -21,7 +21,9 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
-Version 5.1.0 adds the Operations Dashboard. Home now combines maintenance and document alerts, open faults, packing allowance warnings, journey readiness and recent activity with direct links into each workflow.
+Version 5.2.0 adds the Fault Log. Record issues manually or from guided diagnostics, classify system and severity, move faults through open, monitoring, fixed and closed states, and retain symptoms, mileage, location and resolution notes.
+
+Version 5.1.0 added the Operations Dashboard. Home combines maintenance and document alerts, open faults, packing allowance warnings, journey readiness and recent activity with direct links into each workflow.
 
 Version 5.0.0 added Vehicle Records: structured identity and specifications, document references with expiry alerts, and a searchable onboard equipment and spares inventory. All records remain offline and participate in search and backup exports.
 
