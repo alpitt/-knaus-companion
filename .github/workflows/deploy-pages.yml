@@ -37,6 +37,10 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
+          grep -q 'Version 4.6.0' app/index.html
+          grep -q 'id="tripJournal"' app/index.html
+          grep -q 'id="tripForm"' app/index.html
+          grep -q 'const APP_VERSION="4.6.0"' app/assets/js/app-v4.js
           echo "Validated $(find app -type f | wc -l) application files."
 
       - name: Validate interactive system data

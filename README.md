@@ -21,7 +21,9 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
-Version 4.5.0 introduces Touring Operations: a persistent four-stage checklist covering departure, arrival, leaving a site and returning home. Progress is saved locally and remains available offline, with direct links to relevant official-manual pages.
+Version 4.6.0 adds the Touring Journal. Trips can be created, edited and removed with dates, destination, campsite, mileage and notes; the app calculates nights and recorded distance automatically. Journal entries remain available offline and are included in local search and backup exports.
+
+Version 4.5.0 introduced Touring Operations: a persistent four-stage checklist covering departure, arrival, leaving a site and returning home. Progress is saved locally and remains available offline, with direct links to relevant official-manual pages.
 
 Version 4.4.0 began the Interactive Systems series with an electrical power-path explorer. It provides filtered 12 V, 230 V and planned-upgrade views backed by the preserved component and relationship data.
 
