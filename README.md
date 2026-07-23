@@ -21,7 +21,9 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
-Version 4.6.0 adds the Touring Journal. Trips can be created, edited and removed with dates, destination, campsite, mileage and notes; the app calculates nights and recorded distance automatically. Journal entries remain available offline and are included in local search and backup exports.
+Version 4.7.0 adds the Campsite Planner. Saved places include location, pitch, rating, website, phone, facilities and notes, with offline search, favourites, map links and one-tap reuse in a new trip record.
+
+Version 4.6.0 added the Touring Journal. Trips can be created, edited and removed with dates, destination, campsite, mileage and notes; the app calculates nights and recorded distance automatically. Journal entries remain available offline and are included in local search and backup exports.
 
 Version 4.5.0 introduced Touring Operations: a persistent four-stage checklist covering departure, arrival, leaving a site and returning home. Progress is saved locally and remains available offline, with direct links to relevant official-manual pages.
 
