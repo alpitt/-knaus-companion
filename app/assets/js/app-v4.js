@@ -3,7 +3,7 @@ const APP_VERSION="4.4.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
-const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],water:[],gas:[],campsites:[],touringChecks:[]};
+const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],water:[],waterRelations:[],gas:[],campsites:[],touringChecks:[]};
 let state=loadState();
 let libraryMode="chapters";
 let activeManualPage=1;
@@ -12,6 +12,8 @@ let diagnosticFilter="all";
 let activeDiagnosticSession=null;
 let electricalFilter="all";
 let activeElectricalComponent="calira-evs";
+let waterFilter="all";
+let activeWaterComponent="pump";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -48,7 +50,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
-  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["water","Water system","💧"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -680,9 +682,43 @@ function renderElectrical(){
   renderElectricalInspector();
 }
 
+function waterView(component){
+  if(["waste-tank","waste-valve"].includes(component.id))return "waste";
+  if(["truma-boiler","frost-valve","hot-manifold"].includes(component.id))return "hot";
+  if(component.id==="level-sensors")return "monitoring";
+  return "fresh";
+}
+function waterComponents(){
+  if(waterFilter==="all")return DATA.water;
+  const shared=waterFilter==="hot"||waterFilter==="waste"?["kitchen-tap","bathroom-outlets"]:[];
+  return DATA.water.filter(component=>waterView(component)===waterFilter||shared.includes(component.id));
+}
+function renderWaterInspector(){
+  const component=DATA.water.find(item=>item.id===activeWaterComponent)||waterComponents()[0];
+  if(!component){$("#waterInspector").innerHTML="<h2>Water data unavailable</h2><p>Reload the app while online to restore the installed reference data.</p>";return}
+  activeWaterComponent=component.id;
+  const related=DATA.waterRelations.filter(link=>link.from===component.id||link.to===component.id);
+  $("#waterInspector").innerHTML=`<span class="meta">${esc(component.category||"Water component")}</span><h2>${esc(component.name)}</h2><div class="diagnostic-meta"><span>${esc(component.status||"Installed")}</span></div><p>${esc(component.purpose||"")}</p><dl class="component-facts"><div><dt>Location</dt><dd>${esc(component.location||"Confirm on vehicle")}</dd></div><div><dt>Operation</dt><dd>${esc(component.operation||"Inspect the fitted arrangement")}</dd></div></dl>${(component.tests||[]).length?`<section class="detail-section"><h3>Checks</h3><ol>${component.tests.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>`:""}${(component.maintenance||[]).length?`<section class="detail-section"><h3>Maintenance</h3><ul>${component.maintenance.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>`:""}${related.length?`<section class="detail-section"><h3>Connected flow</h3><ul>${related.map(link=>{const other=DATA.water.find(x=>x.id===(link.from===component.id?link.to:link.from));return `<li><strong>${esc(link.from===component.id?"To":"From")} ${esc(other?.name||"component")}</strong><br>${esc(link.label||"connected")}</li>`}).join("")}</ul></section>`:""}<div class="diagnostic-link-row">${(component.chapters||[]).map(n=>`<button class="secondary-btn" data-chapter-nav="${Number(n)}">Chapter ${Number(n)}</button>`).join("")}${(component.officialPages||[]).map(n=>`<button class="secondary-btn" data-manual-nav="${Number(n)}">Manual p. ${Number(n)}</button>`).join("")}</div>`;
+}
+function renderWater(){
+  const filters=[["all","All flow"],["fresh","Fresh & cold"],["hot","Hot water"],["waste","Waste water"],["monitoring","Monitoring"]];
+  $("#waterFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${waterFilter===id?"active":""}" data-water-filter="${id}">${label}</button>`).join("");
+  const components=waterComponents(),visibleIds=new Set(components.map(x=>x.id));
+  const links=DATA.waterRelations.filter(x=>visibleIds.has(x.from)&&visibleIds.has(x.to));
+  $("#waterSummary").innerHTML=[[components.length,"Components"],[links.length,"Visible connections"],[components.filter(x=>x.status==="Confirmed").length,"Confirmed items"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  $("#waterLegend").innerHTML=`<span><i class="legend-dot water-source"></i>Storage / source</span><span><i class="legend-dot water-pressure"></i>Pressure / distribution</span><span><i class="legend-dot water-outlet"></i>Outlet</span><span><i class="legend-dot water-waste"></i>Waste / drain</span>`;
+  $("#waterMap").innerHTML=components.map(component=>{
+    const outgoing=links.filter(x=>x.from===component.id);
+    const kind=/(tank|filler)/.test(component.id)&&component.id!=="waste-tank"?"water-source":/(pump|manifold|boiler)/.test(component.id)?"water-pressure":/(tap|outlets|flush)/.test(component.id)?"water-outlet":"water-waste";
+    return `<article class="electrical-node water-node ${kind} ${activeWaterComponent===component.id?"active":""}"><button data-water-component="${esc(component.id)}" aria-pressed="${activeWaterComponent===component.id}"><span class="meta">${esc(component.category)}</span><strong>${esc(component.name)}</strong><small>${esc(component.operation||component.status||"")}</small></button>${outgoing.map(link=>{const target=DATA.water.find(x=>x.id===link.to);return `<button class="power-link" data-water-component="${esc(link.to)}"><span>${esc(link.label||"flows to")}</span><b>→ ${esc(target?.name||link.to)}</b></button>`}).join("")}</article>`;
+  }).join("")||`<article class="panel"><p>No components match this view.</p></article>`;
+  renderWaterInspector();
+}
+
 function renderVehicle(){
   $("#vehicleCards").innerHTML=[
     moduleCard("electrical","⚡","Interactive electrical","Trace supplies, protection and connected loads"),
+    moduleCard("water","💧","Interactive water","Follow fresh, hot and waste-water flow"),
     moduleCard("manuals","📚","Documentation","Manuals, wiring notes and chapters"),
     moduleCard("maintenance","🛠️","Service history","Work completed and due"),
     moduleCard("diagnostics","⚠️","Faults & diagnostics","Known issues and guided checks"),
@@ -711,14 +747,14 @@ async function clearCache(){
 async function init(){
   [
     DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
-    DATA.electrical,DATA.electricalRelations,DATA.water,DATA.gas,DATA.campsites,DATA.touringChecks
+    DATA.electrical,DATA.electricalRelations,DATA.water,DATA.waterRelations,DATA.gas,DATA.campsites,DATA.touringChecks
   ]=await Promise.all([
     loadJSON("data/chapters.json"),loadJSON("data/manual_pages.json"),loadJSON("data/smart_diagnostics.json"),
     loadJSON("data/maintenance_tasks.json"),loadJSON("data/assistant_prompts.json"),loadJSON("data/build.json",{}),
-    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/water_components.json"),loadJSON("data/gas_components.json"),
+    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json")
   ]);
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderSettings();
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderWater();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
 }
@@ -735,6 +771,8 @@ document.addEventListener("click",e=>{
   const diagnosticFilterButton=e.target.closest("[data-diagnostic-filter]");if(diagnosticFilterButton){diagnosticFilter=diagnosticFilterButton.dataset.diagnosticFilter;renderDiagnostics()}
   const electricalFilterButton=e.target.closest("[data-electrical-filter]");if(electricalFilterButton){electricalFilter=electricalFilterButton.dataset.electricalFilter;const first=electricalComponents()[0];if(first)activeElectricalComponent=first.id;renderElectrical()}
   const electricalComponent=e.target.closest("[data-electrical-component]");if(electricalComponent){activeElectricalComponent=electricalComponent.dataset.electricalComponent;renderElectrical()}
+  const waterFilterButton=e.target.closest("[data-water-filter]");if(waterFilterButton){waterFilter=waterFilterButton.dataset.waterFilter;const first=waterComponents()[0];if(first)activeWaterComponent=first.id;renderWater()}
+  const waterComponent=e.target.closest("[data-water-component]");if(waterComponent){activeWaterComponent=waterComponent.dataset.waterComponent;renderWater()}
   if(e.target.closest("[data-diagnostic-back]"))backDiagnostic();
   if(e.target.closest("[data-diagnostic-restart]"))restartDiagnostic();
   if(e.target.closest("[data-diagnostic-save]"))saveDiagnosticReport();

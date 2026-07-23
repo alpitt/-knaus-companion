@@ -1,4 +1,4 @@
-const CACHE='knaus-companion-v4-4-0';
+const CACHE='knaus-companion-v4-4-0-water';
 const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css','./assets/js/app-v4.js','./data/build.json'];
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting()});
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));

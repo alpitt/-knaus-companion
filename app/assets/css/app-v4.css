@@ -306,3 +306,8 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 @media(max-width:850px){.electrical-layout{grid-template-columns:1fr}.electrical-inspector{position:static;max-height:none}}
 @media(max-width:600px){.system-toolbar{display:grid}.electrical-map{grid-template-columns:1fr}}
 
+/* v4.4 interactive water system */
+.water-node{border-top-color:#0891b2}.water-node.water-pressure{border-top-color:#2563eb}.water-node.water-outlet{border-top-color:#0d9488}.water-node.water-waste{border-top-color:#64748b}
+.water-node .power-link b{color:#087c9c}
+.legend-dot.water-source{background:#0891b2}.legend-dot.water-pressure{background:#2563eb}.legend-dot.water-outlet{background:#0d9488}.legend-dot.water-waste{background:#64748b}
+
