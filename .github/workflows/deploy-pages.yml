@@ -34,7 +34,10 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 5.6.0' app/index.html
+          grep -q 'Version 5.7.0' app/index.html
+          grep -q 'id="expensePeriodFilters"' app/index.html
+          grep -q 'id="expenseInsights"' app/index.html
+          grep -q 'id="exportExpenses"' app/index.html
           grep -q 'id="expenseLog"' app/index.html
           grep -q 'id="expenseSummary"' app/index.html
           grep -q 'id="expenseFilters"' app/index.html
@@ -70,7 +73,9 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="5.6.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="5.7.0"' app/assets/js/app-v4.js
+          grep -q 'function expensesForPeriod()' app/assets/js/app-v4.js
+          grep -q 'function exportExpenseCsv()' app/assets/js/app-v4.js
           grep -q 'function renderExpenses()' app/assets/js/app-v4.js
           grep -q 'function saveExpense(event)' app/assets/js/app-v4.js
           grep -q 'function deleteExpense(id)' app/assets/js/app-v4.js
