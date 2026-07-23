@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 5.1.0</title>
+  <title>Knaus Companion 5.2.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.1.0-dashboard">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.2.0-faults">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 5.1.0</span>
+        <span>Version 5.2.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -155,6 +155,12 @@
         </div>
         <div id="diagnosticSummary" class="status-grid diagnostic-summary"></div>
         <div id="diagnosticList" class="diagnostic-grid"></div>
+        <section class="section-block">
+          <div class="section-heading"><div><span class="eyebrow">Vehicle fault log</span><h2>Track issues to resolution</h2></div><button class="primary-btn" id="addFault">Add fault</button></div>
+          <div id="faultSummary" class="status-grid"></div>
+          <div id="faultFilters" class="chips" aria-label="Filter fault status"></div>
+          <div id="faultList" class="fault-grid"></div>
+        </section>
       </section>
 
       <section class="screen" data-screen="touring">
@@ -312,6 +318,24 @@
       <button data-route="diagnostics">Checks</button>
       <button data-route="search">Search</button>
     </nav>
+
+    <dialog id="faultDialog" class="detail-dialog trip-dialog">
+      <form id="faultForm">
+        <div class="dialog-head"><div><span class="eyebrow">Vehicle fault</span><h2 id="faultDialogTitle">Add fault</h2></div><button class="icon-btn" type="button" data-fault-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">Fault title<input id="faultTitle" name="title" required maxlength="140"></label>
+          <label class="trip-field">System<select id="faultSystem" name="system"><option value="vehicle">Vehicle</option><option value="electrical">Electrical</option><option value="water">Water</option><option value="gas">Gas</option><option value="heating">Heating</option><option value="appliance">Appliance</option><option value="body">Bodywork</option></select></label>
+          <label class="trip-field">Severity<select id="faultSeverity" name="severity"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label>
+          <label class="trip-field">Status<select id="faultStatus" name="status"><option value="open">Open</option><option value="monitoring">Monitoring</option><option value="fixed">Fixed</option><option value="closed">Closed</option></select></label>
+          <label class="trip-field">First observed<input id="faultDate" name="date" type="date" required></label>
+          <label class="trip-field">Mileage (km)<input id="faultMileage" name="mileage" type="number" min="0" step="1"></label>
+          <label class="trip-field">Location<input id="faultLocation" name="location" maxlength="120" placeholder="Where the issue appears"></label>
+          <label class="trip-field trip-field-wide">Symptoms and observations<textarea id="faultSymptoms" name="symptoms" maxlength="2000"></textarea></label>
+          <label class="trip-field trip-field-wide">Resolution or next action<textarea id="faultResolution" name="resolution" maxlength="2000"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-fault-cancel>Cancel</button><button class="primary-btn" type="submit">Save fault</button></div>
+        </div>
+      </form>
+    </dialog>
 
     <dialog id="vehicleProfileDialog" class="detail-dialog trip-dialog">
       <form id="vehicleProfileForm">
@@ -482,7 +506,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=5.1.0-dashboard"></script>
+  <script src="assets/js/app-v4.js?v=5.2.0-faults"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

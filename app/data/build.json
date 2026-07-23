@@ -1,6 +1,6 @@
 {
-  "version": "5.1.0",
-  "releaseName": "Operations Dashboard",
+  "version": "5.2.0",
+  "releaseName": "Fault Log",
   "buildDate": "2026-07-23",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -85,7 +85,11 @@
     "Cross-module operations alerts on the home dashboard",
     "Journey readiness from touring, maintenance, documents and packing",
     "Recent service, trip, diagnostic and document activity",
-    "Direct dashboard actions into the relevant workflow"
+    "Direct dashboard actions into the relevant workflow",
+    "Structured fault records with system and severity",
+    "Open, monitoring, fixed and closed fault workflow",
+    "Diagnostic outcomes linked into editable fault records",
+    "Resolution notes, mileage and first-observed history"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

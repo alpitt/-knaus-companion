@@ -1,5 +1,5 @@
 
-const APP_VERSION="5.1.0";
+const APP_VERSION="5.2.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -28,6 +28,8 @@ let editingPackingItemId=null;
 let maintenanceFilter="all";
 let editingVehicleDocumentId=null;
 let editingInventoryId=null;
+let faultFilter="active";
+let editingFaultId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -269,6 +271,7 @@ function renderDiagnostics(){
     [systems.length,"Vehicle systems"],
     [(state.diagnosticReports||[]).length,"Saved reports"]
   ].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  renderFaultLog();
 
   if(!filtered.length){
     $("#diagnosticList").innerHTML=`<article class="panel"><h2>No matching diagnostic</h2><p>Try a broader symptom or choose All systems.</p></article>`;
@@ -295,6 +298,33 @@ function renderDiagnostics(){
     </article>`;
   }).join("");
 }
+function renderFaultLog(){
+  const faults=state.faults||[],active=faults.filter(item=>!["fixed","closed"].includes(String(item.status||"open").toLowerCase()));
+  $("#faultSummary").innerHTML=[[active.length,"Active faults"],[active.filter(item=>["critical","high"].includes(item.severity)).length,"High priority"],[faults.filter(item=>["fixed","closed"].includes(item.status)).length,"Resolved"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  const filters=[["active","Active"],["open","Open"],["monitoring","Monitoring"],["fixed","Fixed"],["closed","Closed"],["all","All"]];
+  $("#faultFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${faultFilter===id?"active":""}" data-fault-filter="${id}">${label}</button>`).join("");
+  const visible=faults.filter(item=>faultFilter==="all"||(faultFilter==="active"?!["fixed","closed"].includes(item.status||"open"):(item.status||"open")===faultFilter));
+  $("#faultList").innerHTML=visible.length?visible.map(item=>`<article class="panel fault-card severity-${esc(item.severity||"medium")} status-${esc(item.status||"open")}">
+    <div class="fault-card-head"><div><span class="maintenance-status">${esc(item.status||"open")}</span><h3>${esc(item.title||"Vehicle fault")}</h3><p>${diagnosticIcon(item.system||(item.diagnosticReport?.systems||[])[0])} ${esc(item.system||(item.diagnosticReport?.systems||[])[0]||"vehicle")} • ${esc(item.severity||"medium")} severity</p></div><span class="fault-date">${esc(formatTripDate((item.date||item.createdAt||new Date().toISOString()).slice(0,10)))}</span></div>
+    ${item.symptoms||item.diagnosticOutcome?`<p class="fault-symptoms">${esc(item.symptoms||item.diagnosticOutcome)}</p>`:""}
+    ${item.resolution?`<div class="fault-resolution"><strong>Resolution / next action</strong><span>${esc(item.resolution)}</span></div>`:""}
+    <div class="diagnostic-meta">${item.location?`<span>${esc(item.location)}</span>`:""}${item.mileage!==null&&item.mileage!==undefined?`<span>${Number(item.mileage).toLocaleString()} km</span>`:""}${item.diagnosticReport?'<span>Linked diagnostic</span>':""}</div>
+    <div class="trip-card-actions"><button class="secondary-btn" data-fault-edit="${esc(item.id)}">Edit</button>${["fixed","closed"].includes(item.status)?`<button class="secondary-btn" data-fault-status="${esc(item.id)}" data-status="open">Reopen</button>`:`<button class="primary-btn" data-fault-status="${esc(item.id)}" data-status="fixed">Mark fixed</button>`}<button class="danger-btn" data-fault-delete="${esc(item.id)}">Delete</button></div>
+  </article>`).join(""):'<article class="panel trip-empty"><span aria-hidden="true">✓</span><h3>No faults in this view</h3><p>Add an issue manually or save one from a guided diagnostic.</p></article>';
+}
+function openFaultEditor(id=null){
+  editingFaultId=id;const item=(state.faults||[]).find(entry=>entry.id===id)||{};
+  $("#faultDialogTitle").textContent=id?"Edit fault":"Add fault";$("#faultTitle").value=item.title||"";$("#faultSystem").value=item.system||(item.diagnosticReport?.systems||[])[0]||"vehicle";$("#faultSeverity").value=item.severity||"medium";$("#faultStatus").value=item.status||"open";$("#faultDate").value=(item.date||item.createdAt||new Date().toISOString()).slice(0,10);$("#faultMileage").value=item.mileage??state.currentMileage??"";$("#faultLocation").value=item.location||"";$("#faultSymptoms").value=item.symptoms||item.diagnosticOutcome||"";$("#faultResolution").value=item.resolution||"";
+  const dialog=$("#faultDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+}
+function closeFaultEditor(){const dialog=$("#faultDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");editingFaultId=null}
+function saveFault(event){
+  event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget)),existing=(state.faults||[]).find(item=>item.id===editingFaultId),resolved=["fixed","closed"].includes(values.status);
+  const item={...existing,id:existing?.id||`fault-${Date.now()}`,title:values.title.trim(),system:values.system,severity:values.severity,status:values.status,date:values.date,mileage:values.mileage===""?null:Number(values.mileage),location:values.location.trim(),symptoms:values.symptoms.trim(),resolution:values.resolution.trim(),createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString(),resolvedAt:resolved?(existing?.resolvedAt||new Date().toISOString()):null};
+  state.faults=existing?state.faults.map(entry=>entry.id===existing.id?item:entry):[item,...(state.faults||[])];saveState();closeFaultEditor();renderDiagnostics();renderHome();toast(existing?"Fault updated":"Fault added");
+}
+function setFaultStatus(id,status){const item=(state.faults||[]).find(entry=>entry.id===id);if(!item)return;item.status=status;item.updatedAt=new Date().toISOString();item.resolvedAt=["fixed","closed"].includes(status)?new Date().toISOString():null;saveState();renderDiagnostics();renderHome();toast(status==="fixed"?"Fault marked fixed":"Fault reopened")}
+function deleteFault(id){const item=(state.faults||[]).find(entry=>entry.id===id);if(!item||!confirm(`Delete “${item.title}”? This cannot be undone.`))return;state.faults=state.faults.filter(entry=>entry.id!==id);saveState();renderDiagnostics();renderHome();toast("Fault deleted")}
 function renderTouring(){
   const lists=DATA.touringOperations?.lists||[];
   const stage=lists.find(x=>x.id===activeTouringStage)||lists[0];
@@ -973,12 +1003,18 @@ function addDiagnosticToFaultLog(){
   state.faults.unshift({
     id:`fault-${Date.now()}`,
     title:report.title,
+    system:(report.systems||[])[0]||"vehicle",
+    severity:"medium",
     status:"open",
+    date:new Date().toISOString().slice(0,10),
+    mileage:state.currentMileage||null,
+    symptoms:report.outcome,
+    resolution:"",
     createdAt:new Date().toISOString(),
     diagnosticOutcome:report.outcome,
     diagnosticReport:report
   });
-  saveState();renderHome();toast("Added to open faults");
+  saveState();renderDiagnostics();renderHome();toast("Added to open faults");
 }
 function openDetail(item){
   if(!item)return;
@@ -1310,6 +1346,11 @@ document.addEventListener("click",e=>{
   const diagnosticBegin=e.target.closest("[data-diagnostic-begin]");if(diagnosticBegin)beginDiagnostic(diagnosticBegin.dataset.diagnosticBegin);
   const diagnosticAnswer=e.target.closest("[data-diagnostic-answer]");if(diagnosticAnswer)answerDiagnostic(diagnosticAnswer.dataset.diagnosticAnswer);
   const diagnosticFilterButton=e.target.closest("[data-diagnostic-filter]");if(diagnosticFilterButton){diagnosticFilter=diagnosticFilterButton.dataset.diagnosticFilter;renderDiagnostics()}
+  const faultFilterButton=e.target.closest("[data-fault-filter]");if(faultFilterButton){faultFilter=faultFilterButton.dataset.faultFilter;renderFaultLog()}
+  const faultEdit=e.target.closest("[data-fault-edit]");if(faultEdit)openFaultEditor(faultEdit.dataset.faultEdit);
+  const faultStatus=e.target.closest("[data-fault-status]");if(faultStatus)setFaultStatus(faultStatus.dataset.faultStatus,faultStatus.dataset.status);
+  const faultDelete=e.target.closest("[data-fault-delete]");if(faultDelete)deleteFault(faultDelete.dataset.faultDelete);
+  if(e.target.closest("[data-fault-cancel]"))closeFaultEditor();
   const maintenanceFilterButton=e.target.closest("[data-maintenance-filter]");if(maintenanceFilterButton){maintenanceFilter=maintenanceFilterButton.dataset.maintenanceFilter;renderMaintenance()}
   const maintenanceComplete=e.target.closest("[data-maintenance-complete]");if(maintenanceComplete)openServiceRecord(maintenanceComplete.dataset.maintenanceComplete);
   const serviceRecord=e.target.closest("[data-service-record]");if(serviceRecord)openServiceRecordDetail(serviceRecord.dataset.serviceRecord);
@@ -1366,7 +1407,9 @@ $("#inventoryForm").addEventListener("submit",saveInventoryItem);
 $("#addVehicleDocument").onclick=()=>openVehicleDocumentEditor();
 $("#addInventoryItem").onclick=()=>openInventoryEditor();
 $("#inventorySearch").addEventListener("input",renderVehicleRecords);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor()}});
+$("#addFault").onclick=()=>openFaultEditor();
+$("#faultForm").addEventListener("submit",saveFault);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 
