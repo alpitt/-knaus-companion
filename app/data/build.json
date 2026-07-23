@@ -1,7 +1,7 @@
 {
-  "version": "4.3.0",
-  "releaseName": "Interactive Diagnostic Engine",
-  "buildDate": "2026-07-18",
+  "version": "4.4.0",
+  "releaseName": "Interactive Systems: Electrical",
+  "buildDate": "2026-07-23",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
     "companionChapters": 44,
@@ -49,7 +49,10 @@
     "Likely-cause result with recommended next actions",
     "Companion chapter and official-manual cross-links",
     "Locally saved diagnostic reports",
-    "Add diagnostic results to the open fault log"
+    "Add diagnostic results to the open fault log",
+    "Interactive electrical power-path explorer",
+    "12 V, 230 V and planned-upgrade electrical views",
+    "Electrical component readings, checks and reference links"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

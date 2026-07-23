@@ -280,3 +280,29 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
   .diagnostic-actions button,.diagnostic-link-row button{width:100%}
   .diagnostic-link-row{display:grid}
 }
+
+/* v4.4 interactive electrical system */
+.system-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}
+.system-toolbar p{margin:.25rem 0 0;color:var(--muted)}
+.system-toolbar .chips{margin:0}
+.electrical-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,.8fr);gap:16px;align-items:start}
+.electrical-map-panel{padding:14px;overflow:hidden}
+.electrical-legend{display:flex;gap:14px;flex-wrap:wrap;padding:5px 5px 14px;color:var(--muted);font-size:.82rem;font-weight:800}
+.electrical-legend span{display:flex;align-items:center;gap:6px}
+.legend-dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.legend-dot.distribution{background:#2563eb}.legend-dot.load{background:#16a34a}.legend-dot.future{background:#7c3aed}
+.electrical-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;align-items:start}
+.electrical-node{border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:16px;background:var(--panel-2);overflow:hidden}
+.electrical-node.distribution{border-top-color:#2563eb}.electrical-node.load{border-top-color:#16a34a}.electrical-node.future{border-top-color:#7c3aed;border-style:dashed}
+.electrical-node.active{outline:3px solid color-mix(in srgb,var(--accent) 42%,transparent);outline-offset:2px}
+.electrical-node>button:first-child{display:grid;gap:5px;width:100%;padding:15px;border:0;background:transparent;color:var(--text);text-align:left}
+.electrical-node strong{font-size:1rem}.electrical-node small{color:var(--muted);line-height:1.35}
+.power-link{display:grid;gap:2px;width:100%;padding:10px 14px;border:0;border-top:1px solid var(--line);background:var(--panel);color:var(--text);text-align:left;font-size:.78rem}
+.power-link span{color:var(--muted)}.power-link b{color:var(--accent)}
+.electrical-inspector{position:sticky;top:84px;max-height:calc(100dvh - 105px);overflow:auto}
+.electrical-inspector h2{margin:.35rem 0}.electrical-inspector>p{color:var(--muted)}
+.component-facts{display:grid;gap:10px}.component-facts div{padding:11px;border-radius:12px;background:var(--panel-2)}
+.component-facts dt{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:900}.component-facts dd{margin:3px 0 0}
+@media(max-width:850px){.electrical-layout{grid-template-columns:1fr}.electrical-inspector{position:static;max-height:none}}
+@media(max-width:600px){.system-toolbar{display:grid}.electrical-map{grid-template-columns:1fr}}
+

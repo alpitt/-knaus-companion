@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 4.3.0</title>
+  <title>Knaus Companion 4.4.0</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="assets/css/app-v4.css">
 </head>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 4.3.0</span>
+        <span>Version 4.4.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -148,6 +148,29 @@
           <p>Known systems, photos, components and upgrades.</p>
         </div>
         <div id="vehicleCards" class="module-grid"></div>
+      </section>
+
+      <section class="screen" data-screen="electrical">
+        <div class="page-head">
+          <span class="eyebrow">Interactive systems</span>
+          <h1>Electrical system</h1>
+          <p>Follow power from source to load, inspect protection and open the relevant workshop references.</p>
+        </div>
+        <div class="system-toolbar panel">
+          <div>
+            <strong>Show power path</strong>
+            <p>Select a view, then choose any component for its location, readings and checks.</p>
+          </div>
+          <div id="electricalFilters" class="chips" aria-label="Filter electrical diagram"></div>
+        </div>
+        <div id="electricalSummary" class="status-grid"></div>
+        <div class="electrical-layout">
+          <section class="panel electrical-map-panel" aria-label="Electrical system map">
+            <div class="electrical-legend" id="electricalLegend"></div>
+            <div class="electrical-map" id="electricalMap"></div>
+          </section>
+          <aside class="panel electrical-inspector" id="electricalInspector" aria-live="polite"></aside>
+        </div>
       </section>
 
       <section class="screen" data-screen="settings">
