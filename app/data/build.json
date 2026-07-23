@@ -1,7 +1,7 @@
 {
-  "version": "5.2.0",
-  "releaseName": "Fault Log",
-  "buildDate": "2026-07-23",
+  "version": "5.3.0",
+  "releaseName": "Upgrade Planner",
+  "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
     "companionChapters": 44,
@@ -89,7 +89,13 @@
     "Structured fault records with system and severity",
     "Open, monitoring, fixed and closed fault workflow",
     "Diagnostic outcomes linked into editable fault records",
-    "Resolution notes, mileage and first-observed history"
+    "Resolution notes, mileage and first-observed history",
+    "Offline upgrade project planning by system and priority",
+    "Planned, ready, in-progress, blocked and complete project workflow",
+    "Upgrade budgets, actual spend and target dates",
+    "Workshop chapter and official-manual links from upgrade projects",
+    "Blocked and over-budget upgrade alerts on the operations dashboard",
+    "Upgrade projects included in search, recent activity and backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

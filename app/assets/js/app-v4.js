@@ -1,5 +1,5 @@
 
-const APP_VERSION="5.2.0";
+const APP_VERSION="5.3.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -30,6 +30,8 @@ let editingVehicleDocumentId=null;
 let editingInventoryId=null;
 let faultFilter="active";
 let editingFaultId=null;
+let upgradeFilter="active";
+let editingUpgradeId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -86,6 +88,10 @@ function dashboardAlerts(){
   });
   (state.faults||[]).filter(fault=>!["fixed","closed"].includes(String(fault.status||"").toLowerCase())).forEach(fault=>alerts.push({priority:1,kind:"urgent",icon:"⚠️",title:fault.title||"Open vehicle fault",detail:fault.diagnosticOutcome||"Review the saved fault record",route:"diagnostics"}));
   (state.packingLists||[]).forEach(list=>{const metrics=packingListMetrics(list),limit=Number(list.weightLimit)||0;if(limit&&metrics.total>limit)alerts.push({priority:2,kind:"warning",icon:"🎒",title:`${list.title} exceeds allowance`,detail:`${(metrics.total-limit).toFixed(1)} kg over its packing allowance`,route:"touring"})});
+  (state.upgradeProjects||[]).filter(project=>project.status!=="complete").forEach(project=>{
+    if(project.status==="blocked")alerts.push({priority:2,kind:"warning",icon:"🧱",title:`${project.title} is blocked`,detail:"Review the upgrade plan and next action",route:"vehicle"});
+    else if(Number(project.budget)>0&&Number(project.spent)>Number(project.budget))alerts.push({priority:2,kind:"warning",icon:"💶",title:`${project.title} is over budget`,detail:`€${(Number(project.spent)-Number(project.budget)).toFixed(2)} over plan`,route:"vehicle"});
+  });
   return alerts.sort((a,b)=>a.priority-b.priority||a.title.localeCompare(b.title));
 }
 function renderDashboard(){
@@ -106,7 +112,8 @@ function renderDashboard(){
     ...(state.logs||[]).map(item=>({date:item.date||item.createdAt,icon:"🔧",title:item.title||"Service record",type:"Service",route:"maintenance"})),
     ...(state.trips||[]).map(item=>({date:item.startDate||item.createdAt,icon:"🗺️",title:item.title||item.destination||"Touring trip",type:"Trip",route:"touring"})),
     ...(state.diagnosticReports||[]).map(item=>({date:item.completedAt||item.createdAt,icon:"🧰",title:item.title||"Diagnostic report",type:"Diagnostic",route:"diagnostics"})),
-    ...(state.vehicleDocuments||[]).map(item=>({date:item.updatedAt||item.createdAt,icon:"📄",title:item.type||"Vehicle document",type:"Document",route:"vehicle"}))
+    ...(state.vehicleDocuments||[]).map(item=>({date:item.updatedAt||item.createdAt,icon:"📄",title:item.type||"Vehicle document",type:"Document",route:"vehicle"})),
+    ...(state.upgradeProjects||[]).map(item=>({date:item.updatedAt||item.createdAt,icon:"🛠️",title:item.title||"Upgrade project",type:"Upgrade",route:"vehicle"}))
   ].filter(item=>item.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
   $("#recentActivity").innerHTML=activity.length?activity.map(item=>`<button class="panel activity-card" data-route="${item.route}"><span aria-hidden="true">${item.icon}</span><span><small>${esc(item.type)} • ${esc(formatTripDate(String(item.date).slice(0,10)))}</small><strong>${esc(item.title)}</strong></span><b aria-hidden="true">→</b></button>`).join(""):'<article class="panel"><p>No recorded activity yet. Completed service, trips, diagnostics and document updates will appear here.</p></article>';
 }
@@ -142,6 +149,7 @@ function assistantIndex(){
   if(Object.values(state.vehicleProfile||{}).some(Boolean))docs.push({type:"vehicle",title:`${state.vehicleProfile.make||""} ${state.vehicleProfile.model||"Vehicle details"}`.trim(),text:JSON.stringify(state.vehicleProfile),raw:state.vehicleProfile});
   (state.vehicleDocuments||[]).forEach(d=>docs.push({type:"vehicle document",title:d.type||"Vehicle document",text:JSON.stringify(d),raw:d}));
   (state.inventory||[]).forEach(d=>docs.push({type:"inventory",title:d.name||"Onboard item",text:JSON.stringify(d),raw:d}));
+  (state.upgradeProjects||[]).forEach(d=>docs.push({type:"upgrade project",title:d.title||"Upgrade project",text:JSON.stringify(d),raw:d}));
   (state.trips||[]).forEach(d=>docs.push({type:"trip",title:d.title||d.destination||"Touring trip",text:JSON.stringify(d),raw:d}));
   (state.savedCampsites||[]).forEach(d=>docs.push({type:"campsite",title:d.name||"Saved campsite",text:JSON.stringify(d),raw:d}));
   (state.packingLists||[]).forEach(d=>docs.push({type:"packing list",title:d.title||"Packing list",text:JSON.stringify(d),raw:d}));
@@ -1248,8 +1256,39 @@ function saveInventoryItem(event){
   state.inventory=existing?state.inventory.map(entry=>entry.id===existing.id?item:entry):[item,...(state.inventory||[])];saveState();closeInventoryEditor();renderVehicle();toast(existing?"Inventory updated":"Inventory item added");
 }
 function deleteInventoryItem(id){const item=(state.inventory||[]).find(entry=>entry.id===id);if(!item||!confirm(`Delete “${item.name}”?`))return;state.inventory=state.inventory.filter(entry=>entry.id!==id);saveState();renderVehicle();toast("Inventory item deleted")}
+function renderUpgradeProjects(){
+  const projects=state.upgradeProjects||[],active=projects.filter(item=>item.status!=="complete"),spent=projects.reduce((sum,item)=>sum+(Number(item.spent)||0),0),budget=projects.reduce((sum,item)=>sum+(Number(item.budget)||0),0);
+  $("#upgradeSummary").innerHTML=[[active.length,"Active projects"],[projects.filter(item=>item.status==="blocked").length,"Blocked"],[`€${budget.toFixed(2)}`,"Total budget"],[`€${spent.toFixed(2)}`,"Total spent"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  const filters=[["active","Active"],["all","All"],["planned","Planned"],["ready","Ready"],["in-progress","In progress"],["blocked","Blocked"],["complete","Complete"]];
+  $("#upgradeFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${upgradeFilter===id?"active":""}" data-upgrade-filter="${id}">${label}</button>`).join("");
+  const visible=projects.filter(item=>upgradeFilter==="all"||(upgradeFilter==="active"?item.status!=="complete":item.status===upgradeFilter));
+  $("#upgradeProjects").innerHTML=visible.length?visible.map(item=>{
+    const over=Number(item.budget)>0&&Number(item.spent)>Number(item.budget),remaining=Math.max(0,(Number(item.budget)||0)-(Number(item.spent)||0));
+    return `<article class="panel upgrade-card priority-${esc(item.priority||"medium")} status-${esc(item.status||"planned")}">
+      <div class="upgrade-card-head"><div><span class="maintenance-status">${esc(String(item.status||"planned").replace("-"," "))}</span><h3>${esc(item.title)}</h3><p>${vehicleSystemIcon(item.system)} ${esc(item.system||"vehicle")} • ${esc(item.priority||"medium")} priority</p></div>${item.targetDate?`<span class="fault-date">Target ${esc(formatTripDate(item.targetDate))}</span>`:""}</div>
+      <div class="upgrade-money"><div><span>Budget</span><strong>€${(Number(item.budget)||0).toFixed(2)}</strong></div><div><span>Spent</span><strong class="${over?"over-budget":""}">€${(Number(item.spent)||0).toFixed(2)}</strong></div><div><span>${over?"Over":"Remaining"}</span><strong>€${Math.abs(over?Number(item.spent)-Number(item.budget):remaining).toFixed(2)}</strong></div></div>
+      ${item.notes?`<p class="upgrade-notes">${esc(item.notes)}</p>`:""}
+      <div class="diagnostic-link-row">${item.chapter?`<button class="secondary-btn" data-chapter-nav="${Number(item.chapter)}">Chapter ${Number(item.chapter)}</button>`:""}${item.manualPage?`<button class="secondary-btn" data-manual-nav="${Number(item.manualPage)}">Manual p. ${Number(item.manualPage)}</button>`:""}</div>
+      <div class="trip-card-actions"><button class="secondary-btn" data-upgrade-edit="${esc(item.id)}">Edit</button>${item.status!=="complete"?`<button class="primary-btn" data-upgrade-status="${esc(item.id)}" data-status="complete">Complete</button>`:`<button class="secondary-btn" data-upgrade-status="${esc(item.id)}" data-status="planned">Reopen</button>`}<button class="danger-btn" data-upgrade-delete="${esc(item.id)}">Delete</button></div>
+    </article>`;
+  }).join(""):'<article class="panel trip-empty"><p>No upgrade projects match this view.</p><button class="primary-btn" data-upgrade-add>Add first project</button></article>';
+}
+function openUpgradeEditor(id=null){
+  editingUpgradeId=id;const item=(state.upgradeProjects||[]).find(entry=>entry.id===id)||{};
+  $("#upgradeDialogTitle").textContent=id?"Edit project":"Add project";$("#upgradeTitle").value=item.title||"";$("#upgradeSystem").value=item.system||"electrical";$("#upgradePriority").value=item.priority||"medium";$("#upgradeStatus").value=item.status||"planned";$("#upgradeTargetDate").value=item.targetDate||"";$("#upgradeBudget").value=item.budget??"";$("#upgradeSpent").value=item.spent??"";$("#upgradeChapter").value=item.chapter||"";$("#upgradeManualPage").value=item.manualPage||"";$("#upgradeNotes").value=item.notes||"";
+  const dialog=$("#upgradeDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");setTimeout(()=>$("#upgradeTitle").focus(),0);
+}
+function closeUpgradeEditor(){const dialog=$("#upgradeDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");editingUpgradeId=null}
+function saveUpgradeProject(event){
+  event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget)),existing=(state.upgradeProjects||[]).find(item=>item.id===editingUpgradeId);
+  const project={id:existing?.id||`upgrade-${Date.now()}`,title:values.title.trim(),system:values.system,priority:values.priority,status:values.status,targetDate:values.targetDate,budget:values.budget?Number(values.budget):0,spent:values.spent?Number(values.spent):0,chapter:values.chapter?Number(values.chapter):null,manualPage:values.manualPage?Number(values.manualPage):null,notes:values.notes.trim(),createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  state.upgradeProjects=existing?state.upgradeProjects.map(item=>item.id===existing.id?project:item):[project,...(state.upgradeProjects||[])];saveState();closeUpgradeEditor();renderVehicle();renderHome();toast(existing?"Upgrade project updated":"Upgrade project added");
+}
+function setUpgradeStatus(id,status){const project=(state.upgradeProjects||[]).find(item=>item.id===id);if(!project)return;project.status=status;project.updatedAt=new Date().toISOString();saveState();renderVehicle();renderHome();toast(status==="complete"?"Project completed":"Project reopened")}
+function deleteUpgradeProject(id){const project=(state.upgradeProjects||[]).find(item=>item.id===id);if(!project||!confirm(`Delete “${project.title}”?`))return;state.upgradeProjects=state.upgradeProjects.filter(item=>item.id!==id);saveState();renderVehicle();renderHome();toast("Upgrade project deleted")}
 function renderVehicle(){
   renderVehicleRecords();
+  renderUpgradeProjects();
   $("#vehicleCards").innerHTML=[
     moduleCard("electrical","⚡","Interactive electrical","Trace supplies, protection and connected loads"),
     moduleCard("fuses","▥","Fuse & circuit finder","Locate VB06-1 and VB04 protection"),
@@ -1375,6 +1414,12 @@ document.addEventListener("click",e=>{
   const inventoryEdit=e.target.closest("[data-inventory-edit]");if(inventoryEdit)openInventoryEditor(inventoryEdit.dataset.inventoryEdit);
   const inventoryDelete=e.target.closest("[data-inventory-delete]");if(inventoryDelete)deleteInventoryItem(inventoryDelete.dataset.inventoryDelete);
   if(e.target.closest("[data-inventory-cancel]"))closeInventoryEditor();
+  if(e.target.closest("[data-upgrade-add]"))openUpgradeEditor();
+  const upgradeFilterButton=e.target.closest("[data-upgrade-filter]");if(upgradeFilterButton){upgradeFilter=upgradeFilterButton.dataset.upgradeFilter;renderUpgradeProjects()}
+  const upgradeEdit=e.target.closest("[data-upgrade-edit]");if(upgradeEdit)openUpgradeEditor(upgradeEdit.dataset.upgradeEdit);
+  const upgradeStatus=e.target.closest("[data-upgrade-status]");if(upgradeStatus)setUpgradeStatus(upgradeStatus.dataset.upgradeStatus,upgradeStatus.dataset.status);
+  const upgradeDelete=e.target.closest("[data-upgrade-delete]");if(upgradeDelete)deleteUpgradeProject(upgradeDelete.dataset.upgradeDelete);
+  if(e.target.closest("[data-upgrade-cancel]"))closeUpgradeEditor();
   if(e.target.closest("[data-diagnostic-back]"))backDiagnostic();
   if(e.target.closest("[data-diagnostic-restart]"))restartDiagnostic();
   if(e.target.closest("[data-diagnostic-save]"))saveDiagnosticReport();
@@ -1404,12 +1449,14 @@ $("#packingItemForm").addEventListener("submit",savePackingItem);
 $("#vehicleProfileForm").addEventListener("submit",saveVehicleProfile);
 $("#vehicleDocumentForm").addEventListener("submit",saveVehicleDocument);
 $("#inventoryForm").addEventListener("submit",saveInventoryItem);
+$("#upgradeForm").addEventListener("submit",saveUpgradeProject);
 $("#addVehicleDocument").onclick=()=>openVehicleDocumentEditor();
 $("#addInventoryItem").onclick=()=>openInventoryEditor();
+$("#addUpgradeProject").onclick=()=>openUpgradeEditor();
 $("#inventorySearch").addEventListener("input",renderVehicleRecords);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 
