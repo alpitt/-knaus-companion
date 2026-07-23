@@ -25,6 +25,8 @@ Version 4.4.0 begins the Interactive Systems series with an electrical power-pat
 
 The water-system explorer adds filtered fresh, hot, waste and monitoring flows with component operation, maintenance and diagnostic references.
 
+The gas-system explorer covers LPG supply, heating, cooking, refrigeration, flues and safety, with clear boundaries between user checks and work for a competent gas technician.
+
 ## iPhone installation
 
 Open the site in Safari, tap Share, then tap Add to Home Screen. Open the installed app and select Download offline pack.
