@@ -3,7 +3,7 @@ const APP_VERSION="4.4.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
-const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],water:[],waterRelations:[],gas:[],campsites:[],touringChecks:[]};
+const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],water:[],waterRelations:[],gas:[],gasRelations:[],campsites:[],touringChecks:[]};
 let state=loadState();
 let libraryMode="chapters";
 let activeManualPage=1;
@@ -14,6 +14,8 @@ let electricalFilter="all";
 let activeElectricalComponent="calira-evs";
 let waterFilter="all";
 let activeWaterComponent="pump";
+let gasFilter="all";
+let activeGasComponent="gas-manifold";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -50,7 +52,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
-  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["water","Water system","💧"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["water","Water system","💧"],["gas","Gas system","🔥"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -65,6 +67,7 @@ function renderHome(){
   $("#homeModules").innerHTML=[
     moduleCard("electrical","⚡","Electrical system","Trace 12 V, mains and planned upgrades"),
     moduleCard("water","💧","Water system","Follow fresh, hot and waste-water flow"),
+    moduleCard("gas","🔥","Gas system","Trace supply, appliances and combustion safety"),
     moduleCard("vehicle","🚐","My motorhome","Systems, photos and upgrades"),
     moduleCard("manuals","📘","Manuals","Companion chapters and official pages"),
     moduleCard("diagnostics","🧰","Diagnostics","Guided checks for common problems"),
@@ -717,10 +720,45 @@ function renderWater(){
   renderWaterInspector();
 }
 
+function gasView(component){
+  if(["gas-locker","gas-cylinder","regulator","gas-manifold"].includes(component.id))return "supply";
+  if(["truma-heater","warm-air-ducts","boiler-burner"].includes(component.id))return "heating";
+  if(["hob","oven"].includes(component.id))return "cooking";
+  if(component.id==="fridge-gas")return "fridge";
+  return "safety";
+}
+function gasComponents(){
+  if(gasFilter==="all")return DATA.gas;
+  const shared=gasFilter==="heating"||gasFilter==="cooking"||gasFilter==="fridge"?["gas-manifold"]:[];
+  return DATA.gas.filter(component=>gasView(component)===gasFilter||shared.includes(component.id));
+}
+function renderGasInspector(){
+  const component=DATA.gas.find(item=>item.id===activeGasComponent)||gasComponents()[0];
+  if(!component){$("#gasInspector").innerHTML="<h2>Gas data unavailable</h2><p>Reload the app while online to restore the installed reference data.</p>";return}
+  activeGasComponent=component.id;
+  const related=DATA.gasRelations.filter(link=>link.from===component.id||link.to===component.id);
+  $("#gasInspector").innerHTML=`<span class="meta">${esc(component.category||"Gas component")}</span><h2>${esc(component.name)}</h2><div class="diagnostic-meta"><span>${esc(component.status||"Installed")}</span></div><p>${esc(component.purpose||"")}</p><div class="gas-caution"><strong>Safety boundary</strong><span>Visual and user-level checks only. Pressure, soundness, combustion and internal appliance work require a competent gas technician.</span></div><dl class="component-facts"><div><dt>Location</dt><dd>${esc(component.location||"Confirm on vehicle")}</dd></div><div><dt>Operation</dt><dd>${esc(component.operation||"Inspect the fitted arrangement")}</dd></div></dl>${(component.tests||[]).length?`<section class="detail-section"><h3>Safe checks</h3><ol>${component.tests.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>`:""}${(component.maintenance||[]).length?`<section class="detail-section"><h3>Maintenance</h3><ul>${component.maintenance.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>`:""}${related.length?`<section class="detail-section"><h3>Connected path</h3><ul>${related.map(link=>{const other=DATA.gas.find(x=>x.id===(link.from===component.id?link.to:link.from));return `<li><strong>${esc(link.from===component.id?"To":"From")} ${esc(other?.name||"component")}</strong><br>${esc(link.label||"connected")}</li>`}).join("")}</ul></section>`:""}<div class="diagnostic-link-row">${(component.chapters||[]).map(n=>`<button class="secondary-btn" data-chapter-nav="${Number(n)}">Chapter ${Number(n)}</button>`).join("")}${(component.officialPages||[]).map(n=>`<button class="secondary-btn" data-manual-nav="${Number(n)}">Manual p. ${Number(n)}</button>`).join("")}</div>`;
+}
+function renderGas(){
+  const filters=[["all","All paths"],["supply","LPG supply"],["heating","Heating & hot water"],["cooking","Cooking"],["fridge","Refrigerator"],["safety","Safety & flues"]];
+  $("#gasFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${gasFilter===id?"active":""}" data-gas-filter="${id}">${label}</button>`).join("");
+  const components=gasComponents(),visibleIds=new Set(components.map(x=>x.id));
+  const links=DATA.gasRelations.filter(x=>visibleIds.has(x.from)&&visibleIds.has(x.to));
+  $("#gasSummary").innerHTML=[[components.length,"Components"],[links.length,"Visible connections"],[components.filter(x=>x.status==="Installed").length,"Installed items"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  $("#gasLegend").innerHTML=`<span><i class="legend-dot gas-supply"></i>Supply</span><span><i class="legend-dot gas-appliance"></i>Appliance</span><span><i class="legend-dot gas-exhaust"></i>Flue / airflow</span><span><i class="legend-dot gas-safety"></i>Safety</span>`;
+  $("#gasMap").innerHTML=components.map(component=>{
+    const outgoing=links.filter(x=>x.from===component.id);
+    const view=gasView(component),kind=view==="supply"?"gas-supply":view==="safety"?component.id==="co-alarm"?"gas-safety":"gas-exhaust":"gas-appliance";
+    return `<article class="electrical-node gas-node ${kind} ${activeGasComponent===component.id?"active":""}"><button data-gas-component="${esc(component.id)}" aria-pressed="${activeGasComponent===component.id}"><span class="meta">${esc(component.category)}</span><strong>${esc(component.name)}</strong><small>${esc(component.operation||component.status||"")}</small></button>${outgoing.map(link=>{const target=DATA.gas.find(x=>x.id===link.to);return `<button class="power-link" data-gas-component="${esc(link.to)}"><span>${esc(link.label||"supplies")}</span><b>→ ${esc(target?.name||link.to)}</b></button>`}).join("")}</article>`;
+  }).join("")||`<article class="panel"><p>No components match this view.</p></article>`;
+  renderGasInspector();
+}
+
 function renderVehicle(){
   $("#vehicleCards").innerHTML=[
     moduleCard("electrical","⚡","Interactive electrical","Trace supplies, protection and connected loads"),
     moduleCard("water","💧","Interactive water","Follow fresh, hot and waste-water flow"),
+    moduleCard("gas","🔥","Interactive gas","Trace LPG supply and appliance branches"),
     moduleCard("manuals","📚","Documentation","Manuals, wiring notes and chapters"),
     moduleCard("maintenance","🛠️","Service history","Work completed and due"),
     moduleCard("diagnostics","⚠️","Faults & diagnostics","Known issues and guided checks"),
@@ -749,14 +787,14 @@ async function clearCache(){
 async function init(){
   [
     DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
-    DATA.electrical,DATA.electricalRelations,DATA.water,DATA.waterRelations,DATA.gas,DATA.campsites,DATA.touringChecks
+    DATA.electrical,DATA.electricalRelations,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.campsites,DATA.touringChecks
   ]=await Promise.all([
     loadJSON("data/chapters.json"),loadJSON("data/manual_pages.json"),loadJSON("data/smart_diagnostics.json"),
     loadJSON("data/maintenance_tasks.json"),loadJSON("data/assistant_prompts.json"),loadJSON("data/build.json",{}),
-    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),
+    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json")
   ]);
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderWater();renderSettings();
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderWater();renderGas();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
 }
@@ -775,6 +813,8 @@ document.addEventListener("click",e=>{
   const electricalComponent=e.target.closest("[data-electrical-component]");if(electricalComponent){activeElectricalComponent=electricalComponent.dataset.electricalComponent;renderElectrical()}
   const waterFilterButton=e.target.closest("[data-water-filter]");if(waterFilterButton){waterFilter=waterFilterButton.dataset.waterFilter;const first=waterComponents()[0];if(first)activeWaterComponent=first.id;renderWater()}
   const waterComponent=e.target.closest("[data-water-component]");if(waterComponent){activeWaterComponent=waterComponent.dataset.waterComponent;renderWater()}
+  const gasFilterButton=e.target.closest("[data-gas-filter]");if(gasFilterButton){gasFilter=gasFilterButton.dataset.gasFilter;const first=gasComponents()[0];if(first)activeGasComponent=first.id;renderGas()}
+  const gasComponent=e.target.closest("[data-gas-component]");if(gasComponent){activeGasComponent=gasComponent.dataset.gasComponent;renderGas()}
   if(e.target.closest("[data-diagnostic-back]"))backDiagnostic();
   if(e.target.closest("[data-diagnostic-restart]"))restartDiagnostic();
   if(e.target.closest("[data-diagnostic-save]"))saveDiagnosticReport();

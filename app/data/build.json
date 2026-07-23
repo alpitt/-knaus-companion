@@ -54,7 +54,9 @@
     "12 V, 230 V and planned-upgrade electrical views",
     "Electrical component readings, checks and reference links",
     "Interactive fresh, hot and waste-water flow explorer",
-    "Water component operation, maintenance and workshop links"
+    "Water component operation, maintenance and workshop links",
+    "Interactive LPG supply, appliance and combustion-safety explorer",
+    "Gas safety boundaries and emergency guidance"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
