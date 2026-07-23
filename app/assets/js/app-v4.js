@@ -1,9 +1,9 @@
 
-const APP_VERSION="4.4.0";
+const APP_VERSION="4.5.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
-const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[]};
+const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[],touringOperations:null};
 let state=loadState();
 let libraryMode="chapters";
 let activeManualPage=1;
@@ -20,6 +20,7 @@ let vehicleMapView="interior";
 let activeVehicleHotspot="electrical-compartment";
 let fuseBoxFilter="all";
 let activeFuseIndex=0;
+let activeTouringStage="departure";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -180,8 +181,32 @@ function renderDiagnostics(){
   }).join("");
 }
 function renderTouring(){
+  const lists=DATA.touringOperations?.lists||[];
+  const stage=lists.find(x=>x.id===activeTouringStage)||lists[0];
+  if(stage)activeTouringStage=stage.id;
+  const total=lists.reduce((sum,list)=>sum+list.items.length,0);
+  const completed=lists.reduce((sum,list)=>sum+list.items.filter(item=>state.touringProgress?.[`${list.id}:${item.id}`]).length,0);
+  const stageDone=stage?stage.items.filter(item=>state.touringProgress?.[`${stage.id}:${item.id}`]).length:0;
+  $("#touringProgress").innerHTML=[
+    [completed,`of ${total} journey checks`],
+    [lists.filter(list=>list.items.every(item=>state.touringProgress?.[`${list.id}:${item.id}`])).length,`of ${lists.length} stages complete`],
+    [total?`${Math.round(completed/total*100)}%`:"0%","Overall progress"]
+  ].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  $("#touringStageTabs").innerHTML=lists.map(list=>{
+    const done=list.items.filter(item=>state.touringProgress?.[`${list.id}:${item.id}`]).length;
+    return `<button class="tab ${activeTouringStage===list.id?"active":""}" data-touring-stage="${esc(list.id)}">${esc(list.icon)} ${esc(list.title)} <span>${done}/${list.items.length}</span></button>`;
+  }).join("");
+  if(stage){
+    $("#touringChecklist").innerHTML=`<div class="touring-checklist-head"><span class="meta">${esc(stage.icon)} Journey stage</span><h2>${esc(stage.title)}</h2><p>${esc(stage.description)}</p><div class="touring-progress-bar"><span style="width:${stage.items.length?stageDone/stage.items.length*100:0}%"></span></div></div><div class="touring-check-items">${stage.items.map((item,index)=>{
+      const checked=Boolean(state.touringProgress?.[`${stage.id}:${item.id}`]);
+      return `<button class="touring-check ${checked?"complete":""}" data-touring-check="${esc(item.id)}" role="checkbox" aria-checked="${checked}"><span class="touring-check-box">${checked?"✓":index+1}</span><span>${esc(item.text)}</span></button>`;
+    }).join("")}</div>`;
+    $("#touringStageInfo").innerHTML=`<span class="meta">Stage progress</span><h2>${stageDone} of ${stage.items.length}</h2><p>${stageDone===stage.items.length?"Stage complete. Review once more immediately before acting.":"Progress is saved automatically on this device."}</p><div class="diagnostic-actions"><button class="danger-btn" data-touring-reset="${esc(stage.id)}">Reset this stage</button>${(stage.manualPages||[]).map(n=>`<button class="secondary-btn" data-manual-nav="${Number(n)}">Manual p. ${Number(n)}</button>`).join("")}</div>`;
+  }else{
+    $("#touringChecklist").innerHTML="<h2>Touring checklist unavailable</h2>";
+    $("#touringStageInfo").innerHTML="<p>Reload while online to restore the installed touring data.</p>";
+  }
   const cards=[
-    ["departure","✅","Departure checks","Before leaving home or a campsite"],
     ["packing","🎒","Packing","Templates and essential equipment"],
     ["campsites","🏕️","Campsites","Saved campsite information"],
     ["travel-log","📝","Travel log","Record trips and useful notes"]
@@ -838,12 +863,12 @@ async function clearCache(){
 async function init(){
   [
     DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
-    DATA.electrical,DATA.electricalRelations,DATA.fuses,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.campsites,DATA.touringChecks
+    DATA.electrical,DATA.electricalRelations,DATA.fuses,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.campsites,DATA.touringChecks,DATA.touringOperations
   ]=await Promise.all([
     loadJSON("data/chapters.json"),loadJSON("data/manual_pages.json"),loadJSON("data/smart_diagnostics.json"),
     loadJSON("data/maintenance_tasks.json"),loadJSON("data/assistant_prompts.json"),loadJSON("data/build.json",{}),
     loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),
-    loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json")
+    loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{})
   ]);
   applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
@@ -855,6 +880,9 @@ document.addEventListener("click",e=>{
   const prompt=e.target.closest("[data-prompt]");if(prompt){$("#assistantInput").value=prompt.dataset.prompt;askAssistant()}
   const tab=e.target.closest("[data-library]");if(tab){libraryMode=tab.dataset.library;$$(".tab").forEach(x=>x.classList.toggle("active",x===tab));renderLibrary()}
   const touring=e.target.closest("[data-touring]");if(touring)openTouringSection(touring.dataset.touring);
+  const touringStage=e.target.closest("[data-touring-stage]");if(touringStage){activeTouringStage=touringStage.dataset.touringStage;renderTouring()}
+  const touringCheck=e.target.closest("[data-touring-check]");if(touringCheck){const key=`${activeTouringStage}:${touringCheck.dataset.touringCheck}`;state.touringProgress={...(state.touringProgress||{}),[key]:!state.touringProgress?.[key]};saveState();renderTouring()}
+  const touringReset=e.target.closest("[data-touring-reset]");if(touringReset){const prefix=`${touringReset.dataset.touringReset}:`;state.touringProgress=Object.fromEntries(Object.entries(state.touringProgress||{}).filter(([key])=>!key.startsWith(prefix)));saveState();renderTouring();toast("Touring stage reset")}
   const manual=e.target.closest("[data-manual-page],[data-manual-nav],[data-page]");if(manual)openManualPage(manual.dataset.manualPage||manual.dataset.manualNav||manual.dataset.page);
   const chapter=e.target.closest("[data-chapter-nav]");if(chapter)openChapter(chapter.dataset.chapterNav);
   const diagnosticStart=e.target.closest("[data-diagnostic-start]");if(diagnosticStart)startDiagnostic(diagnosticStart.dataset.diagnosticStart);

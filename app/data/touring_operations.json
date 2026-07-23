@@ -1,0 +1,75 @@
+{
+  "version": "4.5.0",
+  "lists": [
+    {
+      "id": "departure",
+      "title": "Departure",
+      "icon": "🚐",
+      "description": "Final checks before moving the vehicle.",
+      "manualPages": [29, 273],
+      "items": [
+        {"id": "documents", "text": "Vehicle papers, insurance, licences and travel documents are onboard"},
+        {"id": "openings", "text": "Doors, lockers, windows and rooflights are secured"},
+        {"id": "utilities", "text": "Hook-up cable, water hose and waste equipment are disconnected and stored"},
+        {"id": "gas", "text": "Cylinder valves and appliance isolation are set correctly for travel"},
+        {"id": "interior", "text": "Loose items, tables, screens and hanging equipment are secured"},
+        {"id": "exterior", "text": "Step, awning, levelling equipment, aerial and satellite dish are stowed"},
+        {"id": "payload", "text": "Payload is restrained and axle or total limits are not exceeded"},
+        {"id": "roadworthy", "text": "Tyres, mirrors, lights, fluids and visible leaks are checked"},
+        {"id": "route", "text": "Destination, route constraints and fuel range are confirmed"}
+      ]
+    },
+    {
+      "id": "arrival",
+      "title": "Arrival",
+      "icon": "📍",
+      "description": "Set up safely without missing a utility step.",
+      "manualPages": [47, 91],
+      "items": [
+        {"id": "pitch", "text": "Pitch access, overhead clearance, ground condition and exit route are suitable"},
+        {"id": "level", "text": "Vehicle is level, parking brake applied and wheels secured if required"},
+        {"id": "gas", "text": "Gas locker, regulator and appliance isolation are visually checked before opening supply"},
+        {"id": "electric", "text": "Hook-up lead is inspected, connected vehicle-first and RCD operation is checked"},
+        {"id": "water", "text": "Fresh-water fill, tank level and frost valve state are confirmed"},
+        {"id": "waste", "text": "Waste outlets are closed and disposal arrangements are known"},
+        {"id": "outside", "text": "Step, awning, chairs and exterior equipment are deployed safely"},
+        {"id": "inside", "text": "Ventilation, refrigerator mode and heating controls are set for occupation"}
+      ]
+    },
+    {
+      "id": "leaving-site",
+      "title": "Leaving Site",
+      "icon": "✅",
+      "description": "Pack down and leave the pitch ready for travel.",
+      "manualPages": [41, 273],
+      "items": [
+        {"id": "waste", "text": "Waste water and toilet cassette are emptied at approved points"},
+        {"id": "water", "text": "Fresh-water level is appropriate and filler or drain caps are secured"},
+        {"id": "electric", "text": "Hook-up is isolated, disconnected bollard-first, inspected and stored"},
+        {"id": "gas", "text": "Gas supply and appliances are set correctly for travel"},
+        {"id": "exterior", "text": "Awning, step, ramps, chocks, aerial and satellite dish are stowed"},
+        {"id": "interior", "text": "Cupboards, fridge contents and loose equipment are secured"},
+        {"id": "pitch", "text": "Pitch is checked for equipment, litter, leaks or damage"},
+        {"id": "walkaround", "text": "A complete vehicle walkaround and light check is finished"}
+      ]
+    },
+    {
+      "id": "return",
+      "title": "Return Home",
+      "icon": "🏠",
+      "description": "Close out the trip and leave the motorhome ready.",
+      "manualPages": [151, 165],
+      "items": [
+        {"id": "unload", "text": "Food, valuables, laundry and trip equipment are removed"},
+        {"id": "clean", "text": "Interior, refrigerator, washroom and cooking areas are cleaned and dried"},
+        {"id": "water", "text": "Fresh and waste systems are drained or left in the intended storage state"},
+        {"id": "toilet", "text": "Toilet cassette is emptied, rinsed and serviced"},
+        {"id": "power", "text": "Battery charging and mains connection are set for storage"},
+        {"id": "gas", "text": "Gas cylinders are closed and locker ventilation remains clear"},
+        {"id": "faults", "text": "New faults, damage and maintenance needs are recorded"},
+        {"id": "mileage", "text": "Mileage, fuel and trip notes are recorded"},
+        {"id": "security", "text": "Windows, rooflights, doors, alarms and storage security are checked"}
+      ]
+    }
+  ]
+}

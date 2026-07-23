@@ -1,6 +1,6 @@
 {
-  "version": "4.4.0",
-  "releaseName": "Interactive Systems: Electrical",
+  "version": "4.5.0",
+  "releaseName": "Touring Operations",
   "buildDate": "2026-07-23",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -60,7 +60,10 @@
     "Interactive interior, exterior and roof vehicle map",
     "Vehicle hotspots linked to systems, chapters and manual pages",
     "Interactive Calira fuse and circuit finder",
-    "Fuse-board filters, search, ratings and safe test sequence"
+    "Fuse-board filters, search, ratings and safe test sequence",
+    "Persistent four-stage journey checklist",
+    "Departure, arrival, leaving-site and return workflows",
+    "Offline touring progress and manual references"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

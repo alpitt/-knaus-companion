@@ -346,3 +346,25 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .fuse-inspector{position:sticky;top:84px}.fuse-inspector h2{margin:.35rem 0}.fuse-test{padding:14px;border-radius:14px;background:var(--panel-2);margin:15px 0}.fuse-test h3{margin:0}.fuse-test li{margin:.45rem 0}
 @media(max-width:850px){.fuse-layout{grid-template-columns:1fr}.fuse-inspector{position:static}}@media(max-width:600px){.fuse-controls{display:grid}.fuse-slots{grid-template-columns:1fr}}
 
+/* v4.5 touring operations */
+.touring-ops-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,.7fr);gap:16px;align-items:start}
+.touring-checklist{padding:0;overflow:hidden}
+.touring-checklist-head{padding:20px;border-bottom:1px solid var(--line)}
+.touring-checklist-head h2{margin:.3rem 0 .45rem}
+.touring-checklist-head p{margin:0 0 16px;color:var(--muted);line-height:1.5}
+.touring-progress-bar{height:10px;border:1px solid var(--line);border-radius:999px;background:var(--panel-2);overflow:hidden}
+.touring-progress-bar span{display:block;height:100%;border-radius:999px;background:var(--brand);transition:width .2s ease}
+.touring-check-items{display:grid}
+.touring-check{display:grid;grid-template-columns:42px 1fr;align-items:center;gap:13px;min-height:66px;padding:12px 18px;border:0;border-bottom:1px solid var(--line);background:var(--panel);color:var(--text);text-align:left;font-weight:750}
+.touring-check:last-child{border-bottom:0}
+.touring-check:hover,.touring-check:focus-visible{background:var(--panel-2)}
+.touring-check.complete{color:var(--muted);text-decoration:line-through}
+.touring-check-box{display:grid;place-items:center;width:36px;height:36px;border:2px solid var(--line);border-radius:11px;background:var(--panel-2);color:var(--muted);font-weight:900;text-decoration:none}
+.touring-check.complete .touring-check-box{border-color:#16a34a;background:#dcfce7;color:#166534}
+.touring-stage-info{position:sticky;top:84px}
+.touring-stage-info h2{font-size:clamp(1.6rem,4vw,2.3rem);margin:.35rem 0}
+.touring-stage-info>p{color:var(--muted);line-height:1.5}
+.touring-tools-heading{margin-top:30px}
+@media(max-width:850px){.touring-ops-layout{grid-template-columns:1fr}.touring-stage-info{position:static}}
+@media(max-width:600px){.touring-check{padding:11px 13px}.touring-check-box{width:34px;height:34px}}
+
