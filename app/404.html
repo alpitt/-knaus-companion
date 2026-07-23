@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 5.3.0</title>
+  <title>Knaus Companion 5.4.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.3.0-upgrades">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.4.0-photos">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 5.3.0</span>
+        <span>Version 5.4.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -226,6 +226,12 @@
           <label class="campsite-search">Search inventory<input id="inventorySearch" type="search" placeholder="Name, category, location or notes"></label>
           <div id="vehicleInventory" class="inventory-grid"></div>
         </section>
+        <section class="section-block" id="vehiclePhotoLibrary">
+          <div class="section-heading"><div><span class="eyebrow">Vehicle reference gallery</span><h2>Installed equipment photos</h2></div></div>
+          <div id="photoSummary" class="status-grid"></div>
+          <label class="campsite-search">Search photos and annotations<input id="photoSearch" type="search" placeholder="Component, location, label or note"></label>
+          <div id="vehiclePhotos" class="photo-grid"></div>
+        </section>
         <section class="section-block" id="upgradePlanner">
           <div class="section-heading"><div><span class="eyebrow">Upgrade planner</span><h2>Plan vehicle improvements</h2></div><button class="primary-btn" id="addUpgradeProject">Add project</button></div>
           <div id="upgradeSummary" class="status-grid"></div>
@@ -407,6 +413,19 @@
       </form>
     </dialog>
 
+    <dialog id="photoDialog" class="detail-dialog photo-dialog">
+      <form id="photoForm">
+        <div class="dialog-head"><div><span class="eyebrow">Vehicle reference photo</span><h2 id="photoDialogTitle">Photo details</h2></div><button class="icon-btn" type="button" data-photo-cancel aria-label="Close">×</button></div>
+        <div class="photo-viewer"><img id="photoDialogImage" alt=""></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Display title<input id="photoTitle" name="title" maxlength="140"></label>
+          <label class="trip-field">Location<input id="photoLocation" name="location" maxlength="140"></label>
+          <label class="trip-field trip-field-wide">Inspection notes<textarea id="photoNotes" name="notes" maxlength="2500" placeholder="Labels, wire colours, condition, access or follow-up checks"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-photo-cancel>Cancel</button><button class="primary-btn" type="submit">Save annotation</button></div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="serviceRecordDialog" class="detail-dialog trip-dialog">
       <form id="serviceRecordForm">
         <div class="dialog-head">
@@ -531,7 +550,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=5.3.0-upgrades"></script>
+  <script src="assets/js/app-v4.js?v=5.4.0-photos"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

@@ -505,3 +505,11 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .upgrade-notes{margin:0;color:var(--muted);white-space:pre-wrap}.upgrade-card .trip-card-actions{margin-top:auto;justify-content:flex-start;flex-wrap:wrap}.upgrade-card.status-complete .maintenance-status{background:#dcfce7;color:#166534}
 @media(max-width:600px){.upgrade-grid{grid-template-columns:1fr}.upgrade-card-head{display:grid}.upgrade-money{grid-template-columns:1fr}.upgrade-card .trip-card-actions{display:grid}.upgrade-card .trip-card-actions button{width:100%}}
 
+/* v5.4 vehicle reference gallery */
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.photo-card{display:flex;flex-direction:column;gap:7px;padding:0 0 14px;overflow:hidden;color:var(--text);text-align:left}
+.photo-card img{width:100%;height:230px;object-fit:cover;background:var(--panel-2)}
+.photo-card>.meta,.photo-card>strong,.photo-card>small{margin-inline:14px}.photo-card>strong{font-size:1rem}.photo-card>small{color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.photo-dialog{width:min(920px,calc(100% - 20px))}.photo-viewer{display:grid;place-items:center;max-height:55dvh;overflow:auto;background:#111}.photo-viewer img{display:block;max-width:100%;max-height:55dvh;object-fit:contain}
+@media(max-width:600px){.photo-grid{grid-template-columns:1fr}.photo-card img{height:260px}.photo-viewer{max-height:42dvh}.photo-viewer img{max-height:42dvh}}
+

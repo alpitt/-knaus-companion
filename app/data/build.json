@@ -1,6 +1,6 @@
 {
-  "version": "5.3.0",
-  "releaseName": "Upgrade Planner",
+  "version": "5.4.0",
+  "releaseName": "Vehicle Reference Gallery",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -95,7 +95,12 @@
     "Upgrade budgets, actual spend and target dates",
     "Workshop chapter and official-manual links from upgrade projects",
     "Blocked and over-budget upgrade alerts on the operations dashboard",
-    "Upgrade projects included in search, recent activity and backups"
+    "Upgrade projects included in search, recent activity and backups",
+    "Searchable gallery for all six preserved vehicle photographs",
+    "Large reference-photo inspection view",
+    "Editable photo titles, locations and inspection notes",
+    "Vehicle photo annotations included in offline search and backups",
+    "Reference photographs precached for offline use"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

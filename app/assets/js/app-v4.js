@@ -1,7 +1,16 @@
 
-const APP_VERSION="5.3.0";
+const APP_VERSION="5.4.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+
+const VEHICLE_PHOTOS=[
+  {id:"photo-01",file:"vehicle_photo_01.jpg",title:"Calira VB06-1 and EVS installation",location:"Electrical compartment",tags:"electrical fuse distribution charger wiring VB06-1 EVS 30/20"},
+  {id:"photo-02",file:"vehicle_photo_02.jpg",title:"Calira EVS 30/20 wiring and labels",location:"Electrical compartment",tags:"electrical charger power supply connectors cable routes"},
+  {id:"photo-03",file:"vehicle_photo_03.jpg",title:"Calira VB04 auxiliary fuse box",location:"Under passenger seat",tags:"electrical fuse D+ heating permanent supply VB04"},
+  {id:"photo-04",file:"vehicle_photo_04.jpg",title:"Passenger-seat equipment location",location:"Under passenger seat",tags:"electrical seat base control module installation access"},
+  {id:"photo-05",file:"vehicle_photo_05.jpg",title:"Seat-base control module and cabling",location:"Under passenger seat",tags:"electrical control module wiring connector access"},
+  {id:"photo-06",file:"vehicle_photo_06.jpg",title:"Calira EVS 30/20 identification",location:"Electrical compartment",tags:"electrical charger label model EVS 30/20 identification"}
+];
 
 const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[],touringOperations:null,packingTemplates:null};
 let state=loadState();
@@ -32,6 +41,7 @@ let faultFilter="active";
 let editingFaultId=null;
 let upgradeFilter="active";
 let editingUpgradeId=null;
+let activeVehiclePhotoId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -150,6 +160,7 @@ function assistantIndex(){
   (state.vehicleDocuments||[]).forEach(d=>docs.push({type:"vehicle document",title:d.type||"Vehicle document",text:JSON.stringify(d),raw:d}));
   (state.inventory||[]).forEach(d=>docs.push({type:"inventory",title:d.name||"Onboard item",text:JSON.stringify(d),raw:d}));
   (state.upgradeProjects||[]).forEach(d=>docs.push({type:"upgrade project",title:d.title||"Upgrade project",text:JSON.stringify(d),raw:d}));
+  VEHICLE_PHOTOS.forEach(photo=>{const note=state.vehiclePhotoNotes?.[photo.id]||{};docs.push({type:"vehicle photo",title:note.title||photo.title,text:`${photo.location} ${photo.tags} ${note.location||""} ${note.notes||""}`,raw:photo})});
   (state.trips||[]).forEach(d=>docs.push({type:"trip",title:d.title||d.destination||"Touring trip",text:JSON.stringify(d),raw:d}));
   (state.savedCampsites||[]).forEach(d=>docs.push({type:"campsite",title:d.name||"Saved campsite",text:JSON.stringify(d),raw:d}));
   (state.packingLists||[]).forEach(d=>docs.push({type:"packing list",title:d.title||"Packing list",text:JSON.stringify(d),raw:d}));
@@ -1256,6 +1267,23 @@ function saveInventoryItem(event){
   state.inventory=existing?state.inventory.map(entry=>entry.id===existing.id?item:entry):[item,...(state.inventory||[])];saveState();closeInventoryEditor();renderVehicle();toast(existing?"Inventory updated":"Inventory item added");
 }
 function deleteInventoryItem(id){const item=(state.inventory||[]).find(entry=>entry.id===id);if(!item||!confirm(`Delete “${item.name}”?`))return;state.inventory=state.inventory.filter(entry=>entry.id!==id);saveState();renderVehicle();toast("Inventory item deleted")}
+function renderVehiclePhotos(){
+  const annotations=state.vehiclePhotoNotes||{},annotated=VEHICLE_PHOTOS.filter(photo=>{const note=annotations[photo.id];return note&&(note.title||note.location||note.notes)}).length,query=($("#photoSearch")?.value||"").trim().toLowerCase();
+  $("#photoSummary").innerHTML=[[VEHICLE_PHOTOS.length,"Reference photos"],[annotated,"Annotated"],[VEHICLE_PHOTOS.length-annotated,"Original labels"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  const visible=VEHICLE_PHOTOS.filter(photo=>{const note=annotations[photo.id]||{};return !query||[photo.title,photo.location,photo.tags,note.title,note.location,note.notes].join(" ").toLowerCase().includes(query)});
+  $("#vehiclePhotos").innerHTML=visible.length?visible.map(photo=>{const note=annotations[photo.id]||{},title=note.title||photo.title,location=note.location||photo.location;return `<button class="panel photo-card" data-vehicle-photo="${esc(photo.id)}"><img src="assets/photos/${esc(photo.file)}" alt="${esc(title)}" loading="lazy"><span class="meta">${esc(location)}</span><strong>${esc(title)}</strong><small>${note.notes?esc(note.notes):"Open to inspect and annotate"}</small></button>`}).join(""):'<article class="panel trip-empty"><p>No reference photos match that search.</p></article>';
+}
+function openVehiclePhoto(id){
+  const photo=VEHICLE_PHOTOS.find(item=>item.id===id);if(!photo)return;activeVehiclePhotoId=id;const note=state.vehiclePhotoNotes?.[id]||{};
+  $("#photoDialogTitle").textContent=note.title||photo.title;$("#photoDialogImage").src=`assets/photos/${photo.file}`;$("#photoDialogImage").alt=note.title||photo.title;$("#photoTitle").value=note.title||photo.title;$("#photoLocation").value=note.location||photo.location;$("#photoNotes").value=note.notes||"";
+  const dialog=$("#photoDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+}
+function closeVehiclePhoto(){const dialog=$("#photoDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");activeVehiclePhotoId=null}
+function saveVehiclePhotoNote(event){
+  event.preventDefault();const photo=VEHICLE_PHOTOS.find(item=>item.id===activeVehiclePhotoId);if(!photo)return;const values=Object.fromEntries(new FormData(event.currentTarget));
+  state.vehiclePhotoNotes={...(state.vehiclePhotoNotes||{}),[photo.id]:{title:values.title.trim(),location:values.location.trim(),notes:values.notes.trim(),updatedAt:new Date().toISOString()}};
+  saveState();closeVehiclePhoto();renderVehiclePhotos();toast("Photo annotation saved");
+}
 function renderUpgradeProjects(){
   const projects=state.upgradeProjects||[],active=projects.filter(item=>item.status!=="complete"),spent=projects.reduce((sum,item)=>sum+(Number(item.spent)||0),0),budget=projects.reduce((sum,item)=>sum+(Number(item.budget)||0),0);
   $("#upgradeSummary").innerHTML=[[active.length,"Active projects"],[projects.filter(item=>item.status==="blocked").length,"Blocked"],[`€${budget.toFixed(2)}`,"Total budget"],[`€${spent.toFixed(2)}`,"Total spent"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
@@ -1288,6 +1316,7 @@ function setUpgradeStatus(id,status){const project=(state.upgradeProjects||[]).f
 function deleteUpgradeProject(id){const project=(state.upgradeProjects||[]).find(item=>item.id===id);if(!project||!confirm(`Delete “${project.title}”?`))return;state.upgradeProjects=state.upgradeProjects.filter(item=>item.id!==id);saveState();renderVehicle();renderHome();toast("Upgrade project deleted")}
 function renderVehicle(){
   renderVehicleRecords();
+  renderVehiclePhotos();
   renderUpgradeProjects();
   $("#vehicleCards").innerHTML=[
     moduleCard("electrical","⚡","Interactive electrical","Trace supplies, protection and connected loads"),
@@ -1414,6 +1443,8 @@ document.addEventListener("click",e=>{
   const inventoryEdit=e.target.closest("[data-inventory-edit]");if(inventoryEdit)openInventoryEditor(inventoryEdit.dataset.inventoryEdit);
   const inventoryDelete=e.target.closest("[data-inventory-delete]");if(inventoryDelete)deleteInventoryItem(inventoryDelete.dataset.inventoryDelete);
   if(e.target.closest("[data-inventory-cancel]"))closeInventoryEditor();
+  const vehiclePhoto=e.target.closest("[data-vehicle-photo]");if(vehiclePhoto)openVehiclePhoto(vehiclePhoto.dataset.vehiclePhoto);
+  if(e.target.closest("[data-photo-cancel]"))closeVehiclePhoto();
   if(e.target.closest("[data-upgrade-add]"))openUpgradeEditor();
   const upgradeFilterButton=e.target.closest("[data-upgrade-filter]");if(upgradeFilterButton){upgradeFilter=upgradeFilterButton.dataset.upgradeFilter;renderUpgradeProjects()}
   const upgradeEdit=e.target.closest("[data-upgrade-edit]");if(upgradeEdit)openUpgradeEditor(upgradeEdit.dataset.upgradeEdit);
@@ -1450,13 +1481,15 @@ $("#vehicleProfileForm").addEventListener("submit",saveVehicleProfile);
 $("#vehicleDocumentForm").addEventListener("submit",saveVehicleDocument);
 $("#inventoryForm").addEventListener("submit",saveInventoryItem);
 $("#upgradeForm").addEventListener("submit",saveUpgradeProject);
+$("#photoForm").addEventListener("submit",saveVehiclePhotoNote);
 $("#addVehicleDocument").onclick=()=>openVehicleDocumentEditor();
 $("#addInventoryItem").onclick=()=>openInventoryEditor();
 $("#addUpgradeProject").onclick=()=>openUpgradeEditor();
 $("#inventorySearch").addEventListener("input",renderVehicleRecords);
+$("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 
