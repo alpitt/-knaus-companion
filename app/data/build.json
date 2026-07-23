@@ -58,7 +58,9 @@
     "Interactive LPG supply, appliance and combustion-safety explorer",
     "Gas safety boundaries and emergency guidance",
     "Interactive interior, exterior and roof vehicle map",
-    "Vehicle hotspots linked to systems, chapters and manual pages"
+    "Vehicle hotspots linked to systems, chapters and manual pages",
+    "Interactive Calira fuse and circuit finder",
+    "Fuse-board filters, search, ratings and safe test sequence"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

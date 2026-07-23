@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#16384b">
   <title>Knaus Companion 4.4.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.4.0-vehicle-map">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.4.0-fuses">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -181,6 +181,14 @@
         </div>
       </section>
 
+      <section class="screen" data-screen="fuses">
+        <div class="page-head"><span class="eyebrow">Interactive systems</span><h1>Fuse & circuit finder</h1><p>Identify the Calira board, fuse label, rating and protected circuit before testing or replacement.</p></div>
+        <div class="fuse-warning" role="note"><strong>Never fit a higher-rated fuse</strong><span>Replace only with the documented rating and type. A fuse that blows again indicates a fault that must be investigated.</span></div>
+        <div class="fuse-controls panel"><label><span>Search label or circuit</span><input id="fuseSearch" type="search" placeholder="Examples: pump, D+, heating…" autocomplete="off"></label><div id="fuseBoxFilters" class="chips" aria-label="Filter fuse board"></div></div>
+        <div id="fuseSummary" class="status-grid"></div>
+        <div class="fuse-layout"><section id="fuseBoards" class="fuse-boards" aria-label="Fuse boards"></section><aside id="fuseInspector" class="panel fuse-inspector" aria-live="polite"></aside></div>
+      </section>
+
       <section class="screen" data-screen="water">
         <div class="page-head"><span class="eyebrow">Interactive systems</span><h1>Water system</h1><p>Trace fresh, hot and waste-water flow, inspect components and open the relevant workshop references.</p></div>
         <div class="system-toolbar panel"><div><strong>Show water path</strong><p>Select a view, then choose a component for its location, operation and checks.</p></div><div id="waterFilters" class="chips" aria-label="Filter water diagram"></div></div>
@@ -241,7 +249,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=4.4.0-vehicle-map"></script>
+  <script src="assets/js/app-v4.js?v=4.4.0-fuses"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

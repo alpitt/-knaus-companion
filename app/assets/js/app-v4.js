@@ -3,7 +3,7 @@ const APP_VERSION="4.4.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
-const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[]};
+const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[]};
 let state=loadState();
 let libraryMode="chapters";
 let activeManualPage=1;
@@ -18,6 +18,8 @@ let gasFilter="all";
 let activeGasComponent="gas-manifold";
 let vehicleMapView="interior";
 let activeVehicleHotspot="electrical-compartment";
+let fuseBoxFilter="all";
+let activeFuseIndex=0;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -54,7 +56,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
-  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["water","Water system","💧"],["gas","Gas system","🔥"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -68,6 +70,7 @@ function renderHome(){
   ].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
   $("#homeModules").innerHTML=[
     moduleCard("electrical","⚡","Electrical system","Trace 12 V, mains and planned upgrades"),
+    moduleCard("fuses","▥","Fuse finder","Identify Calira fuses and protected circuits"),
     moduleCard("water","💧","Water system","Follow fresh, hot and waste-water flow"),
     moduleCard("gas","🔥","Gas system","Trace supply, appliances and combustion safety"),
     moduleCard("vehicle","🚐","My motorhome","Systems, photos and upgrades"),
@@ -689,6 +692,34 @@ function renderElectrical(){
   renderElectricalInspector();
 }
 
+function fuseSystem(fuse){
+  const text=`${fuse.label} ${fuse.function}`.toLowerCase();
+  if(text.includes("pump"))return "water";
+  if(text.includes("heating"))return "gas";
+  if(text.includes("refrigerator"))return "gas";
+  return "electrical";
+}
+function renderFuseInspector(){
+  const fuse=DATA.fuses[activeFuseIndex]||DATA.fuses[0];
+  if(!fuse){$("#fuseInspector").innerHTML="<h2>Fuse data unavailable</h2>";return}
+  const component=DATA.electrical.find(x=>x.id===fuse.component);
+  const system=fuseSystem(fuse);
+  $("#fuseInspector").innerHTML=`<span class="meta">${esc(fuse.box)} fuse</span><h2>${esc(fuse.label)}</h2><div class="fuse-rating-large">${esc(fuse.rating)}</div><p>${esc(fuse.function)}</p><div class="fuse-test"><h3>Safe test sequence</h3><ol><li>Switch off the affected load.</li><li>Confirm the fuse rating matches this record.</li><li>Test both fuse points with a suitable meter or test lamp.</li><li>Replace only with the same rating and type.</li><li>If it blows again, stop and investigate the circuit fault.</li></ol></div><div class="component-facts"><div><dt>Board location</dt><dd>${esc(component?.location||"Confirm from the vehicle map")}</dd></div><div><dt>Board</dt><dd>${esc(component?.name||fuse.box)}</dd></div></div><div class="diagnostic-actions"><button class="primary-btn" data-route="electrical" data-electrical-component="${esc(fuse.component)}">Open electrical board</button>${system!=="electrical"?`<button class="secondary-btn" data-route="${system}">Open ${esc(system)} system</button>`:""}<button class="secondary-btn" data-manual-nav="95">Manual p. 95</button><button class="secondary-btn" data-chapter-nav="15">Chapter 15</button></div>`;
+}
+function renderFuses(){
+  const query=($("#fuseSearch")?.value||"").trim().toLowerCase();
+  const boxes=[...new Set(DATA.fuses.map(x=>x.box))];
+  $("#fuseBoxFilters").innerHTML=[["all","All boards"],...boxes.map(x=>[x,x])].map(([id,label])=>`<button class="chip ${fuseBoxFilter===id?"active":""}" data-fuse-box="${esc(id)}">${esc(label)}</button>`).join("");
+  const indexed=DATA.fuses.map((fuse,index)=>({fuse,index})).filter(({fuse})=>(fuseBoxFilter==="all"||fuse.box===fuseBoxFilter)&&(!query||`${fuse.box} ${fuse.label} ${fuse.rating} ${fuse.function}`.toLowerCase().includes(query)));
+  if(indexed.length&&!indexed.some(x=>x.index===activeFuseIndex))activeFuseIndex=indexed[0].index;
+  $("#fuseSummary").innerHTML=[[DATA.fuses.length,"Documented fuses"],[boxes.length,"Fuse boards"],[indexed.length,"Shown"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  $("#fuseBoards").innerHTML=boxes.map(box=>{
+    const rows=indexed.filter(x=>x.fuse.box===box);if(!rows.length)return "";
+    return `<article class="panel fuse-board"><div class="fuse-board-head"><span class="meta">Calira distribution</span><h2>${esc(box)}</h2></div><div class="fuse-slots">${rows.map(({fuse,index})=>`<button class="fuse-slot ${activeFuseIndex===index?"active":""}" data-fuse-index="${index}" aria-pressed="${activeFuseIndex===index}"><span class="fuse-amp amp-${esc(fuse.rating.replace(/[^0-9]/g,""))}">${esc(fuse.rating)}</span><span><strong>${esc(fuse.label)}</strong><small>${esc(fuse.function)}</small></span></button>`).join("")}</div></article>`;
+  }).join("")||`<article class="panel"><h2>No matching fuse</h2><p>Try a circuit name, German label or rating.</p></article>`;
+  renderFuseInspector();
+}
+
 function waterView(component){
   if(["waste-tank","waste-valve"].includes(component.id))return "waste";
   if(["truma-boiler","frost-valve","hot-manifold"].includes(component.id))return "hot";
@@ -759,6 +790,7 @@ function renderGas(){
 function renderVehicle(){
   $("#vehicleCards").innerHTML=[
     moduleCard("electrical","⚡","Interactive electrical","Trace supplies, protection and connected loads"),
+    moduleCard("fuses","▥","Fuse & circuit finder","Locate VB06-1 and VB04 protection"),
     moduleCard("water","💧","Interactive water","Follow fresh, hot and waste-water flow"),
     moduleCard("gas","🔥","Interactive gas","Trace LPG supply and appliance branches"),
     moduleCard("manuals","📚","Documentation","Manuals, wiring notes and chapters"),
@@ -806,15 +838,16 @@ async function clearCache(){
 async function init(){
   [
     DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
-    DATA.electrical,DATA.electricalRelations,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.campsites,DATA.touringChecks
+    DATA.electrical,DATA.electricalRelations,DATA.fuses,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.campsites,DATA.touringChecks
   ]=await Promise.all([
     loadJSON("data/chapters.json"),loadJSON("data/manual_pages.json"),loadJSON("data/smart_diagnostics.json"),
     loadJSON("data/maintenance_tasks.json"),loadJSON("data/assistant_prompts.json"),loadJSON("data/build.json",{}),
-    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),
+    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json")
   ]);
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderWater();renderGas();renderSettings();
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
+  $("#fuseSearch")?.addEventListener("input",renderFuses);
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
 }
 document.addEventListener("click",e=>{
@@ -830,6 +863,8 @@ document.addEventListener("click",e=>{
   const diagnosticFilterButton=e.target.closest("[data-diagnostic-filter]");if(diagnosticFilterButton){diagnosticFilter=diagnosticFilterButton.dataset.diagnosticFilter;renderDiagnostics()}
   const electricalFilterButton=e.target.closest("[data-electrical-filter]");if(electricalFilterButton){electricalFilter=electricalFilterButton.dataset.electricalFilter;const first=electricalComponents()[0];if(first)activeElectricalComponent=first.id;renderElectrical()}
   const electricalComponent=e.target.closest("[data-electrical-component]");if(electricalComponent){activeElectricalComponent=electricalComponent.dataset.electricalComponent;renderElectrical()}
+  const fuseBoxButton=e.target.closest("[data-fuse-box]");if(fuseBoxButton){fuseBoxFilter=fuseBoxButton.dataset.fuseBox;renderFuses()}
+  const fuseButton=e.target.closest("[data-fuse-index]");if(fuseButton){activeFuseIndex=Number(fuseButton.dataset.fuseIndex);renderFuses()}
   const waterFilterButton=e.target.closest("[data-water-filter]");if(waterFilterButton){waterFilter=waterFilterButton.dataset.waterFilter;const first=waterComponents()[0];if(first)activeWaterComponent=first.id;renderWater()}
   const waterComponent=e.target.closest("[data-water-component]");if(waterComponent){activeWaterComponent=waterComponent.dataset.waterComponent;renderWater()}
   const gasFilterButton=e.target.closest("[data-gas-filter]");if(gasFilterButton){gasFilter=gasFilterButton.dataset.gasFilter;const first=gasComponents()[0];if(first)activeGasComponent=first.id;renderGas()}

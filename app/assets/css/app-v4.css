@@ -336,3 +336,13 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 @media(max-width:850px){.vehicle-map-layout{grid-template-columns:1fr}.vehicle-map-inspector{position:static}.vehicle-map-stage{min-height:480px}}
 @media(max-width:520px){.vehicle-map-stage{min-height:580px;padding:8px}.vehicle-hotspot{min-width:62px}.vehicle-hotspot strong{font-size:.66rem}}
 
+/* v4.4 interactive fuse and circuit finder */
+.fuse-warning{display:grid;gap:4px;margin-bottom:16px;padding:16px 18px;border:1px solid #dc2626;border-left:6px solid #dc2626;border-radius:16px;background:color-mix(in srgb,#dc2626 8%,var(--panel))}
+.fuse-warning strong{color:#b91c1c}[data-theme="dark"] .fuse-warning strong{color:#fca5a5}
+.fuse-controls{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:16px}.fuse-controls label{display:grid;gap:7px;flex:1;min-width:260px;font-weight:850}.fuse-controls input{min-height:48px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:14px;padding:0 15px;font-size:16px}.fuse-controls .chips{margin:0}
+.fuse-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.75fr);gap:16px;align-items:start}.fuse-boards{display:grid;gap:16px}.fuse-board{padding:0;overflow:hidden}.fuse-board-head{padding:17px;border-bottom:1px solid var(--line)}.fuse-board-head h2{margin:.25rem 0 0}.fuse-slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line)}
+.fuse-slot{display:flex;align-items:center;gap:12px;min-height:82px;padding:13px;border:0;background:var(--panel);color:var(--text);text-align:left}.fuse-slot.active{background:var(--panel-2);box-shadow:inset 4px 0 0 var(--accent)}.fuse-slot>span:last-child{display:grid;gap:3px}.fuse-slot small{color:var(--muted);line-height:1.3}
+.fuse-amp,.fuse-rating-large{display:grid;place-items:center;border-radius:9px;background:#2563eb;color:white;font-weight:950;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}.fuse-amp{width:50px;height:42px;flex:0 0 50px}.fuse-rating-large{width:88px;height:62px;font-size:1.35rem;margin:12px 0}.amp-5{background:#d97706}.amp-75{background:#7c3aed}.amp-10{background:#dc2626}.amp-15{background:#2563eb}.amp-20{background:#eab308;color:#422006}
+.fuse-inspector{position:sticky;top:84px}.fuse-inspector h2{margin:.35rem 0}.fuse-test{padding:14px;border-radius:14px;background:var(--panel-2);margin:15px 0}.fuse-test h3{margin:0}.fuse-test li{margin:.45rem 0}
+@media(max-width:850px){.fuse-layout{grid-template-columns:1fr}.fuse-inspector{position:static}}@media(max-width:600px){.fuse-controls{display:grid}.fuse-slots{grid-template-columns:1fr}}
+
