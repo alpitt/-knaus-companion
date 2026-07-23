@@ -21,7 +21,9 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
-Version 4.9.0 introduces the Maintenance Scheduler. Calendar and mileage intervals calculate overdue, due-soon and upcoming tasks from linked service records, with current-mileage tracking and structured provider, cost and service-note history.
+Version 5.0.0 adds Vehicle Records: structured identity and specifications, document references with expiry alerts, and a searchable onboard equipment and spares inventory. All records remain offline and participate in search and backup exports.
+
+Version 4.9.0 introduced the Maintenance Scheduler. Calendar and mileage intervals calculate overdue, due-soon and upcoming tasks from linked service records, with current-mileage tracking and structured provider, cost and service-note history.
 
 Version 4.8.0 completed the Touring suite with the Packing Planner. Create blank or template-based packing lists, associate them with trips, track quantities and packed state, estimate weight, duplicate reusable lists and warn when a configurable packing allowance is exceeded.
 
