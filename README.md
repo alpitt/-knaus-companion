@@ -21,7 +21,9 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
-Version 4.4.0 begins the Interactive Systems series with an electrical power-path explorer. It provides filtered 12 V, 230 V and planned-upgrade views backed by the preserved component and relationship data.
+Version 4.5.0 introduces Touring Operations: a persistent four-stage checklist covering departure, arrival, leaving a site and returning home. Progress is saved locally and remains available offline, with direct links to relevant official-manual pages.
+
+Version 4.4.0 began the Interactive Systems series with an electrical power-path explorer. It provides filtered 12 V, 230 V and planned-upgrade views backed by the preserved component and relationship data.
 
 The water-system explorer adds filtered fresh, hot, waste and monitoring flows with component operation, maintenance and diagnostic references.
 

@@ -96,6 +96,18 @@ jobs:
               assert fuse["box"] and fuse["label"] and fuse["rating"] and fuse["function"], "Fuse records require board, label, rating and function"
               assert fuse["component"] in component_ids, f"Unknown electrical component for fuse {fuse['label']}"
           print(f"Validated {len(fuses)} documented fuses across {len({fuse['box'] for fuse in fuses})} boards.")
+
+          touring = json.loads((data / "touring_operations.json").read_text(encoding="utf-8"))
+          assert touring["version"] == "4.5.0", "Touring operations data must match release 4.5.0"
+          lists = touring["lists"]
+          list_ids = [stage["id"] for stage in lists]
+          assert list_ids == ["departure", "arrival", "leaving-site", "return"], "Touring stages are missing or out of order"
+          for stage in lists:
+              item_ids = [item["id"] for item in stage["items"]]
+              assert len(item_ids) == len(set(item_ids)), f"Duplicate item IDs in touring stage {stage['id']}"
+              assert all(item["text"].strip() for item in stage["items"]), f"Empty checklist item in touring stage {stage['id']}"
+              assert all(1 <= page <= 286 for page in stage.get("manualPages", [])), f"Invalid manual page in touring stage {stage['id']}"
+          print(f"Validated {len(lists)} touring stages and {sum(len(stage['items']) for stage in lists)} checklist items.")
           PY
 
       - name: Configure GitHub Pages
