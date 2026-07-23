@@ -21,7 +21,9 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
-Version 4.8.0 completes the Touring suite with the Packing Planner. Create blank or template-based packing lists, associate them with trips, track quantities and packed state, estimate weight, duplicate reusable lists and warn when a configurable packing allowance is exceeded.
+Version 4.9.0 introduces the Maintenance Scheduler. Calendar and mileage intervals calculate overdue, due-soon and upcoming tasks from linked service records, with current-mileage tracking and structured provider, cost and service-note history.
+
+Version 4.8.0 completed the Touring suite with the Packing Planner. Create blank or template-based packing lists, associate them with trips, track quantities and packed state, estimate weight, duplicate reusable lists and warn when a configurable packing allowance is exceeded.
 
 Version 4.7.0 added the Campsite Planner. Saved places include location, pitch, rating, website, phone, facilities and notes, with offline search, favourites, map links and one-tap reuse in a new trip record.
 
