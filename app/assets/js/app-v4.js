@@ -1,5 +1,5 @@
 
-const APP_VERSION="5.0.0";
+const APP_VERSION="5.1.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleDocuments:[],upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -56,6 +56,7 @@ function navigate(id){location.hash=id}
 function setActiveRoute(id){
   $$(".screen").forEach(s=>s.classList.toggle("active",s.dataset.screen===id));
   $$("[data-route]").forEach(b=>b.classList.toggle("active",b.dataset.route===id));
+  if(id==="home")renderHome();
   $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
@@ -70,12 +71,51 @@ function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
 }
 function moduleCard(id,icon,title,desc){return `<button class="module-card" data-route="${id}"><div class="icon">${icon}</div><h3>${title}</h3><p>${desc}</p></button>`}
+function dashboardAlerts(){
+  const alerts=[];
+  (DATA.maintenanceTasks||[]).map(maintenanceTaskStatus).forEach(item=>{
+    if(item.status==="overdue")alerts.push({priority:1,kind:"urgent",icon:"🔧",title:`${item.task.name} overdue`,detail:item.dueDate?`Due ${formatTripDate(item.dueDate)}`:`Due at ${Number(item.dueMileage).toLocaleString()} km`,route:"maintenance"});
+    else if(item.status==="soon")alerts.push({priority:2,kind:"warning",icon:"🔧",title:`${item.task.name} due soon`,detail:item.dueDate?`Due ${formatTripDate(item.dueDate)}`:`Due at ${Number(item.dueMileage).toLocaleString()} km`,route:"maintenance"});
+  });
+  (state.vehicleDocuments||[]).forEach(document=>{
+    const status=vehicleDocumentStatus(document);
+    if(status.status==="expired")alerts.push({priority:1,kind:"urgent",icon:"📄",title:`${document.type} expired`,detail:document.expiry?formatTripDate(document.expiry):status.label,route:"vehicle"});
+    else if(status.status==="expiring")alerts.push({priority:2,kind:"warning",icon:"📄",title:`${document.type} expires soon`,detail:document.expiry?formatTripDate(document.expiry):status.label,route:"vehicle"});
+  });
+  (state.faults||[]).filter(fault=>!["fixed","closed"].includes(String(fault.status||"").toLowerCase())).forEach(fault=>alerts.push({priority:1,kind:"urgent",icon:"⚠️",title:fault.title||"Open vehicle fault",detail:fault.diagnosticOutcome||"Review the saved fault record",route:"diagnostics"}));
+  (state.packingLists||[]).forEach(list=>{const metrics=packingListMetrics(list),limit=Number(list.weightLimit)||0;if(limit&&metrics.total>limit)alerts.push({priority:2,kind:"warning",icon:"🎒",title:`${list.title} exceeds allowance`,detail:`${(metrics.total-limit).toFixed(1)} kg over its packing allowance`,route:"touring"})});
+  return alerts.sort((a,b)=>a.priority-b.priority||a.title.localeCompare(b.title));
+}
+function renderDashboard(){
+  const alerts=dashboardAlerts();
+  $("#operationsAlerts").innerHTML=alerts.length?alerts.slice(0,8).map(alert=>`<button class="dashboard-alert ${alert.kind}" data-route="${alert.route}"><span aria-hidden="true">${alert.icon}</span><span><strong>${esc(alert.title)}</strong><small>${esc(alert.detail)}</small></span><b aria-hidden="true">→</b></button>`).join(""):'<div class="dashboard-clear"><span aria-hidden="true">✓</span><div><strong>No active alerts</strong><p>Maintenance, documents, faults and packing allowances are clear.</p></div></div>';
+  const touringLists=DATA.touringOperations?.lists||[],touringTotal=touringLists.reduce((sum,list)=>sum+list.items.length,0),touringDone=touringLists.reduce((sum,list)=>sum+list.items.filter(item=>state.touringProgress?.[`${list.id}:${item.id}`]).length,0);
+  const maintenance=(DATA.maintenanceTasks||[]).map(maintenanceTaskStatus),maintenanceClear=!maintenance.some(item=>item.status==="overdue");
+  const documentsClear=!(state.vehicleDocuments||[]).some(document=>["expired","expiring"].includes(vehicleDocumentStatus(document).status));
+  const packing=state.packingLists?.[0],packingMetrics=packing?packingListMetrics(packing):null,packingReady=packingMetrics?packingMetrics.totalCount>0&&packingMetrics.packedCount===packingMetrics.totalCount:null;
+  const checks=[
+    {label:"Journey checks",value:touringTotal?`${touringDone}/${touringTotal}`:"Not loaded",done:touringTotal>0&&touringDone===touringTotal,route:"touring"},
+    {label:"Maintenance",value:maintenanceClear?"No overdue tasks":"Overdue work",done:maintenanceClear,route:"maintenance"},
+    {label:"Vehicle documents",value:documentsClear?"No expiry alerts":"Needs attention",done:documentsClear,route:"vehicle"},
+    {label:"Packing",value:packingMetrics?`${packingMetrics.packedCount}/${packingMetrics.totalCount} packed`:"No active list",done:packingReady===true,route:"touring"}
+  ];
+  $("#readinessChecks").innerHTML=checks.map(check=>`<button class="readiness-row ${check.done?"ready":""}" data-route="${check.route}"><span>${check.done?"✓":"!"}</span><strong>${esc(check.label)}</strong><small>${esc(check.value)}</small></button>`).join("");
+  const activity=[
+    ...(state.logs||[]).map(item=>({date:item.date||item.createdAt,icon:"🔧",title:item.title||"Service record",type:"Service",route:"maintenance"})),
+    ...(state.trips||[]).map(item=>({date:item.startDate||item.createdAt,icon:"🗺️",title:item.title||item.destination||"Touring trip",type:"Trip",route:"touring"})),
+    ...(state.diagnosticReports||[]).map(item=>({date:item.completedAt||item.createdAt,icon:"🧰",title:item.title||"Diagnostic report",type:"Diagnostic",route:"diagnostics"})),
+    ...(state.vehicleDocuments||[]).map(item=>({date:item.updatedAt||item.createdAt,icon:"📄",title:item.type||"Vehicle document",type:"Document",route:"vehicle"}))
+  ].filter(item=>item.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
+  $("#recentActivity").innerHTML=activity.length?activity.map(item=>`<button class="panel activity-card" data-route="${item.route}"><span aria-hidden="true">${item.icon}</span><span><small>${esc(item.type)} • ${esc(formatTripDate(String(item.date).slice(0,10)))}</small><strong>${esc(item.title)}</strong></span><b aria-hidden="true">→</b></button>`).join(""):'<article class="panel"><p>No recorded activity yet. Completed service, trips, diagnostics and document updates will appear here.</p></article>';
+}
 function renderHome(){
   const openFaults=(state.faults||[]).filter(x=>!["fixed","closed"].includes(String(x.status||"").toLowerCase())).length;
   const services=(state.logs||[]).length;
+  const alertCount=dashboardAlerts().length;
   $("#statusGrid").innerHTML=[
-    [APP_VERSION,"Current version"],[DATA.chapters.length||44,"Companion chapters"],[DATA.pages.length||286,"Manual pages"],[openFaults,"Open faults"],[services,"Service records"]
+    [APP_VERSION,"Current version"],[alertCount,"Needs attention"],[openFaults,"Open faults"],[services,"Service records"],[(state.trips||[]).length,"Trips recorded"]
   ].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  renderDashboard();
   $("#homeModules").innerHTML=[
     moduleCard("electrical","⚡","Electrical system","Trace 12 V, mains and planned upgrades"),
     moduleCard("fuses","▥","Fuse finder","Identify Calira fuses and protected circuits"),

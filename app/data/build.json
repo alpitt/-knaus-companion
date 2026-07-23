@@ -1,6 +1,6 @@
 {
-  "version": "5.0.0",
-  "releaseName": "Vehicle Records",
+  "version": "5.1.0",
+  "releaseName": "Operations Dashboard",
   "buildDate": "2026-07-23",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -81,7 +81,11 @@
     "Structured vehicle identity and specification record",
     "Document references with expiry alerts",
     "Searchable onboard equipment and spares inventory",
-    "Vehicle records included in offline search and backups"
+    "Vehicle records included in offline search and backups",
+    "Cross-module operations alerts on the home dashboard",
+    "Journey readiness from touring, maintenance, documents and packing",
+    "Recent service, trip, diagnostic and document activity",
+    "Direct dashboard actions into the relevant workflow"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
