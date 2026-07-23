@@ -3,7 +3,7 @@ const APP_VERSION="4.4.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},upgradeProjects:[],currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
-const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],water:[],waterRelations:[],gas:[],gasRelations:[],campsites:[],touringChecks:[]};
+const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],campsites:[],touringChecks:[]};
 let state=loadState();
 let libraryMode="chapters";
 let activeManualPage=1;
@@ -16,6 +16,8 @@ let waterFilter="all";
 let activeWaterComponent="pump";
 let gasFilter="all";
 let activeGasComponent="gas-manifold";
+let vehicleMapView="interior";
+let activeVehicleHotspot="electrical-compartment";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -764,6 +766,23 @@ function renderVehicle(){
     moduleCard("diagnostics","⚠️","Faults & diagnostics","Known issues and guided checks"),
     moduleCard("search","🔎","Find a component","Search all installed vehicle information")
   ].join("");
+  renderVehicleMap();
+}
+function vehicleSystemIcon(system){return ({electrical:"⚡",water:"💧",gas:"🔥",vehicle:"🚐"}[system]||"●")}
+function renderVehicleMapInspector(){
+  const spots=DATA.vehicleExplorer.filter(item=>item.view===vehicleMapView);
+  const item=DATA.vehicleExplorer.find(x=>x.id===activeVehicleHotspot)||spots[0];
+  if(!item){$("#vehicleMapInspector").innerHTML="<h2>Map data unavailable</h2>";return}
+  activeVehicleHotspot=item.id;
+  const systemRoute=["electrical","water","gas"].includes(item.system)?item.system:"";
+  $("#vehicleMapInspector").innerHTML=`<span class="meta">${vehicleSystemIcon(item.system)} ${esc(item.system||"vehicle")}</span><h2>${esc(item.name)}</h2><h3>${esc(item.label||"")}</h3><p>${esc(item.description||"")}</p><div class="diagnostic-actions">${systemRoute?`<button class="primary-btn" data-route="${systemRoute}">Open ${esc(systemRoute)} system</button>`:""}</div><div class="diagnostic-link-row">${(item.chapters||[]).map(n=>`<button class="secondary-btn" data-chapter-nav="${Number(n)}">Chapter ${Number(n)}</button>`).join("")}${(item.manualPages||[]).map(n=>`<button class="secondary-btn" data-manual-nav="${Number(n)}">Manual p. ${Number(n)}</button>`).join("")}</div>`;
+}
+function renderVehicleMap(){
+  const views=[["interior","Interior"],["exterior","Exterior"],["roof","Roof"]];
+  $("#vehicleViewTabs").innerHTML=views.map(([id,label])=>`<button class="tab ${vehicleMapView===id?"active":""}" data-vehicle-view="${id}">${label}</button>`).join("");
+  const spots=DATA.vehicleExplorer.filter(item=>item.view===vehicleMapView);
+  $("#vehicleMapStage").innerHTML=`<div class="vehicle-outline ${vehicleMapView}" aria-hidden="true"><span class="vehicle-cab">CAB</span><span class="vehicle-view-label">${esc(vehicleMapView)} view</span></div>${spots.map(item=>`<button class="vehicle-hotspot system-${esc(item.system)} ${activeVehicleHotspot===item.id?"active":""}" style="--x:${Number(item.x)}%;--y:${Number(item.y)}%;--w:${Number(item.w)}%;--h:${Number(item.h)}%" data-vehicle-hotspot="${esc(item.id)}" aria-pressed="${activeVehicleHotspot===item.id}"><span>${vehicleSystemIcon(item.system)}</span><strong>${esc(item.name)}</strong></button>`).join("")}`;
+  renderVehicleMapInspector();
 }
 function renderSettings(){
   const b=DATA.build||{};
@@ -787,11 +806,11 @@ async function clearCache(){
 async function init(){
   [
     DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
-    DATA.electrical,DATA.electricalRelations,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.campsites,DATA.touringChecks
+    DATA.electrical,DATA.electricalRelations,DATA.water,DATA.waterRelations,DATA.gas,DATA.gasRelations,DATA.vehicleExplorer,DATA.campsites,DATA.touringChecks
   ]=await Promise.all([
     loadJSON("data/chapters.json"),loadJSON("data/manual_pages.json"),loadJSON("data/smart_diagnostics.json"),
     loadJSON("data/maintenance_tasks.json"),loadJSON("data/assistant_prompts.json"),loadJSON("data/build.json",{}),
-    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),
+    loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json")
   ]);
   applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderWater();renderGas();renderSettings();
@@ -815,6 +834,8 @@ document.addEventListener("click",e=>{
   const waterComponent=e.target.closest("[data-water-component]");if(waterComponent){activeWaterComponent=waterComponent.dataset.waterComponent;renderWater()}
   const gasFilterButton=e.target.closest("[data-gas-filter]");if(gasFilterButton){gasFilter=gasFilterButton.dataset.gasFilter;const first=gasComponents()[0];if(first)activeGasComponent=first.id;renderGas()}
   const gasComponent=e.target.closest("[data-gas-component]");if(gasComponent){activeGasComponent=gasComponent.dataset.gasComponent;renderGas()}
+  const vehicleViewButton=e.target.closest("[data-vehicle-view]");if(vehicleViewButton){vehicleMapView=vehicleViewButton.dataset.vehicleView;const first=DATA.vehicleExplorer.find(x=>x.view===vehicleMapView);if(first)activeVehicleHotspot=first.id;renderVehicleMap()}
+  const vehicleHotspot=e.target.closest("[data-vehicle-hotspot]");if(vehicleHotspot){activeVehicleHotspot=vehicleHotspot.dataset.vehicleHotspot;renderVehicleMap()}
   if(e.target.closest("[data-diagnostic-back]"))backDiagnostic();
   if(e.target.closest("[data-diagnostic-restart]"))restartDiagnostic();
   if(e.target.closest("[data-diagnostic-save]"))saveDiagnosticReport();

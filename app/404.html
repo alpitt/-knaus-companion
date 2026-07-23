@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 4.3.0</title>
+  <title>Knaus Companion 4.4.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.4.0-gas">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.4.0-vehicle-map">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 4.3.0</span>
+        <span>Version 4.4.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -148,6 +148,52 @@
           <p>Known systems, photos, components and upgrades.</p>
         </div>
         <div id="vehicleCards" class="module-grid"></div>
+        <section class="section-block vehicle-explorer-block">
+          <div class="section-heading"><div><span class="eyebrow">Interactive vehicle map</span><h2>Where is everything?</h2></div></div>
+          <div id="vehicleViewTabs" class="tab-row" aria-label="Vehicle map view"></div>
+          <div class="vehicle-map-layout">
+            <div class="panel vehicle-map-stage" id="vehicleMapStage"></div>
+            <aside class="panel vehicle-map-inspector" id="vehicleMapInspector" aria-live="polite"></aside>
+          </div>
+        </section>
+      </section>
+
+      <section class="screen" data-screen="electrical">
+        <div class="page-head">
+          <span class="eyebrow">Interactive systems</span>
+          <h1>Electrical system</h1>
+          <p>Follow power from source to load, inspect protection and open the relevant workshop references.</p>
+        </div>
+        <div class="system-toolbar panel">
+          <div>
+            <strong>Show power path</strong>
+            <p>Select a view, then choose any component for its location, readings and checks.</p>
+          </div>
+          <div id="electricalFilters" class="chips" aria-label="Filter electrical diagram"></div>
+        </div>
+        <div id="electricalSummary" class="status-grid"></div>
+        <div class="electrical-layout">
+          <section class="panel electrical-map-panel" aria-label="Electrical system map">
+            <div class="electrical-legend" id="electricalLegend"></div>
+            <div class="electrical-map" id="electricalMap"></div>
+          </section>
+          <aside class="panel electrical-inspector" id="electricalInspector" aria-live="polite"></aside>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="water">
+        <div class="page-head"><span class="eyebrow">Interactive systems</span><h1>Water system</h1><p>Trace fresh, hot and waste-water flow, inspect components and open the relevant workshop references.</p></div>
+        <div class="system-toolbar panel"><div><strong>Show water path</strong><p>Select a view, then choose a component for its location, operation and checks.</p></div><div id="waterFilters" class="chips" aria-label="Filter water diagram"></div></div>
+        <div id="waterSummary" class="status-grid"></div>
+        <div class="electrical-layout water-layout"><section class="panel electrical-map-panel" aria-label="Water system map"><div class="electrical-legend" id="waterLegend"></div><div class="electrical-map" id="waterMap"></div></section><aside class="panel electrical-inspector" id="waterInspector" aria-live="polite"></aside></div>
+      </section>
+
+      <section class="screen" data-screen="gas">
+        <div class="page-head"><span class="eyebrow">Interactive systems</span><h1>Gas system</h1><p>Trace LPG supply, appliance branches, ventilation and combustion safety references.</p></div>
+        <div class="gas-emergency" role="note"><strong>If you smell gas or a CO alarm sounds</strong><span>Turn off the cylinder only if safe, extinguish flames, avoid electrical switches, ventilate, evacuate and obtain competent help.</span></div>
+        <div class="system-toolbar panel"><div><strong>Show gas path</strong><p>Select a view, then choose a component for its location, operation and safe checks.</p></div><div id="gasFilters" class="chips" aria-label="Filter gas diagram"></div></div>
+        <div id="gasSummary" class="status-grid"></div>
+        <div class="electrical-layout gas-layout"><section class="panel electrical-map-panel" aria-label="Gas system map"><div class="electrical-legend" id="gasLegend"></div><div class="electrical-map" id="gasMap"></div></section><aside class="panel electrical-inspector" id="gasInspector" aria-live="polite"></aside></div>
       </section>
 
       <section class="screen" data-screen="settings">
@@ -195,6 +241,19 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=4.4.0-gas"></script>
-<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}</script></body>
+  <script src="assets/js/app-v4.js?v=4.4.0-vehicle-map"></script>
+<script>
+if("serviceWorker" in navigator){
+  let refreshing=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!refreshing){refreshing=true;location.reload()}});
+  window.addEventListener("load",async()=>{
+    const registration=await navigator.serviceWorker.register("./service-worker.js");
+    if(registration.waiting)registration.waiting.postMessage({type:"SKIP_WAITING"});
+    registration.addEventListener("updatefound",()=>{
+      const worker=registration.installing;
+      worker?.addEventListener("statechange",()=>{if(worker.state==="installed"&&navigator.serviceWorker.controller)worker.postMessage({type:"SKIP_WAITING"})});
+    });
+  });
+}
+</script></body>
 </html>

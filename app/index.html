@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#16384b">
   <title>Knaus Companion 4.4.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.4.0-gas">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=4.4.0-vehicle-map">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -148,6 +148,14 @@
           <p>Known systems, photos, components and upgrades.</p>
         </div>
         <div id="vehicleCards" class="module-grid"></div>
+        <section class="section-block vehicle-explorer-block">
+          <div class="section-heading"><div><span class="eyebrow">Interactive vehicle map</span><h2>Where is everything?</h2></div></div>
+          <div id="vehicleViewTabs" class="tab-row" aria-label="Vehicle map view"></div>
+          <div class="vehicle-map-layout">
+            <div class="panel vehicle-map-stage" id="vehicleMapStage"></div>
+            <aside class="panel vehicle-map-inspector" id="vehicleMapInspector" aria-live="polite"></aside>
+          </div>
+        </section>
       </section>
 
       <section class="screen" data-screen="electrical">
@@ -233,7 +241,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=4.4.0-gas"></script>
+  <script src="assets/js/app-v4.js?v=4.4.0-vehicle-map"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

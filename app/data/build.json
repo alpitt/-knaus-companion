@@ -56,7 +56,9 @@
     "Interactive fresh, hot and waste-water flow explorer",
     "Water component operation, maintenance and workshop links",
     "Interactive LPG supply, appliance and combustion-safety explorer",
-    "Gas safety boundaries and emergency guidance"
+    "Gas safety boundaries and emergency guidance",
+    "Interactive interior, exterior and roof vehicle map",
+    "Vehicle hotspots linked to systems, chapters and manual pages"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
