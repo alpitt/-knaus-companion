@@ -34,12 +34,16 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 4.7.0' app/index.html
+          grep -q 'Version 4.8.0' app/index.html
+          grep -q 'id="packingPlanner"' app/index.html
+          grep -q 'id="packingListForm"' app/index.html
+          grep -q 'id="packingItemForm"' app/index.html
           grep -q 'id="tripJournal"' app/index.html
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="4.7.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="4.8.0"' app/assets/js/app-v4.js
+          grep -q 'function renderPacking()' app/assets/js/app-v4.js
           grep -q 'function renderCampsites()' app/assets/js/app-v4.js
           echo "Validated $(find app -type f | wc -l) application files."
 
@@ -112,6 +116,18 @@ jobs:
               assert all(item["text"].strip() for item in stage["items"]), f"Empty checklist item in touring stage {stage['id']}"
               assert all(1 <= page <= 286 for page in stage.get("manualPages", [])), f"Invalid manual page in touring stage {stage['id']}"
           print(f"Validated {len(lists)} touring stages and {sum(len(stage['items']) for stage in lists)} checklist items.")
+
+          packing = json.loads((data / "packing_templates.json").read_text(encoding="utf-8"))
+          assert packing["version"] == "4.8.0", "Packing templates must match release 4.8.0"
+          templates = packing["templates"]
+          template_ids = [template["id"] for template in templates]
+          assert len(template_ids) == len(set(template_ids)), "Packing template IDs must be unique"
+          for template in templates:
+              assert template["title"].strip() and template["items"], f"Incomplete packing template: {template['id']}"
+              for item in template["items"]:
+                  assert item["name"].strip() and item["category"].strip(), f"Incomplete item in template {template['id']}"
+                  assert item["quantity"] > 0 and item["unitWeight"] >= 0, f"Invalid quantity or weight in template {template['id']}"
+          print(f"Validated {len(templates)} packing templates and {sum(len(template['items']) for template in templates)} packing items.")
           PY
 
       - name: Configure GitHub Pages

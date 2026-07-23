@@ -21,7 +21,9 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
-Version 4.7.0 adds the Campsite Planner. Saved places include location, pitch, rating, website, phone, facilities and notes, with offline search, favourites, map links and one-tap reuse in a new trip record.
+Version 4.8.0 completes the Touring suite with the Packing Planner. Create blank or template-based packing lists, associate them with trips, track quantities and packed state, estimate weight, duplicate reusable lists and warn when a configurable packing allowance is exceeded.
+
+Version 4.7.0 added the Campsite Planner. Saved places include location, pitch, rating, website, phone, facilities and notes, with offline search, favourites, map links and one-tap reuse in a new trip record.
 
 Version 4.6.0 added the Touring Journal. Trips can be created, edited and removed with dates, destination, campsite, mileage and notes; the app calculates nights and recorded distance automatically. Journal entries remain available offline and are included in local search and backup exports.
 
