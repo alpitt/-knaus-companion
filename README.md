@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 5.3.0 adds the Upgrade Planner. Create improvement projects with system, priority, status, target date, budget and actual spend; link workshop chapters and official manual pages, surface blocked or over-budget work on the Operations Dashboard, and retain every plan in offline backups and search.
+
 Version 5.2.0 adds the Fault Log. Record issues manually or from guided diagnostics, classify system and severity, move faults through open, monitoring, fixed and closed states, and retain symptoms, mileage, location and resolution notes.
 
 Version 5.1.0 added the Operations Dashboard. Home combines maintenance and document alerts, open faults, packing allowance warnings, journey readiness and recent activity with direct links into each workflow.

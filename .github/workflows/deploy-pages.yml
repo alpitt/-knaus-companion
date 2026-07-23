@@ -34,7 +34,11 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 5.2.0' app/index.html
+          grep -q 'Version 5.3.0' app/index.html
+          grep -q 'id="upgradePlanner"' app/index.html
+          grep -q 'id="upgradeSummary"' app/index.html
+          grep -q 'id="upgradeFilters"' app/index.html
+          grep -q 'id="upgradeForm"' app/index.html
           grep -q 'id="faultSummary"' app/index.html
           grep -q 'id="faultFilters"' app/index.html
           grep -q 'id="faultForm"' app/index.html
@@ -54,7 +58,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="5.2.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="5.3.0"' app/assets/js/app-v4.js
+          grep -q 'function renderUpgradeProjects()' app/assets/js/app-v4.js
+          grep -q 'function saveUpgradeProject(event)' app/assets/js/app-v4.js
+          grep -q 'function setUpgradeStatus(id,status)' app/assets/js/app-v4.js
           grep -q 'function renderFaultLog()' app/assets/js/app-v4.js
           grep -q 'function saveFault(event)' app/assets/js/app-v4.js
           grep -q 'function dashboardAlerts()' app/assets/js/app-v4.js
