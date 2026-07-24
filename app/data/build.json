@@ -1,6 +1,6 @@
 {
-  "version": "6.5.0",
-  "releaseName": "Workshop Outcomes",
+  "version": "6.6.0",
+  "releaseName": "Workshop History",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -149,7 +149,11 @@
     "Resolved, monitoring and follow-up workshop outcomes",
     "Final findings and job cost capture",
     "Optional follow-up fault creation from workshop close-out",
-    "Outcome and cost included in service records and workshop reports"
+    "Outcome and cost included in service records and workshop reports",
+    "Searchable completed workshop archive",
+    "Resolved, monitoring and follow-up outcome filters",
+    "Workshop time, cost and follow-up summaries",
+    "Direct report access from every history record"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

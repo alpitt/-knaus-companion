@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 6.5.0</title>
+  <title>Knaus Companion 6.6.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.5.0-outcomes">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.6.0-history">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 6.5.0</span>
+        <span>Version 6.6.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -351,6 +351,15 @@
             </div>
           </aside>
         </div>
+        <section class="section-block workshop-history-block" id="workshopHistoryArchive">
+          <div class="section-heading"><div><span class="eyebrow">Workshop history</span><h2>Completed session archive</h2></div></div>
+          <div id="workshopHistorySummary" class="status-grid"></div>
+          <div class="workshop-history-toolbar">
+            <label class="campsite-search">Search completed work<input id="workshopHistorySearch" type="search" placeholder="Job, system, finding, measurement or part"></label>
+            <div id="workshopHistoryFilters" class="chips" aria-label="Filter workshop outcomes"></div>
+          </div>
+          <div id="workshopHistoryList" class="workshop-history-list"></div>
+        </section>
       </section>
 
       <section class="screen" data-screen="settings">
@@ -715,7 +724,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=6.5.0-outcomes"></script>
+  <script src="assets/js/app-v4.js?v=6.6.0-history"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
