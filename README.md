@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 6.6.0 adds Workshop History. Search every completed session by job, system, finding, measurement or part; filter resolved, monitoring and follow-up outcomes; review total time and cost; and open any detailed report from the archive.
+
 Version 6.5.0 adds Workshop Outcomes. Close a session as resolved, monitoring or needing follow-up; capture final findings and cost; optionally create a linked open fault; and carry the outcome into service history and printable Workshop Reports.
 
 Version 6.4.0 adds Workshop Reports. Open completed sessions as detailed records with timing, mileage, safety progress, measurements and used parts; print a clean handoff report; or export an individual session as JSON.
