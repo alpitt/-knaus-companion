@@ -1,6 +1,6 @@
 {
-  "version": "6.3.0",
-  "releaseName": "Workshop Parts Usage",
+  "version": "6.4.0",
+  "releaseName": "Workshop Reports",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -141,7 +141,11 @@
     "Workshop parts reserved from the offline stockroom",
     "Onboard-quantity checks before workshop completion",
     "Stock deducted only when a workshop session is finished",
-    "Used parts included in service records and session history"
+    "Used parts included in service records and session history",
+    "Inspectable completed workshop reports",
+    "Report tables for measurements and parts usage",
+    "Print-ready workshop handoff view",
+    "Individual workshop report JSON export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
