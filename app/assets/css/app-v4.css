@@ -534,3 +534,10 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .trip-costs{display:grid;align-content:start}.trip-cost-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.trip-cost-row:last-child{border-bottom:0}.trip-cost-row>span{display:grid;gap:3px}.trip-cost-row small{color:var(--muted)}
 @media(max-width:850px){.expense-insights{grid-template-columns:1fr}}@media(max-width:520px){.expense-toolbar{display:grid}.expense-toolbar button{width:100%}.cost-row{grid-template-columns:1fr auto}.cost-row>div{grid-column:1/3}}
 
+/* v5.8 vehicle configuration registry */
+.configuration-registry .section-intro{max-width:780px;color:var(--muted)}.configuration-tabs{margin:16px 0}
+.configuration-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.configuration-field{display:grid;align-content:start;gap:7px;border-top:4px solid var(--line)}.configuration-field.confirmed{border-top-color:#16a34a}.configuration-field.reference{border-top-color:#d97706}
+.configuration-field h3,.configuration-field p{margin:0}.configuration-field p{color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}.configuration-field.confirmed .maintenance-status{background:#dcfce7;color:#166534}.configuration-field.reference .maintenance-status{background:#fef3c7;color:#92400e}
+.configuration-help{margin:0;padding:10px 12px;border-radius:11px;background:var(--panel-2);color:var(--muted)}
+@media(max-width:600px){.configuration-fields{grid-template-columns:1fr}.configuration-tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}.configuration-tabs .chip{flex:0 0 auto}.configuration-registry .section-heading{align-items:stretch}.configuration-registry .section-heading button{width:100%}}
+
