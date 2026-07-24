@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 6.1.0</title>
+  <title>Knaus Companion 6.2.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.1.0-sessions">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.2.0-readings">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 6.1.0</span>
+        <span>Version 6.2.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -401,6 +401,20 @@
       </form>
     </dialog>
 
+    <dialog id="workshopMeasurementDialog" class="detail-dialog trip-dialog">
+      <form id="workshopMeasurementForm">
+        <div class="dialog-head"><div><span class="eyebrow">Workshop measurement</span><h2>Record a reading</h2></div><button class="icon-btn" type="button" data-workshop-measurement-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Reading label<input id="workshopMeasurementLabel" name="label" required maxlength="100" placeholder="Leisure battery at rest"></label>
+          <label class="trip-field">Value<input id="workshopMeasurementValue" name="value" required maxlength="40" inputmode="decimal" placeholder="12.7"></label>
+          <label class="trip-field">Unit<input id="workshopMeasurementUnit" name="unit" maxlength="20" placeholder="V, A, Ω, bar, °C"></label>
+          <label class="trip-field">Location / test point<input id="workshopMeasurementLocation" name="location" maxlength="120" placeholder="Battery terminals"></label>
+          <label class="trip-field trip-field-wide">Reading notes<textarea id="workshopMeasurementNotes" name="notes" maxlength="800" placeholder="Conditions, load state or instrument used"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-workshop-measurement-cancel>Cancel</button><button class="primary-btn" type="submit">Save reading</button></div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="payloadDialog" class="detail-dialog trip-dialog">
       <form id="payloadForm">
         <div class="dialog-head"><div><span class="eyebrow">Payload & loading</span><h2>Set travelling load</h2></div><button class="icon-btn" type="button" data-payload-cancel aria-label="Close">×</button></div>
@@ -675,7 +689,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=6.1.0-sessions"></script>
+  <script src="assets/js/app-v4.js?v=6.2.0-readings"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

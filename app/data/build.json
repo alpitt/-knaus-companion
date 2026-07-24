@@ -1,6 +1,6 @@
 {
-  "version": "6.1.0",
-  "releaseName": "Workshop Sessions",
+  "version": "6.2.0",
+  "releaseName": "Workshop Measurements",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -133,7 +133,11 @@
     "Persistent active workshop job with system, mileage and notes",
     "Workshop session duration and safety-step completion capture",
     "Completed workshop sessions written directly to service history",
-    "Recent workshop session history retained in offline backups"
+    "Recent workshop session history retained in offline backups",
+    "Structured workshop readings with label, value, unit and test point",
+    "Measurement conditions and instrument notes",
+    "Workshop readings carried into completed service records",
+    "Measurement counts retained in workshop session history"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
