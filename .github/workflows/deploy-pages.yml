@@ -34,7 +34,9 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 6.4.0' app/index.html
+          grep -q 'Version 6.5.0' app/index.html
+          grep -q 'id="workshopOutcomeDialog"' app/index.html
+          grep -q 'id="workshopOutcomeForm"' app/index.html
           grep -q 'id="workshopPartDialog"' app/index.html
           grep -q 'id="workshopPartForm"' app/index.html
           grep -q 'id="workshopMeasurementDialog"' app/index.html
@@ -92,7 +94,9 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="6.4.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="6.5.0"' app/assets/js/app-v4.js
+          grep -q 'function completeWorkshopSession(event)' app/assets/js/app-v4.js
+          grep -q 'function closeWorkshopOutcome()' app/assets/js/app-v4.js
           grep -q 'function workshopReportHtml(session,actions=true)' app/assets/js/app-v4.js
           grep -q 'function exportWorkshopReport()' app/assets/js/app-v4.js
           grep -q 'function printWorkshopReport()' app/assets/js/app-v4.js
