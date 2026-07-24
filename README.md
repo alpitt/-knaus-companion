@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 6.2.0 adds Workshop Measurements. Record structured readings with a label, value, unit, test point and conditions during an active job; review or remove them in Workshop Mode; and carry the complete readings into the generated service record.
+
 Version 6.1.0 adds Workshop Sessions. Start a persistent workshop job with system, mileage and working notes; retain it across reloads; capture elapsed time and safe-work progress; and finish the job directly into service history.
 
 Version 6.0.0 restores and expands Workshop Mode in the rebuilt application. Use a persistent eight-step safe-work sequence, switch among system references with large workbench controls, keep the display awake while working and close the loop through faults, service records, parts stock and manuals.
