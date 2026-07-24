@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 6.3.0 adds Workshop Parts Usage. Reserve parts and consumables from the offline stockroom during an active job, catch insufficient quantities before completion, deduct stock only when the session is finished and include every used item in the generated service record.
+
 Version 6.2.0 adds Workshop Measurements. Record structured readings with a label, value, unit, test point and conditions during an active job; review or remove them in Workshop Mode; and carry the complete readings into the generated service record.
 
 Version 6.1.0 adds Workshop Sessions. Start a persistent workshop job with system, mileage and working notes; retain it across reloads; capture elapsed time and safe-work progress; and finish the job directly into service history.
