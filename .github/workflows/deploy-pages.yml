@@ -34,7 +34,10 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 6.0.0' app/index.html
+          grep -q 'Version 6.1.0' app/index.html
+          grep -q 'id="workshopSession"' app/index.html
+          grep -q 'id="workshopSessionDialog"' app/index.html
+          grep -q 'id="workshopSessionForm"' app/index.html
           grep -q 'data-screen="workshop"' app/index.html
           grep -q 'id="workshopWakeLock"' app/index.html
           grep -q 'id="workshopSystemButtons"' app/index.html
@@ -85,7 +88,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="6.0.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="6.1.0"' app/assets/js/app-v4.js
+          grep -q 'function saveWorkshopSession(event)' app/assets/js/app-v4.js
+          grep -q 'function finishWorkshopSession()' app/assets/js/app-v4.js
+          grep -q 'function discardWorkshopSession()' app/assets/js/app-v4.js
           grep -q 'function renderWorkshop()' app/assets/js/app-v4.js
           grep -q 'function requestWorkshopWakeLock()' app/assets/js/app-v4.js
           grep -q 'function releaseWorkshopWakeLock()' app/assets/js/app-v4.js
