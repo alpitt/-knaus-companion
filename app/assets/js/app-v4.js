@@ -1,5 +1,5 @@
 
-const APP_VERSION="6.4.0";
+const APP_VERSION="6.5.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -1536,15 +1536,22 @@ function saveWorkshopSession(event){
 function finishWorkshopSession(){
   const session=state.activeWorkshopSession;if(!session)return;
   const shortages=workshopPartsShortages(session);if(shortages.length){toast("Restock or reduce reserved parts before finishing");return}
+  $("#workshopOutcomeForm").reset();$("#workshopOutcomeSummary").value=session.notes||"";const dialog=$("#workshopOutcomeDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");setTimeout(()=>$("#workshopOutcomeSummary").focus(),0);
+}
+function closeWorkshopOutcome(){const dialog=$("#workshopOutcomeDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open")}
+function completeWorkshopSession(event){
+  event.preventDefault();const session=state.activeWorkshopSession;if(!session)return;const values=Object.fromEntries(new FormData(event.currentTarget));
   const completedAt=new Date().toISOString(),durationMinutes=Math.max(1,Math.round((new Date(completedAt)-new Date(session.startedAt))/60000)),stepsComplete=WORKSHOP_STEPS.filter((_,index)=>state.workshopSteps?.[index]).length;
-  const completed={...session,completedAt,durationMinutes,stepsComplete};
+  const outcome=values.outcome,summary=values.summary.trim(),cost=values.cost===""?null:Number(values.cost);
+  const completed={...session,completedAt,durationMinutes,stepsComplete,outcome,summary,cost};
   state.workshopSessions=[completed,...(state.workshopSessions||[])].slice(0,100);
   const measurementNotes=(session.measurements||[]).length?`Measurements:\n${session.measurements.map(item=>`• ${item.label}: ${item.value}${item.unit?` ${item.unit}`:""}${item.location?` at ${item.location}`:""}${item.notes?` — ${item.notes}`:""}`).join("\n")}`:"";
   const partNotes=(session.partsUsed||[]).length?`Parts used:\n${session.partsUsed.map(item=>{const part=DATA.partsInventory.find(entry=>entry.id===item.partId);return `• ${part?.name||item.name}: ${item.quantity}${item.notes?` — ${item.notes}`:""}`}).join("\n")}`:"";
   (session.partsUsed||[]).forEach(item=>{const part=DATA.partsInventory.find(entry=>entry.id===item.partId);if(!part)return;const stock=partStock(part);stock.quantity-=Number(item.quantity)||0;stock.updatedAt=completedAt;state.partsStock={...(state.partsStock||{}),[part.id]:stock}});
-  state.logs=[{id:`service-${Date.now()}`,taskId:"",title:session.title,date:completedAt.slice(0,10),mileage:session.mileage,provider:"Owner — Workshop Mode",cost:null,notes:[`${session.system} workshop session • ${durationMinutes} min • ${stepsComplete}/${WORKSHOP_STEPS.length} safety steps`,session.notes,measurementNotes,partNotes].filter(Boolean).join("\n\n"),createdAt:completedAt,workshopSessionId:session.id},...(state.logs||[])];
+  state.logs=[{id:`service-${Date.now()}`,taskId:"",title:session.title,date:completedAt.slice(0,10),mileage:session.mileage,provider:"Owner — Workshop Mode",cost,notes:[`${session.system} workshop session • ${durationMinutes} min • ${stepsComplete}/${WORKSHOP_STEPS.length} safety steps • Outcome: ${outcome}`,session.notes,`Final findings:\n${summary}`,measurementNotes,partNotes].filter(Boolean).join("\n\n"),createdAt:completedAt,workshopSessionId:session.id},...(state.logs||[])];
+  if(values.createFault==="yes")state.faults=[{id:`fault-${Date.now()}`,title:session.title,system:session.system,severity:"medium",status:"open",date:completedAt.slice(0,10),mileage:session.mileage,location:"",symptoms:summary,resolution:"Follow up from Workshop Mode session",createdAt:completedAt,updatedAt:completedAt,workshopSessionId:session.id},...(state.faults||[])];
   if(session.mileage!==null&&session.mileage>(Number(state.currentMileage)||0))state.currentMileage=session.mileage;
-  state.activeWorkshopSession=null;state.workshopSteps={};saveState();renderWorkshop();renderMaintenance();renderPartsStock();renderHome();toast("Workshop session added to service history");
+  state.activeWorkshopSession=null;state.workshopSteps={};saveState();closeWorkshopOutcome();renderWorkshop();renderMaintenance();renderPartsStock();renderDiagnostics();renderHome();toast(values.createFault==="yes"?"Session completed and follow-up fault created":"Workshop session added to service history");
 }
 function discardWorkshopSession(){const session=state.activeWorkshopSession;if(!session||!confirm(`Discard “${session.title}” without creating a service record?`))return;state.activeWorkshopSession=null;saveState();renderWorkshop();renderHome();toast("Workshop session discarded")}
 function openWorkshopMeasurementEditor(){
@@ -1571,7 +1578,7 @@ function saveWorkshopPart(event){
 function deleteWorkshopPart(id){const session=state.activeWorkshopSession,item=session?.partsUsed?.find(entry=>entry.id===id);if(!item)return;session.partsUsed=session.partsUsed.filter(entry=>entry.id!==id);session.updatedAt=new Date().toISOString();saveState();renderWorkshop();toast("Part removed from job")}
 function workshopReportHtml(session,actions=true){
   const measurements=(session.measurements||[]),parts=(session.partsUsed||[]);
-  return `<article class="workshop-report"><div class="diagnostic-meta"><span>${vehicleSystemIcon(session.system)} ${esc(session.system)}</span><span>${esc(formatTripDate(session.completedAt.slice(0,10)))}</span><span>${Number(session.durationMinutes)||0} minutes</span>${session.mileage!==null?`<span>${Number(session.mileage).toLocaleString()} km</span>`:""}<span>${Number(session.stepsComplete)||0}/${WORKSHOP_STEPS.length} safety steps</span></div>${session.notes?`<section><h3>Working notes</h3><p>${esc(session.notes)}</p></section>`:""}<section><h3>Measurements</h3>${measurements.length?`<table><thead><tr><th>Reading</th><th>Value</th><th>Test point</th><th>Notes</th></tr></thead><tbody>${measurements.map(item=>`<tr><td>${esc(item.label)}</td><td>${esc(item.value)}${item.unit?` ${esc(item.unit)}`:""}</td><td>${esc(item.location||"—")}</td><td>${esc(item.notes||"—")}</td></tr>`).join("")}</tbody></table>`:"<p>No measurements recorded.</p>"}</section><section><h3>Parts used</h3>${parts.length?`<ul>${parts.map(item=>{const part=DATA.partsInventory.find(entry=>entry.id===item.partId);return `<li><strong>${esc(part?.name||item.name||"Stock item")} × ${Number(item.quantity)||0}</strong>${item.notes?` — ${esc(item.notes)}`:""}</li>`}).join("")}</ul>`:"<p>No parts recorded.</p>"}</section>${actions?'<div class="diagnostic-actions"><button class="primary-btn" data-workshop-report-print>Print report</button><button class="secondary-btn" data-workshop-report-export>Export JSON</button></div>':""}</article>`;
+  return `<article class="workshop-report"><div class="diagnostic-meta"><span>${vehicleSystemIcon(session.system)} ${esc(session.system)}</span><span>${esc(formatTripDate(session.completedAt.slice(0,10)))}</span><span>${Number(session.durationMinutes)||0} minutes</span>${session.mileage!==null?`<span>${Number(session.mileage).toLocaleString()} km</span>`:""}<span>${Number(session.stepsComplete)||0}/${WORKSHOP_STEPS.length} safety steps</span>${session.outcome?`<span>Outcome: ${esc(session.outcome)}</span>`:""}${session.cost!==null&&session.cost!==undefined?`<span>€${Number(session.cost).toFixed(2)}</span>`:""}</div>${session.summary?`<section class="workshop-outcome"><h3>Final findings</h3><p>${esc(session.summary)}</p></section>`:""}${session.notes?`<section><h3>Working notes</h3><p>${esc(session.notes)}</p></section>`:""}<section><h3>Measurements</h3>${measurements.length?`<table><thead><tr><th>Reading</th><th>Value</th><th>Test point</th><th>Notes</th></tr></thead><tbody>${measurements.map(item=>`<tr><td>${esc(item.label)}</td><td>${esc(item.value)}${item.unit?` ${esc(item.unit)}`:""}</td><td>${esc(item.location||"—")}</td><td>${esc(item.notes||"—")}</td></tr>`).join("")}</tbody></table>`:"<p>No measurements recorded.</p>"}</section><section><h3>Parts used</h3>${parts.length?`<ul>${parts.map(item=>{const part=DATA.partsInventory.find(entry=>entry.id===item.partId);return `<li><strong>${esc(part?.name||item.name||"Stock item")} × ${Number(item.quantity)||0}</strong>${item.notes?` — ${esc(item.notes)}`:""}</li>`}).join("")}</ul>`:"<p>No parts recorded.</p>"}</section>${actions?'<div class="diagnostic-actions"><button class="primary-btn" data-workshop-report-print>Print report</button><button class="secondary-btn" data-workshop-report-export>Export JSON</button></div>':""}</article>`;
 }
 function openWorkshopReport(id){const session=(state.workshopSessions||[]).find(item=>item.id===id);if(!session)return;activeWorkshopReportId=id;showDialog("Workshop report",session.title,workshopReportHtml(session),true)}
 function exportWorkshopReport(){const session=(state.workshopSessions||[]).find(item=>item.id===activeWorkshopReportId);if(!session)return;const blob=new Blob([JSON.stringify({app:"Knaus Companion",version:APP_VERSION,exportedAt:new Date().toISOString(),workshopSession:session},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-workshop-${session.id}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Workshop report exported")}
@@ -1682,6 +1689,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-workshop-session-cancel]"))closeWorkshopSessionEditor();
   if(e.target.closest("[data-workshop-session-finish]"))finishWorkshopSession();
   if(e.target.closest("[data-workshop-session-discard]"))discardWorkshopSession();
+  if(e.target.closest("[data-workshop-outcome-cancel]"))closeWorkshopOutcome();
   if(e.target.closest("[data-workshop-measurement-add]"))openWorkshopMeasurementEditor();
   if(e.target.closest("[data-workshop-measurement-cancel]"))closeWorkshopMeasurementEditor();
   const workshopMeasurementDelete=e.target.closest("[data-workshop-measurement-delete]");if(workshopMeasurementDelete)deleteWorkshopMeasurement(workshopMeasurementDelete.dataset.workshopMeasurementDelete);
@@ -1740,6 +1748,8 @@ $("#resetWorkshopSteps").onclick=()=>{state.workshopSteps={};saveState();renderW
 $("#workshopSessionForm").addEventListener("submit",saveWorkshopSession);
 $("#workshopMeasurementForm").addEventListener("submit",saveWorkshopMeasurement);
 $("#workshopPartForm").addEventListener("submit",saveWorkshopPart);
+$("#workshopOutcomeForm").addEventListener("submit",completeWorkshopSession);
+$("#workshopOutcomeStatus").addEventListener("change",e=>{$("#workshopOutcomeFault").checked=e.target.value==="follow-up"});
 $("#addTrip").onclick=()=>openTripEditor();
 $("#tripForm").addEventListener("submit",saveTrip);
 $("#addExpense").onclick=()=>openExpenseEditor();
@@ -1769,7 +1779,7 @@ $("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#partsSearch").addEventListener("input",renderPartsStock);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeWorkshopMeasurementEditor();closeWorkshopPartEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeWorkshopMeasurementEditor();closeWorkshopPartEditor();closeWorkshopOutcome();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("#workshopWakeLock")?.checked&&!workshopWakeLock)requestWorkshopWakeLock()});

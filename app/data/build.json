@@ -1,6 +1,6 @@
 {
-  "version": "6.4.0",
-  "releaseName": "Workshop Reports",
+  "version": "6.5.0",
+  "releaseName": "Workshop Outcomes",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -145,7 +145,11 @@
     "Inspectable completed workshop reports",
     "Report tables for measurements and parts usage",
     "Print-ready workshop handoff view",
-    "Individual workshop report JSON export"
+    "Individual workshop report JSON export",
+    "Resolved, monitoring and follow-up workshop outcomes",
+    "Final findings and job cost capture",
+    "Optional follow-up fault creation from workshop close-out",
+    "Outcome and cost included in service records and workshop reports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
