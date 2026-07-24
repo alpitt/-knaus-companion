@@ -1,7 +1,7 @@
 
-const APP_VERSION="6.0.0";
+const APP_VERSION="6.1.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const VEHICLE_PHOTOS=[
   {id:"photo-01",file:"vehicle_photo_01.jpg",title:"Calira VB06-1 and EVS installation",location:"Electrical compartment",tags:"electrical fuse distribution charger wiring VB06-1 EVS 30/20"},
@@ -169,6 +169,7 @@ function assistantIndex(){
   DATA.diagnostics.forEach(d=>docs.push({type:"diagnostic",title:d.title||"Diagnostic",text:JSON.stringify(d)}));
   DATA.maintenanceTasks.forEach(d=>docs.push({type:"maintenance",title:d.title||d.name||"Maintenance task",text:JSON.stringify(d)}));
   (state.logs||[]).forEach(d=>docs.push({type:"service record",title:d.title||d.category||"Service record",text:JSON.stringify(d)}));
+  if(state.activeWorkshopSession)docs.push({type:"workshop session",title:state.activeWorkshopSession.title||"Active workshop session",text:JSON.stringify(state.activeWorkshopSession),raw:state.activeWorkshopSession});
   (state.faults||[]).forEach(d=>docs.push({type:"fault",title:d.title||"Fault record",text:JSON.stringify(d)}));
   if(Object.values(state.vehicleProfile||{}).some(Boolean))docs.push({type:"vehicle",title:`${state.vehicleProfile.make||""} ${state.vehicleProfile.model||"Vehicle details"}`.trim(),text:JSON.stringify(state.vehicleProfile),raw:state.vehicleProfile});
   if(Object.values(state.vehicleConfiguration||{}).some(Boolean))docs.push({type:"vehicle configuration",title:"Installed systems and specifications",text:JSON.stringify(state.vehicleConfiguration),raw:state.vehicleConfiguration});
@@ -1503,10 +1504,33 @@ const WORKSHOP_STEPS=[
 ];
 function renderWorkshop(){
   const complete=WORKSHOP_STEPS.filter((_,index)=>state.workshopSteps?.[index]).length;
-  $("#workshopSummary").innerHTML=[[complete,`of ${WORKSHOP_STEPS.length} safety steps`],[`${Math.round(complete/WORKSHOP_STEPS.length*100)}%`,"Sequence complete"],[(state.faults||[]).filter(item=>!["fixed","closed"].includes(item.status)).length,"Active faults"],[(state.logs||[]).length,"Service records"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  $("#workshopSummary").innerHTML=[[state.activeWorkshopSession?"Active":"None","Workshop job"],[complete,`of ${WORKSHOP_STEPS.length} safety steps`],[`${Math.round(complete/WORKSHOP_STEPS.length*100)}%`,"Sequence complete"],[(state.workshopSessions||[]).length,"Completed sessions"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
   $("#workshopSystemButtons").innerHTML=[["electrical","⚡","Electrical"],["fuses","▥","Fuses"],["water","💧","Water"],["gas","🔥","Gas"],["diagnostics","🧰","Diagnostics"],["vehicle","📦","Parts & vehicle"]].map(([route,icon,label])=>`<button class="workshop-button" data-route="${route}"><span>${icon}</span><strong>${label}</strong></button>`).join("");
   $("#workshopSteps").innerHTML=WORKSHOP_STEPS.map((step,index)=>{const checked=Boolean(state.workshopSteps?.[index]);return `<button class="workshop-step ${checked?"complete":""}" data-workshop-step="${index}" role="checkbox" aria-checked="${checked}"><span>${checked?"✓":index+1}</span><strong>${esc(step)}</strong></button>`}).join("");
+  const session=state.activeWorkshopSession,history=(state.workshopSessions||[]).slice(0,3);
+  $("#workshopSession").innerHTML=session?`<span class="meta">Active workshop job</span><h2>${esc(session.title)}</h2><div class="diagnostic-meta"><span>${vehicleSystemIcon(session.system)} ${esc(session.system)}</span><span>Started ${esc(new Date(session.startedAt).toLocaleString())}</span>${session.mileage!==null?`<span>${Number(session.mileage).toLocaleString()} km</span>`:""}</div>${session.notes?`<p class="workshop-session-notes">${esc(session.notes)}</p>`:""}<div class="workshop-session-actions"><button class="secondary-btn" data-workshop-session-edit>Edit notes</button><button class="primary-btn" data-workshop-session-finish>Finish & log service</button><button class="danger-btn" data-workshop-session-discard>Discard</button></div>`:`<span class="meta">Workshop sessions</span><h2>Document the job</h2><p>Start a session before work, keep findings with it and finish into service history.</p><button class="primary-btn workshop-session-start" data-workshop-session-start>Start workshop job</button>${history.length?`<div class="workshop-session-history"><h3>Recent sessions</h3>${history.map(item=>`<div><strong>${esc(item.title)}</strong><small>${esc(formatTripDate(item.completedAt.slice(0,10)))} • ${Number(item.durationMinutes)||0} min</small></div>`).join("")}</div>`:""}`;
 }
+function openWorkshopSessionEditor(){
+  const session=state.activeWorkshopSession||{};
+  $("#workshopSessionDialogTitle").textContent=state.activeWorkshopSession?"Update workshop job":"Start a workshop job";$("#workshopSessionTitle").value=session.title||"";$("#workshopSessionSystem").value=session.system||"vehicle";$("#workshopSessionMileage").value=session.mileage??state.currentMileage??"";$("#workshopSessionNotes").value=session.notes||"";
+  const dialog=$("#workshopSessionDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");setTimeout(()=>$("#workshopSessionTitle").focus(),0);
+}
+function closeWorkshopSessionEditor(){const dialog=$("#workshopSessionDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open")}
+function saveWorkshopSession(event){
+  event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget)),existing=state.activeWorkshopSession;
+  state.activeWorkshopSession={id:existing?.id||`workshop-${Date.now()}`,title:values.title.trim(),system:values.system,mileage:values.mileage===""?null:Number(values.mileage),notes:values.notes.trim(),startedAt:existing?.startedAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  saveState();closeWorkshopSessionEditor();renderWorkshop();renderHome();toast(existing?"Workshop job updated":"Workshop job started");
+}
+function finishWorkshopSession(){
+  const session=state.activeWorkshopSession;if(!session)return;
+  const completedAt=new Date().toISOString(),durationMinutes=Math.max(1,Math.round((new Date(completedAt)-new Date(session.startedAt))/60000)),stepsComplete=WORKSHOP_STEPS.filter((_,index)=>state.workshopSteps?.[index]).length;
+  const completed={...session,completedAt,durationMinutes,stepsComplete};
+  state.workshopSessions=[completed,...(state.workshopSessions||[])].slice(0,100);
+  state.logs=[{id:`service-${Date.now()}`,taskId:"",title:session.title,date:completedAt.slice(0,10),mileage:session.mileage,provider:"Owner — Workshop Mode",cost:null,notes:[`${session.system} workshop session • ${durationMinutes} min • ${stepsComplete}/${WORKSHOP_STEPS.length} safety steps`,session.notes].filter(Boolean).join("\n\n"),createdAt:completedAt,workshopSessionId:session.id},...(state.logs||[])];
+  if(session.mileage!==null&&session.mileage>(Number(state.currentMileage)||0))state.currentMileage=session.mileage;
+  state.activeWorkshopSession=null;state.workshopSteps={};saveState();renderWorkshop();renderMaintenance();renderHome();toast("Workshop session added to service history");
+}
+function discardWorkshopSession(){const session=state.activeWorkshopSession;if(!session||!confirm(`Discard “${session.title}” without creating a service record?`))return;state.activeWorkshopSession=null;saveState();renderWorkshop();renderHome();toast("Workshop session discarded")}
 async function requestWorkshopWakeLock(){
   if(!("wakeLock" in navigator)){$("#workshopWakeLock").checked=false;$("#workshopWakeStatus").textContent="Screen wake lock is not supported by this browser.";toast("Wake lock is not supported here");return}
   try{workshopWakeLock=await navigator.wakeLock.request("screen");document.body.classList.add("workshop-mode-active");$("#workshopWakeStatus").textContent="Screen wake lock is active while Workshop Mode remains open.";workshopWakeLock.addEventListener("release",()=>{workshopWakeLock=null;document.body.classList.remove("workshop-mode-active")},{once:true})}catch{$("#workshopWakeLock").checked=false;$("#workshopWakeStatus").textContent="Screen wake lock could not be activated.";toast("Could not keep the screen awake")}
@@ -1609,6 +1633,10 @@ document.addEventListener("click",e=>{
   const gasFilterButton=e.target.closest("[data-gas-filter]");if(gasFilterButton){gasFilter=gasFilterButton.dataset.gasFilter;const first=gasComponents()[0];if(first)activeGasComponent=first.id;renderGas()}
   const gasComponent=e.target.closest("[data-gas-component]");if(gasComponent){activeGasComponent=gasComponent.dataset.gasComponent;renderGas()}
   const workshopStep=e.target.closest("[data-workshop-step]");if(workshopStep){const index=Number(workshopStep.dataset.workshopStep);state.workshopSteps={...(state.workshopSteps||{}),[index]:!state.workshopSteps?.[index]};saveState();renderWorkshop()}
+  if(e.target.closest("[data-workshop-session-start],[data-workshop-session-edit]"))openWorkshopSessionEditor();
+  if(e.target.closest("[data-workshop-session-cancel]"))closeWorkshopSessionEditor();
+  if(e.target.closest("[data-workshop-session-finish]"))finishWorkshopSession();
+  if(e.target.closest("[data-workshop-session-discard]"))discardWorkshopSession();
   const vehicleViewButton=e.target.closest("[data-vehicle-view]");if(vehicleViewButton){vehicleMapView=vehicleViewButton.dataset.vehicleView;const first=DATA.vehicleExplorer.find(x=>x.view===vehicleMapView);if(first)activeVehicleHotspot=first.id;renderVehicleMap()}
   const vehicleHotspot=e.target.closest("[data-vehicle-hotspot]");if(vehicleHotspot){activeVehicleHotspot=vehicleHotspot.dataset.vehicleHotspot;renderVehicleMap()}
   if(e.target.closest("[data-vehicle-profile-edit]"))openVehicleProfileEditor();
@@ -1655,6 +1683,7 @@ $("#importBackup").onchange=async e=>{try{if(e.target.files[0])await restoreBack
 $("#clearCache").onclick=clearCache;
 $("#workshopWakeLock").addEventListener("change",e=>e.target.checked?requestWorkshopWakeLock():releaseWorkshopWakeLock());
 $("#resetWorkshopSteps").onclick=()=>{state.workshopSteps={};saveState();renderWorkshop();toast("Workshop sequence reset")};
+$("#workshopSessionForm").addEventListener("submit",saveWorkshopSession);
 $("#addTrip").onclick=()=>openTripEditor();
 $("#tripForm").addEventListener("submit",saveTrip);
 $("#addExpense").onclick=()=>openExpenseEditor();
@@ -1684,7 +1713,7 @@ $("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#partsSearch").addEventListener("input",renderPartsStock);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("#workshopWakeLock")?.checked&&!workshopWakeLock)requestWorkshopWakeLock()});

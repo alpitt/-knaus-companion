@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 6.0.0</title>
+  <title>Knaus Companion 6.1.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.0.0-workshop">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.1.0-sessions">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 6.0.0</span>
+        <span>Version 6.1.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -340,9 +340,9 @@
             <div id="workshopSteps"></div>
           </section>
           <aside class="panel workshop-sidebar">
-            <span class="meta">Record the outcome</span>
+            <div id="workshopSession"></div>
+            <span class="meta">Quick records</span>
             <h2>Close the loop</h2>
-            <p>Log faults before dismantling, record completed work in service history and update used parts.</p>
             <div class="stack">
               <button class="primary-btn" data-route="diagnostics">Open fault log</button>
               <button class="secondary-btn" data-route="maintenance">Service records</button>
@@ -387,6 +387,19 @@
       <button data-route="diagnostics">Checks</button>
       <button data-route="search">Search</button>
     </nav>
+
+    <dialog id="workshopSessionDialog" class="detail-dialog trip-dialog">
+      <form id="workshopSessionForm">
+        <div class="dialog-head"><div><span class="eyebrow">Workshop session</span><h2 id="workshopSessionDialogTitle">Start a job</h2></div><button class="icon-btn" type="button" data-workshop-session-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">Job title<input id="workshopSessionTitle" name="title" required maxlength="140" placeholder="Trace kitchen pump circuit"></label>
+          <label class="trip-field">System<select id="workshopSessionSystem" name="system"><option value="vehicle">Vehicle</option><option value="electrical">Electrical</option><option value="water">Water</option><option value="gas">Gas</option><option value="heating">Heating</option><option value="appliance">Appliance</option><option value="body">Bodywork</option></select></label>
+          <label class="trip-field">Mileage (km)<input id="workshopSessionMileage" name="mileage" type="number" min="0" step="1"></label>
+          <label class="trip-field trip-field-wide">Working notes<textarea id="workshopSessionNotes" name="notes" maxlength="2000" placeholder="Symptoms, measurements, parts used and follow-up"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-workshop-session-cancel>Cancel</button><button class="primary-btn" type="submit">Save session</button></div>
+        </div>
+      </form>
+    </dialog>
 
     <dialog id="payloadDialog" class="detail-dialog trip-dialog">
       <form id="payloadForm">
@@ -662,7 +675,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=6.0.0-workshop"></script>
+  <script src="assets/js/app-v4.js?v=6.1.0-sessions"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

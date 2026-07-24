@@ -554,3 +554,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .workshop-mode-active .workshop-button,.workshop-mode-active .workshop-step,.workshop-mode-active .primary-btn,.workshop-mode-active .secondary-btn{min-height:52px}.workshop-mode-active .workshop-step{min-height:78px}
 @media(max-width:900px){.workshop-actions{grid-template-columns:repeat(3,1fr)}.workshop-layout{grid-template-columns:1fr}}@media(max-width:540px){.workshop-control{display:grid}.workshop-actions{grid-template-columns:repeat(2,1fr)}.workshop-checklist .section-heading{display:grid}.workshop-checklist .section-heading button{width:100%}}
 
+/* v6.1 workshop sessions */
+.workshop-session-start{width:100%;margin:8px 0 18px}.workshop-session-notes{padding:11px;border-radius:11px;background:var(--panel-2);white-space:pre-wrap}.workshop-session-actions{display:grid;gap:8px;margin:14px 0 20px}.workshop-session-actions button{width:100%}
+.workshop-session-history{display:grid;gap:8px;margin:18px 0}.workshop-session-history h3{margin:0}.workshop-session-history>div{display:grid;gap:3px;padding:10px;border-radius:11px;background:var(--panel-2)}.workshop-session-history small{color:var(--muted)}
+

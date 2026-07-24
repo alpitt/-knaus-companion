@@ -1,6 +1,6 @@
 {
-  "version": "6.0.0",
-  "releaseName": "Workshop Mode",
+  "version": "6.1.0",
+  "releaseName": "Workshop Sessions",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -129,7 +129,11 @@
     "Dedicated high-visibility Workshop Mode",
     "Persistent eight-step safe work sequence",
     "Screen wake lock with automatic release outside Workshop Mode",
-    "Direct workshop access to systems, faults, service records, parts and manuals"
+    "Direct workshop access to systems, faults, service records, parts and manuals",
+    "Persistent active workshop job with system, mileage and notes",
+    "Workshop session duration and safety-step completion capture",
+    "Completed workshop sessions written directly to service history",
+    "Recent workshop session history retained in offline backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
