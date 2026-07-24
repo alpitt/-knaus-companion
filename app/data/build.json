@@ -1,6 +1,6 @@
 {
-  "version": "6.2.0",
-  "releaseName": "Workshop Measurements",
+  "version": "6.3.0",
+  "releaseName": "Workshop Parts Usage",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -137,7 +137,11 @@
     "Structured workshop readings with label, value, unit and test point",
     "Measurement conditions and instrument notes",
     "Workshop readings carried into completed service records",
-    "Measurement counts retained in workshop session history"
+    "Measurement counts retained in workshop session history",
+    "Workshop parts reserved from the offline stockroom",
+    "Onboard-quantity checks before workshop completion",
+    "Stock deducted only when a workshop session is finished",
+    "Used parts included in service records and session history"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

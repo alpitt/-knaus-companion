@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 6.2.0</title>
+  <title>Knaus Companion 6.3.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.2.0-readings">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.3.0-parts">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 6.2.0</span>
+        <span>Version 6.3.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -415,6 +415,19 @@
       </form>
     </dialog>
 
+    <dialog id="workshopPartDialog" class="detail-dialog trip-dialog">
+      <form id="workshopPartForm">
+        <div class="dialog-head"><div><span class="eyebrow">Workshop parts usage</span><h2>Reserve a stock item</h2></div><button class="icon-btn" type="button" data-workshop-part-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">Part or consumable<select id="workshopPartId" name="partId" required></select></label>
+          <label class="trip-field">Quantity used<input id="workshopPartQuantity" name="quantity" type="number" min="1" step="1" value="1" required></label>
+          <label class="trip-field trip-field-wide">Usage notes<textarea id="workshopPartNotes" name="notes" maxlength="600" placeholder="Circuit, repair location or reason for replacement"></textarea></label>
+          <p class="configuration-help trip-field-wide">Stock is deducted only when the workshop session is finished and written to service history.</p>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-workshop-part-cancel>Cancel</button><button class="primary-btn" type="submit">Add to job</button></div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="payloadDialog" class="detail-dialog trip-dialog">
       <form id="payloadForm">
         <div class="dialog-head"><div><span class="eyebrow">Payload & loading</span><h2>Set travelling load</h2></div><button class="icon-btn" type="button" data-payload-cancel aria-label="Close">×</button></div>
@@ -689,7 +702,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=6.2.0-readings"></script>
+  <script src="assets/js/app-v4.js?v=6.3.0-parts"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
