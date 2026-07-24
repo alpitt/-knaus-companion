@@ -1,6 +1,6 @@
 {
-  "version": "5.8.0",
-  "releaseName": "Vehicle Configuration Registry",
+  "version": "5.9.0",
+  "releaseName": "Payload & Loading Planner",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -121,7 +121,11 @@
     "Schema-driven vehicle configuration registry",
     "Identity, electrical, water, gas, exterior and tyre configuration sections",
     "Owner-confirmed values distinguished from preserved reference values",
-    "Vehicle configuration included in offline search and backups"
+    "Vehicle configuration included in offline search and backups",
+    "Payload and travelling-mass planner",
+    "Occupant, water, fuel, gas, accessory and packing weight breakdown",
+    "Packing-list integration with remaining-MAM warnings",
+    "Payload plans included in offline search and backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

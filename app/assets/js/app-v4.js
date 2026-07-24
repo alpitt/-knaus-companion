@@ -1,7 +1,7 @@
 
-const APP_VERSION="5.8.0";
+const APP_VERSION="5.9.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],expenses:[],savedCampsites:[],packingLists:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const VEHICLE_PHOTOS=[
   {id:"photo-01",file:"vehicle_photo_01.jpg",title:"Calira VB06-1 and EVS installation",location:"Electrical compartment",tags:"electrical fuse distribution charger wiring VB06-1 EVS 30/20"},
@@ -104,6 +104,7 @@ function dashboardAlerts(){
   });
   (state.faults||[]).filter(fault=>!["fixed","closed"].includes(String(fault.status||"").toLowerCase())).forEach(fault=>alerts.push({priority:1,kind:"urgent",icon:"⚠️",title:fault.title||"Open vehicle fault",detail:fault.diagnosticOutcome||"Review the saved fault record",route:"diagnostics"}));
   (state.packingLists||[]).forEach(list=>{const metrics=packingListMetrics(list),limit=Number(list.weightLimit)||0;if(limit&&metrics.total>limit)alerts.push({priority:2,kind:"warning",icon:"🎒",title:`${list.title} exceeds allowance`,detail:`${(metrics.total-limit).toFixed(1)} kg over its packing allowance`,route:"touring"})});
+  const payload=payloadMetrics();if(payload.mam&&payload.emptyMass&&payload.remaining<0)alerts.push({priority:1,kind:"urgent",icon:"⚖️",title:"Estimated travelling mass exceeds MAM",detail:`${Math.abs(payload.remaining).toFixed(1)} kg over the entered limit`,route:"touring"});
   (state.upgradeProjects||[]).filter(project=>project.status!=="complete").forEach(project=>{
     if(project.status==="blocked")alerts.push({priority:2,kind:"warning",icon:"🧱",title:`${project.title} is blocked`,detail:"Review the upgrade plan and next action",route:"vehicle"});
     else if(Number(project.budget)>0&&Number(project.spent)>Number(project.budget))alerts.push({priority:2,kind:"warning",icon:"💶",title:`${project.title} is over budget`,detail:`€${(Number(project.spent)-Number(project.budget)).toFixed(2)} over plan`,route:"vehicle"});
@@ -118,11 +119,13 @@ function renderDashboard(){
   const maintenance=(DATA.maintenanceTasks||[]).map(maintenanceTaskStatus),maintenanceClear=!maintenance.some(item=>item.status==="overdue");
   const documentsClear=!(state.vehicleDocuments||[]).some(document=>["expired","expiring"].includes(vehicleDocumentStatus(document).status));
   const packing=state.packingLists?.[0],packingMetrics=packing?packingListMetrics(packing):null,packingReady=packingMetrics?packingMetrics.totalCount>0&&packingMetrics.packedCount===packingMetrics.totalCount:null;
+  const payload=payloadMetrics(),payloadReady=payload.mam>0&&payload.emptyMass>0&&payload.remaining>=0;
   const checks=[
     {label:"Journey checks",value:touringTotal?`${touringDone}/${touringTotal}`:"Not loaded",done:touringTotal>0&&touringDone===touringTotal,route:"touring"},
     {label:"Maintenance",value:maintenanceClear?"No overdue tasks":"Overdue work",done:maintenanceClear,route:"maintenance"},
     {label:"Vehicle documents",value:documentsClear?"No expiry alerts":"Needs attention",done:documentsClear,route:"vehicle"},
-    {label:"Packing",value:packingMetrics?`${packingMetrics.packedCount}/${packingMetrics.totalCount} packed`:"No active list",done:packingReady===true,route:"touring"}
+    {label:"Packing",value:packingMetrics?`${packingMetrics.packedCount}/${packingMetrics.totalCount} packed`:"No active list",done:packingReady===true,route:"touring"},
+    {label:"Payload",value:payload.mam&&payload.emptyMass?(payload.remaining>=0?`${payload.remaining.toFixed(1)} kg margin`:`${Math.abs(payload.remaining).toFixed(1)} kg over MAM`):"Loading plan not set",done:payloadReady,route:"touring"}
   ];
   $("#readinessChecks").innerHTML=checks.map(check=>`<button class="readiness-row ${check.done?"ready":""}" data-route="${check.route}"><span>${check.done?"✓":"!"}</span><strong>${esc(check.label)}</strong><small>${esc(check.value)}</small></button>`).join("");
   const activity=[
@@ -175,6 +178,7 @@ function assistantIndex(){
   (state.expenses||[]).forEach(d=>docs.push({type:"touring expense",title:d.vendor||`${d.type||"Touring"} expense`,text:JSON.stringify(d),raw:d}));
   (state.savedCampsites||[]).forEach(d=>docs.push({type:"campsite",title:d.name||"Saved campsite",text:JSON.stringify(d),raw:d}));
   (state.packingLists||[]).forEach(d=>docs.push({type:"packing list",title:d.title||"Packing list",text:JSON.stringify(d),raw:d}));
+  if(Object.values(state.payloadPlan||{}).some(Boolean))docs.push({type:"payload plan",title:"Payload and travelling mass plan",text:JSON.stringify(state.payloadPlan),raw:state.payloadPlan});
   return docs;
 }
 function searchDocs(q){
@@ -498,8 +502,35 @@ function packingListMetrics(list){
   const packed=list.items.filter(item=>item.packed);
   return {total,packedWeight:packed.reduce((sum,item)=>sum+packingWeight(item),0),packedCount:packed.length,totalCount:list.items.length};
 }
+function payloadNumber(value){const match=String(value??"").replace(/,/g,"").match(/\d+(?:\.\d+)?/);return match?Number(match[0]):0}
+function payloadMetrics(){
+  const plan=state.payloadPlan||{},list=(state.packingLists||[]).find(item=>item.id===plan.packingListId);
+  const packing=list?packingListMetrics(list).total:0,mam=payloadNumber(plan.mam)||(payloadNumber(state.vehicleConfiguration?.mam)||Number(state.vehicleProfile?.maxMass)||0);
+  const emptyMass=payloadNumber(plan.emptyMass),occupants=payloadNumber(plan.occupants),water=payloadNumber(plan.waterLitres),fuel=payloadNumber(plan.fuelLitres)*.84,gas=payloadNumber(plan.gasKg),accessories=payloadNumber(plan.accessoriesKg);
+  const load=occupants+water+fuel+gas+accessories+packing,travellingMass=emptyMass+load;
+  return {plan,list,mam,emptyMass,occupants,water,fuel,gas,accessories,packing,load,travellingMass,remaining:mam?mam-travellingMass:null};
+}
+function renderPayloadPlanner(){
+  const m=payloadMetrics(),complete=m.mam>0&&m.emptyMass>0,status=!complete?"Setup required":m.remaining<0?"Over MAM":m.remaining<50?"Low margin":"Within estimate";
+  $("#payloadSummary").innerHTML=[[m.mam?`${m.mam.toFixed(0)} kg`:"Not set","Maximum authorised mass"],[`${m.load.toFixed(1)} kg`,"Estimated added load"],[m.emptyMass?`${m.travellingMass.toFixed(1)} kg`:"Not available","Estimated travelling mass"],[complete?`${Math.abs(m.remaining).toFixed(1)} kg`:"—",complete?(m.remaining<0?"Over limit":"Remaining margin"):"Set masses first"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  const rows=[["Occupants & pets",m.occupants],["Fresh water",m.water],["Diesel (0.84 kg/L)",m.fuel],["Gas cylinders",m.gas],["Permanent accessories",m.accessories],[m.list?`Packing: ${m.list.title}`:"Packing list",m.packing]];
+  $("#payloadBreakdown").innerHTML=`<article class="panel payload-card ${complete&&m.remaining<0?"over":""}"><div class="payload-head"><div><span class="maintenance-status">${esc(status)}</span><h3>Loading breakdown</h3></div><strong>${m.load.toFixed(1)} kg</strong></div><div class="payload-rows">${rows.map(([label,value])=>`<div><span>${esc(label)}</span><strong>${value.toFixed(1)} kg</strong></div>`).join("")}</div>${m.plan.notes?`<p class="trip-notes">${esc(m.plan.notes)}</p>`:""}</article><article class="panel payload-guidance"><h3>Use this as a planning estimate</h3><p>Confirm the vehicle’s plated MAM and obtain actual total and axle weights at a weighbridge. Do not rely on catalogue mass or this estimate for legal compliance.</p><div class="diagnostic-link-row"><button class="secondary-btn" data-manual-nav="183">Manual tyre table</button><button class="secondary-btn" data-manual-nav="193">Manual payload section</button><button class="secondary-btn" data-manual-nav="195">Payload formula</button><button class="secondary-btn" data-manual-nav="273">Departure checklist</button><button class="secondary-btn" data-chapter-nav="26">Chapter 26</button></div></article>`;
+}
+function openPayloadEditor(){
+  const m=payloadMetrics(),plan=state.payloadPlan||{};
+  $("#payloadMam").value=plan.mam||m.mam||"";$("#payloadEmptyMass").value=plan.emptyMass||"";$("#payloadOccupants").value=plan.occupants??0;$("#payloadWater").value=plan.waterLitres??0;$("#payloadFuel").value=plan.fuelLitres??0;$("#payloadGas").value=plan.gasKg??0;$("#payloadAccessories").value=plan.accessoriesKg??0;$("#payloadNotes").value=plan.notes||"";
+  $("#payloadPackingList").innerHTML='<option value="">No packing list</option>'+(state.packingLists||[]).map(list=>`<option value="${esc(list.id)}">${esc(list.title)} — ${packingListMetrics(list).total.toFixed(1)} kg</option>`).join("");$("#payloadPackingList").value=plan.packingListId||activePackingListId||"";
+  const dialog=$("#payloadDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+}
+function closePayloadEditor(){const dialog=$("#payloadDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open")}
+function savePayloadPlan(event){
+  event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget));
+  state.payloadPlan={mam:Number(values.mam)||0,emptyMass:Number(values.emptyMass)||0,occupants:Number(values.occupants)||0,waterLitres:Number(values.waterLitres)||0,fuelLitres:Number(values.fuelLitres)||0,gasKg:Number(values.gasKg)||0,accessoriesKg:Number(values.accessoriesKg)||0,packingListId:values.packingListId||"",notes:values.notes.trim(),updatedAt:new Date().toISOString()};
+  saveState();closePayloadEditor();renderPayloadPlanner();renderHome();toast("Loading plan saved");
+}
 function renderPacking(){
   const lists=state.packingLists||[];
+  renderPayloadPlanner();
   if(!lists.some(list=>list.id===activePackingListId))activePackingListId=lists[0]?.id||null;
   const active=lists.find(list=>list.id===activePackingListId);
   const allItems=lists.flatMap(list=>list.items||[]);
@@ -1525,6 +1556,7 @@ document.addEventListener("click",e=>{
   const packingDelete=e.target.closest("[data-packing-delete]");if(packingDelete)deletePackingList(packingDelete.dataset.packingDelete);
   if(e.target.closest("[data-packing-list-cancel]"))closePackingListEditor();
   if(e.target.closest("[data-packing-item-cancel]"))closePackingItemEditor();
+  if(e.target.closest("[data-payload-cancel]"))closePayloadEditor();
   const manual=e.target.closest("[data-manual-page],[data-manual-nav],[data-page]");if(manual)openManualPage(manual.dataset.manualPage||manual.dataset.manualNav||manual.dataset.page);
   const chapter=e.target.closest("[data-chapter-nav]");if(chapter)openChapter(chapter.dataset.chapterNav);
   const diagnosticStart=e.target.closest("[data-diagnostic-start]");if(diagnosticStart)startDiagnostic(diagnosticStart.dataset.diagnosticStart);
@@ -1603,6 +1635,8 @@ $("#campsiteSearch").addEventListener("input",renderCampsites);
 $("#addPackingList").onclick=openPackingListEditor;
 $("#packingListForm").addEventListener("submit",createPackingList);
 $("#packingItemForm").addEventListener("submit",savePackingItem);
+$("#payloadForm").addEventListener("submit",savePayloadPlan);
+$("#editPayloadPlan").onclick=openPayloadEditor;
 $("#vehicleProfileForm").addEventListener("submit",saveVehicleProfile);
 $("#configurationForm").addEventListener("submit",saveVehicleConfiguration);
 $("#vehicleDocumentForm").addEventListener("submit",saveVehicleDocument);
@@ -1619,7 +1653,7 @@ $("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#partsSearch").addEventListener("input",renderPartsStock);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 

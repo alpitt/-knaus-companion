@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 5.8.0</title>
+  <title>Knaus Companion 5.9.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.8.0-config">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.9.0-payload">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 5.8.0</span>
+        <span>Version 5.9.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -188,6 +188,11 @@
             <section class="panel packing-detail" id="packingDetail"></section>
           </div>
         </section>
+        <section class="section-block" id="payloadPlanner">
+          <div class="section-heading"><div><span class="eyebrow">Payload & loading planner</span><h2>Estimate travelling mass</h2></div><button class="primary-btn" id="editPayloadPlan">Set loading values</button></div>
+          <div id="payloadSummary" class="status-grid"></div>
+          <div id="payloadBreakdown" class="payload-layout"></div>
+        </section>
         <section class="section-block" id="tripJournal">
           <div class="section-heading">
             <div><span class="eyebrow">Touring journal</span><h2>Trip history</h2></div>
@@ -351,6 +356,24 @@
       <button data-route="diagnostics">Checks</button>
       <button data-route="search">Search</button>
     </nav>
+
+    <dialog id="payloadDialog" class="detail-dialog trip-dialog">
+      <form id="payloadForm">
+        <div class="dialog-head"><div><span class="eyebrow">Payload & loading</span><h2>Set travelling load</h2></div><button class="icon-btn" type="button" data-payload-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Maximum authorised mass (kg)<input id="payloadMam" name="mam" type="number" min="0" step="1" required></label>
+          <label class="trip-field">Base mass before the loads below (kg)<input id="payloadEmptyMass" name="emptyMass" type="number" min="0" step="1" required></label>
+          <label class="trip-field">Occupants and pets (kg)<input id="payloadOccupants" name="occupants" type="number" min="0" step="0.1" value="0"></label>
+          <label class="trip-field">Fresh water carried (litres)<input id="payloadWater" name="waterLitres" type="number" min="0" step="1" value="0"></label>
+          <label class="trip-field">Diesel carried (litres)<input id="payloadFuel" name="fuelLitres" type="number" min="0" step="1" value="0"></label>
+          <label class="trip-field">Gas cylinders, including contents (kg)<input id="payloadGas" name="gasKg" type="number" min="0" step="0.1" value="0"></label>
+          <label class="trip-field">Permanent accessories not in empty mass (kg)<input id="payloadAccessories" name="accessoriesKg" type="number" min="0" step="0.1" value="0"></label>
+          <label class="trip-field">Packing list<select id="payloadPackingList" name="packingListId"><option value="">No packing list</option></select></label>
+          <label class="trip-field trip-field-wide">Loading notes<textarea id="payloadNotes" name="notes" maxlength="1200" placeholder="Axle weighbridge results, carrier loads or items still to verify"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-payload-cancel>Cancel</button><button class="primary-btn" type="submit">Save loading plan</button></div>
+        </div>
+      </form>
+    </dialog>
 
     <dialog id="configurationDialog" class="detail-dialog trip-dialog">
       <form id="configurationForm">
@@ -608,7 +631,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=5.8.0-config"></script>
+  <script src="assets/js/app-v4.js?v=5.9.0-payload"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

@@ -541,3 +541,8 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .configuration-help{margin:0;padding:10px 12px;border-radius:11px;background:var(--panel-2);color:var(--muted)}
 @media(max-width:600px){.configuration-fields{grid-template-columns:1fr}.configuration-tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}.configuration-tabs .chip{flex:0 0 auto}.configuration-registry .section-heading{align-items:stretch}.configuration-registry .section-heading button{width:100%}}
 
+/* v5.9 payload and loading planner */
+.payload-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:14px}.payload-card{border-top:5px solid #16a34a}.payload-card.over{border-top-color:#dc2626}.payload-card.over .maintenance-status{background:#fee2e2;color:#991b1b}
+.payload-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.payload-head h3{margin:.35rem 0 0}.payload-head>strong{font-size:1.5rem}.payload-rows{display:grid;gap:0;margin-top:12px}.payload-rows>div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.payload-rows>div:last-child{border-bottom:0}.payload-rows span,.payload-guidance p{color:var(--muted)}.payload-guidance h3{margin-top:0}
+@media(max-width:800px){.payload-layout{grid-template-columns:1fr}}@media(max-width:600px){#payloadPlanner .section-heading{align-items:stretch}#payloadPlanner .section-heading button{width:100%}}
+
