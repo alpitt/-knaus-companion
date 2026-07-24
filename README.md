@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 6.0.0 restores and expands Workshop Mode in the rebuilt application. Use a persistent eight-step safe-work sequence, switch among system references with large workbench controls, keep the display awake while working and close the loop through faults, service records, parts stock and manuals.
+
 Version 5.9.0 adds the Payload & Loading Planner. Estimate travelling mass from a verified base mass plus occupants, fresh water, diesel, gas, permanent accessories and an existing packing list; review the remaining MAM margin; and surface an estimated overload in journey readiness and Operations Dashboard alerts.
 
 Version 5.8.0 adds the Vehicle Configuration Registry. Review identity, electrical, water, gas, exterior and tyre details from the preserved schema; replace reference values with owner-confirmed information; and retain the record in offline search and backups.
