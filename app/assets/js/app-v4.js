@@ -1,7 +1,7 @@
 
-const APP_VERSION="5.9.0";
+const APP_VERSION="6.0.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const VEHICLE_PHOTOS=[
   {id:"photo-01",file:"vehicle_photo_01.jpg",title:"Calira VB06-1 and EVS installation",location:"Electrical compartment",tags:"electrical fuse distribution charger wiring VB06-1 EVS 30/20"},
@@ -48,6 +48,7 @@ let expenseFilter="all";
 let expensePeriod="all";
 let editingExpenseId=null;
 let activeConfigurationSection="identity";
+let workshopWakeLock=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -74,6 +75,7 @@ function toast(msg){const el=document.createElement("div");el.className="toast";
 function route(){return (location.hash.slice(1)||"home").split("/")[0]}
 function navigate(id){location.hash=id}
 function setActiveRoute(id){
+  if(id!=="workshop"&&workshopWakeLock)releaseWorkshopWakeLock();
   $$(".screen").forEach(s=>s.classList.toggle("active",s.dataset.screen===id));
   $$("[data-route]").forEach(b=>b.classList.toggle("active",b.dataset.route===id));
   if(id==="home")renderHome();
@@ -85,7 +87,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
-  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -155,6 +157,7 @@ function renderHome(){
     moduleCard("manuals","📘","Manuals","Companion chapters and official pages"),
     moduleCard("diagnostics","🧰","Diagnostics","Guided checks for common problems"),
     moduleCard("maintenance","🔧","Maintenance","Tasks, service history and reminders"),
+    moduleCard("workshop","🛠️","Workshop mode","Safe sequence and hands-on shortcuts"),
     moduleCard("touring","🗺️","Touring","Departure checks, campsites and packing"),
     moduleCard("settings","💾","Backup","Export, restore and recovery")
   ].join("");
@@ -1488,6 +1491,31 @@ function renderVehicleMap(){
   $("#vehicleMapStage").innerHTML=`<div class="vehicle-outline ${vehicleMapView}" aria-hidden="true"><span class="vehicle-cab">CAB</span><span class="vehicle-view-label">${esc(vehicleMapView)} view</span></div>${spots.map(item=>`<button class="vehicle-hotspot system-${esc(item.system)} ${activeVehicleHotspot===item.id?"active":""}" style="--x:${Number(item.x)}%;--y:${Number(item.y)}%;--w:${Number(item.w)}%;--h:${Number(item.h)}%" data-vehicle-hotspot="${esc(item.id)}" aria-pressed="${activeVehicleHotspot===item.id}"><span>${vehicleSystemIcon(item.system)}</span><strong>${esc(item.name)}</strong></button>`).join("")}`;
   renderVehicleMapInspector();
 }
+const WORKSHOP_STEPS=[
+  "Park securely, apply the handbrake and prevent unintended vehicle movement",
+  "Identify the exact component, circuit or pipework before disconnecting anything",
+  "Disconnect 230 V hook-up and verify mains isolation where electrical work is involved",
+  "Isolate the relevant 12 V supply, battery or fuse before disturbing wiring",
+  "Shut off LPG at the cylinder for work near gas appliances or pipework",
+  "Photograph labels, connectors and routing before removal",
+  "Use the correct replacement rating, specification and approved test method",
+  "Restore guards and supplies, test the complete operating sequence, then record the result"
+];
+function renderWorkshop(){
+  const complete=WORKSHOP_STEPS.filter((_,index)=>state.workshopSteps?.[index]).length;
+  $("#workshopSummary").innerHTML=[[complete,`of ${WORKSHOP_STEPS.length} safety steps`],[`${Math.round(complete/WORKSHOP_STEPS.length*100)}%`,"Sequence complete"],[(state.faults||[]).filter(item=>!["fixed","closed"].includes(item.status)).length,"Active faults"],[(state.logs||[]).length,"Service records"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  $("#workshopSystemButtons").innerHTML=[["electrical","⚡","Electrical"],["fuses","▥","Fuses"],["water","💧","Water"],["gas","🔥","Gas"],["diagnostics","🧰","Diagnostics"],["vehicle","📦","Parts & vehicle"]].map(([route,icon,label])=>`<button class="workshop-button" data-route="${route}"><span>${icon}</span><strong>${label}</strong></button>`).join("");
+  $("#workshopSteps").innerHTML=WORKSHOP_STEPS.map((step,index)=>{const checked=Boolean(state.workshopSteps?.[index]);return `<button class="workshop-step ${checked?"complete":""}" data-workshop-step="${index}" role="checkbox" aria-checked="${checked}"><span>${checked?"✓":index+1}</span><strong>${esc(step)}</strong></button>`}).join("");
+}
+async function requestWorkshopWakeLock(){
+  if(!("wakeLock" in navigator)){$("#workshopWakeLock").checked=false;$("#workshopWakeStatus").textContent="Screen wake lock is not supported by this browser.";toast("Wake lock is not supported here");return}
+  try{workshopWakeLock=await navigator.wakeLock.request("screen");document.body.classList.add("workshop-mode-active");$("#workshopWakeStatus").textContent="Screen wake lock is active while Workshop Mode remains open.";workshopWakeLock.addEventListener("release",()=>{workshopWakeLock=null;document.body.classList.remove("workshop-mode-active")},{once:true})}catch{$("#workshopWakeLock").checked=false;$("#workshopWakeStatus").textContent="Screen wake lock could not be activated.";toast("Could not keep the screen awake")}
+}
+async function releaseWorkshopWakeLock(){
+  if(workshopWakeLock)await workshopWakeLock.release();workshopWakeLock=null;document.body.classList.remove("workshop-mode-active");
+  if($("#workshopWakeLock"))$("#workshopWakeLock").checked=false;
+  if($("#workshopWakeStatus"))$("#workshopWakeStatus").textContent="Screen wake lock is off.";
+}
 function renderSettings(){
   const b=DATA.build||{};
   $("#buildInfo").innerHTML=`<p><strong>Version:</strong> ${esc(b.version||APP_VERSION)}</p><p><strong>Release:</strong> ${esc(b.releaseName||"Rebuilt application shell")}</p><p><strong>Build date:</strong> ${esc(b.buildDate||"2026-07-18")}</p><p><strong>Local records:</strong> ${(state.logs||[]).length}</p>`;
@@ -1517,7 +1545,7 @@ async function init(){
     loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),loadJSON("data/vehicle_config_schema.json",{}),loadJSON("data/parts_inventory.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderSettings();
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderWorkshop();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   $("#fuseSearch")?.addEventListener("input",renderFuses);
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
@@ -1580,6 +1608,7 @@ document.addEventListener("click",e=>{
   const waterComponent=e.target.closest("[data-water-component]");if(waterComponent){activeWaterComponent=waterComponent.dataset.waterComponent;renderWater()}
   const gasFilterButton=e.target.closest("[data-gas-filter]");if(gasFilterButton){gasFilter=gasFilterButton.dataset.gasFilter;const first=gasComponents()[0];if(first)activeGasComponent=first.id;renderGas()}
   const gasComponent=e.target.closest("[data-gas-component]");if(gasComponent){activeGasComponent=gasComponent.dataset.gasComponent;renderGas()}
+  const workshopStep=e.target.closest("[data-workshop-step]");if(workshopStep){const index=Number(workshopStep.dataset.workshopStep);state.workshopSteps={...(state.workshopSteps||{}),[index]:!state.workshopSteps?.[index]};saveState();renderWorkshop()}
   const vehicleViewButton=e.target.closest("[data-vehicle-view]");if(vehicleViewButton){vehicleMapView=vehicleViewButton.dataset.vehicleView;const first=DATA.vehicleExplorer.find(x=>x.view===vehicleMapView);if(first)activeVehicleHotspot=first.id;renderVehicleMap()}
   const vehicleHotspot=e.target.closest("[data-vehicle-hotspot]");if(vehicleHotspot){activeVehicleHotspot=vehicleHotspot.dataset.vehicleHotspot;renderVehicleMap()}
   if(e.target.closest("[data-vehicle-profile-edit]"))openVehicleProfileEditor();
@@ -1624,6 +1653,8 @@ $("#saveMaintenanceMileage").onclick=()=>{const value=Number($("#maintenanceMile
 $("#exportBackup").onclick=exportBackup;
 $("#importBackup").onchange=async e=>{try{if(e.target.files[0])await restoreBackup(e.target.files[0])}catch(err){toast(err.message)}finally{e.target.value=""}};
 $("#clearCache").onclick=clearCache;
+$("#workshopWakeLock").addEventListener("change",e=>e.target.checked?requestWorkshopWakeLock():releaseWorkshopWakeLock());
+$("#resetWorkshopSteps").onclick=()=>{state.workshopSteps={};saveState();renderWorkshop();toast("Workshop sequence reset")};
 $("#addTrip").onclick=()=>openTripEditor();
 $("#tripForm").addEventListener("submit",saveTrip);
 $("#addExpense").onclick=()=>openExpenseEditor();
@@ -1656,6 +1687,7 @@ $("#faultForm").addEventListener("submit",saveFault);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("#workshopWakeLock")?.checked&&!workshopWakeLock)requestWorkshopWakeLock()});
 
 init().catch(err=>{
   console.error(err);

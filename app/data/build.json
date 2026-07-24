@@ -1,6 +1,6 @@
 {
-  "version": "5.9.0",
-  "releaseName": "Payload & Loading Planner",
+  "version": "6.0.0",
+  "releaseName": "Workshop Mode",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -125,7 +125,11 @@
     "Payload and travelling-mass planner",
     "Occupant, water, fuel, gas, accessory and packing weight breakdown",
     "Packing-list integration with remaining-MAM warnings",
-    "Payload plans included in offline search and backups"
+    "Payload plans included in offline search and backups",
+    "Dedicated high-visibility Workshop Mode",
+    "Persistent eight-step safe work sequence",
+    "Screen wake lock with automatic release outside Workshop Mode",
+    "Direct workshop access to systems, faults, service records, parts and manuals"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

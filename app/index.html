@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 5.9.0</title>
+  <title>Knaus Companion 6.0.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=5.9.0-payload">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=6.0.0-workshop">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 5.9.0</span>
+        <span>Version 6.0.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -320,6 +320,37 @@
         <div class="system-toolbar panel"><div><strong>Show gas path</strong><p>Select a view, then choose a component for its location, operation and safe checks.</p></div><div id="gasFilters" class="chips" aria-label="Filter gas diagram"></div></div>
         <div id="gasSummary" class="status-grid"></div>
         <div class="electrical-layout gas-layout"><section class="panel electrical-map-panel" aria-label="Gas system map"><div class="electrical-legend" id="gasLegend"></div><div class="electrical-map" id="gasMap"></div></section><aside class="panel electrical-inspector" id="gasInspector" aria-live="polite"></aside></div>
+      </section>
+
+      <section class="screen" data-screen="workshop">
+        <div class="page-head">
+          <span class="eyebrow">Workshop mode</span>
+          <h1>Work safely on the vehicle</h1>
+          <p>A high-visibility workbench for isolation checks, system references and recording the result.</p>
+        </div>
+        <div id="workshopSummary" class="status-grid"></div>
+        <section class="panel workshop-control">
+          <div><span class="meta">Display control</span><h2>Keep this screen awake</h2><p id="workshopWakeStatus">Screen wake lock is off.</p></div>
+          <label class="workshop-switch"><input id="workshopWakeLock" type="checkbox"><span>Keep awake</span></label>
+        </section>
+        <div id="workshopSystemButtons" class="workshop-actions"></div>
+        <div class="workshop-layout">
+          <section class="panel workshop-checklist">
+            <div class="section-heading"><div><span class="eyebrow">Safe work sequence</span><h2>Before, during and after</h2></div><button class="danger-btn" id="resetWorkshopSteps">Reset</button></div>
+            <div id="workshopSteps"></div>
+          </section>
+          <aside class="panel workshop-sidebar">
+            <span class="meta">Record the outcome</span>
+            <h2>Close the loop</h2>
+            <p>Log faults before dismantling, record completed work in service history and update used parts.</p>
+            <div class="stack">
+              <button class="primary-btn" data-route="diagnostics">Open fault log</button>
+              <button class="secondary-btn" data-route="maintenance">Service records</button>
+              <button class="secondary-btn" data-route="vehicle">Parts stockroom</button>
+              <button class="secondary-btn" data-route="manuals">Manuals & chapters</button>
+            </div>
+          </aside>
+        </div>
       </section>
 
       <section class="screen" data-screen="settings">
@@ -631,7 +662,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=5.9.0-payload"></script>
+  <script src="assets/js/app-v4.js?v=6.0.0-workshop"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
