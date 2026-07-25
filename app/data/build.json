@@ -1,6 +1,6 @@
 {
-  "version": "8.0.0",
-  "releaseName": "Compliance Centre",
+  "version": "8.1.0",
+  "releaseName": "Compliance Requirements",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -187,7 +187,11 @@
     "Dedicated Safety and Compliance Centre",
     "Combined document and scheduled-maintenance action queue",
     "Compliance readiness score and status filters",
-    "Exportable JSON audit snapshot"
+    "Exportable JSON audit snapshot",
+    "Owner-defined statutory and safety requirements",
+    "Recurring intervals with calculated expiry",
+    "Authority, evidence reference and completion details",
+    "Requirement alerts, editing and deletion"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
