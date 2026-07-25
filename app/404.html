@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 8.3.0</title>
+  <title>Knaus Companion 8.4.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=8.3.0-report">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=8.4.0-calendar">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 8.3.0</span>
+        <span>Version 8.4.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -149,6 +149,7 @@
         <div class="toolbar">
           <button class="secondary-btn" id="exportComplianceSnapshot">Export audit snapshot</button>
           <button class="secondary-btn" id="openComplianceReport">Open compliance report</button>
+          <button class="secondary-btn" id="exportComplianceCalendar">Export compliance calendar</button>
           <button class="primary-btn" id="addComplianceRequirement">Add requirement</button>
           <button class="primary-btn" data-route="vehicle">Manage documents</button>
         </div>
@@ -159,6 +160,10 @@
         </section>
         <div id="complianceFilters" class="chips" aria-label="Filter compliance status"></div>
         <div id="complianceQueue" class="compliance-grid"></div>
+        <section class="section-block compliance-timeline-block">
+          <div class="section-heading"><div><span class="eyebrow">Compliance calendar</span><h2>Overdue and next 12 months</h2></div></div>
+          <div id="complianceTimeline" class="compliance-timeline"></div>
+        </section>
       </section>
 
       <section class="screen" data-screen="diagnostics">
@@ -838,7 +843,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=8.3.0-report"></script>
+  <script src="assets/js/app-v4.js?v=8.4.0-calendar"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

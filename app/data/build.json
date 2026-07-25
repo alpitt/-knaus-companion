@@ -1,6 +1,6 @@
 {
-  "version": "8.3.0",
-  "releaseName": "Compliance Report",
+  "version": "8.4.0",
+  "releaseName": "Compliance Calendar",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -199,7 +199,11 @@
     "Consolidated compliance audit report",
     "Vehicle identity, readiness and action summary",
     "Tracked-item and evidence-history tables",
-    "Print-ready handoff and structured JSON export"
+    "Print-ready handoff and structured JSON export",
+    "Dedicated compliance timeline",
+    "Overdue and next-12-month compliance grouping",
+    "Document, maintenance and requirement due events",
+    "Compliance-only iCalendar export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
