@@ -688,3 +688,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .seasonal-report-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.seasonal-report{display:grid;gap:5px}.seasonal-report section{margin:13px 0}.seasonal-report h3{margin:0 0 9px}.seasonal-report table{width:100%;border-collapse:collapse}.seasonal-report th,.seasonal-report td{padding:9px;border:1px solid var(--line);text-align:left;vertical-align:top}.seasonal-report th{background:var(--panel-2)}.seasonal-report ul{margin:0;padding-left:20px}
 @media(max-width:680px){.seasonal-report-actions{display:grid}.seasonal-report-actions button{width:100%}.seasonal-report section{overflow-x:auto}.seasonal-report table{min-width:650px}}
 
+/* v10.5 seasonal supplies */
+.seasonal-supplies{display:grid;grid-template-columns:1fr 1fr;gap:8px}.seasonal-supply{display:grid;grid-template-columns:32px 1fr;align-items:center;gap:10px;color:var(--text);text-align:left}.seasonal-supply>span{display:grid;place-items:center;width:28px;height:28px;border:2px solid var(--line);border-radius:8px;font-weight:900}.seasonal-supply.ready{border-color:#16a34a;background:color-mix(in srgb,#16a34a 8%,var(--panel))}.seasonal-supply.ready>span{border-color:#16a34a;background:#16a34a;color:#fff}
+@media(max-width:650px){.seasonal-supplies{grid-template-columns:1fr}}
+

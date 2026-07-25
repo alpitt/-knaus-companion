@@ -1,6 +1,6 @@
 {
-  "version": "10.4.0",
-  "releaseName": "Seasonal Care Report",
+  "version": "10.5.0",
+  "releaseName": "Seasonal Supplies",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -264,7 +264,11 @@
     "Consolidated seasonal care report",
     "Vehicle, plan, checklist and cycle-history handoff",
     "Print-ready seasonal report",
-    "Structured seasonal report JSON export"
+    "Structured seasonal report JSON export",
+    "Per-mode seasonal supplies checklists",
+    "Storage, frost-protection and reactivation preparation items",
+    "Persistent supply readiness state",
+    "Supply readiness included in seasonal report exports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

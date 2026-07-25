@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 10.5.0 adds Seasonal Supplies. Prepare the cleaning, drainage, battery, frost-protection, inspection and recommissioning materials needed for each seasonal mode with a separate persistent readiness checklist that is included in structured seasonal reports.
+
 Version 10.4.0 adds the Seasonal Care Report. Review vehicle identity, every active seasonal plan, checklist completion and archived cycle history in one handoff, then print it cleanly or export the full record as structured JSON.
 
 Version 10.3.0 adds Seasonal Cycle History. Once every item in a seasonal mode is complete, archive the cycle with its completion time, target and notes, then reset that checklist for the next season while retaining a durable offline record.
