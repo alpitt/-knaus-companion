@@ -1,6 +1,6 @@
 {
-  "version": "8.2.0",
-  "releaseName": "Compliance Evidence Log",
+  "version": "8.3.0",
+  "releaseName": "Compliance Report",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -195,7 +195,11 @@
     "Dated completion evidence history",
     "Provider, certificate, validity and evidence notes",
     "Evidence-driven requirement status refresh",
-    "Full evidence trail in compliance audit exports"
+    "Full evidence trail in compliance audit exports",
+    "Consolidated compliance audit report",
+    "Vehicle identity, readiness and action summary",
+    "Tracked-item and evidence-history tables",
+    "Print-ready handoff and structured JSON export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
