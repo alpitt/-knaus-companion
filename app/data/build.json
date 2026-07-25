@@ -1,6 +1,6 @@
 {
-  "version": "7.0.0",
-  "releaseName": "Ownership Costs",
+  "version": "7.1.0",
+  "releaseName": "Ownership Budgets",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -157,7 +157,11 @@
     "Combined ownership cost dashboard",
     "Service, touring and upgrade spend comparison",
     "All-time, 12-month and 30-day ownership filters",
-    "Recent ownership costs and period-aware CSV export"
+    "Recent ownership costs and period-aware CSV export",
+    "Annual service, touring and upgrade budgets",
+    "Current-year spend progress and remaining allowances",
+    "Persistent offline budget notes",
+    "Over-budget alerts on the Operations Dashboard"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

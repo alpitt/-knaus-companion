@@ -1,7 +1,7 @@
 
-const APP_VERSION="7.0.0";
+const APP_VERSION="7.1.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const VEHICLE_PHOTOS=[
   {id:"photo-01",file:"vehicle_photo_01.jpg",title:"Calira VB06-1 and EVS installation",location:"Electrical compartment",tags:"electrical fuse distribution charger wiring VB06-1 EVS 30/20"},
@@ -112,6 +112,7 @@ function dashboardAlerts(){
   (state.faults||[]).filter(fault=>!["fixed","closed"].includes(String(fault.status||"").toLowerCase())).forEach(fault=>alerts.push({priority:1,kind:"urgent",icon:"⚠️",title:fault.title||"Open vehicle fault",detail:fault.diagnosticOutcome||"Review the saved fault record",route:"diagnostics"}));
   (state.packingLists||[]).forEach(list=>{const metrics=packingListMetrics(list),limit=Number(list.weightLimit)||0;if(limit&&metrics.total>limit)alerts.push({priority:2,kind:"warning",icon:"🎒",title:`${list.title} exceeds allowance`,detail:`${(metrics.total-limit).toFixed(1)} kg over its packing allowance`,route:"touring"})});
   const payload=payloadMetrics();if(payload.mam&&payload.emptyMass&&payload.remaining<0)alerts.push({priority:1,kind:"urgent",icon:"⚖️",title:"Estimated travelling mass exceeds MAM",detail:`${Math.abs(payload.remaining).toFixed(1)} kg over the entered limit`,route:"touring"});
+  ownershipBudgetMetrics().filter(item=>item.budget>0&&item.spent>item.budget).forEach(item=>alerts.push({priority:2,kind:"warning",icon:"💶",title:`${item.source} budget exceeded`,detail:`€${(item.spent-item.budget).toFixed(2)} over the annual allowance`,route:"vehicle"}));
   (state.upgradeProjects||[]).filter(project=>project.status!=="complete").forEach(project=>{
     if(project.status==="blocked")alerts.push({priority:2,kind:"warning",icon:"🧱",title:`${project.title} is blocked`,detail:"Review the upgrade plan and next action",route:"vehicle"});
     else if(Number(project.budget)>0&&Number(project.spent)>Number(project.budget))alerts.push({priority:2,kind:"warning",icon:"💶",title:`${project.title} is over budget`,detail:`€${(Number(project.spent)-Number(project.budget)).toFixed(2)} over plan`,route:"vehicle"});
@@ -1463,17 +1464,23 @@ function saveUpgradeProject(event){
 }
 function setUpgradeStatus(id,status){const project=(state.upgradeProjects||[]).find(item=>item.id===id);if(!project)return;project.status=status;project.updatedAt=new Date().toISOString();saveState();renderVehicle();renderHome();toast(status==="complete"?"Project completed":"Project reopened")}
 function deleteUpgradeProject(id){const project=(state.upgradeProjects||[]).find(item=>item.id===id);if(!project||!confirm(`Delete “${project.title}”?`))return;state.upgradeProjects=state.upgradeProjects.filter(item=>item.id!==id);saveState();renderVehicle();renderHome();toast("Upgrade project deleted")}
-function ownershipCostEntries(){
+function ownershipCostEntries(period=ownershipCostPeriod){
   const entries=[
     ...(state.logs||[]).filter(item=>Number(item.cost)>0).map(item=>({date:item.date||item.createdAt,source:"Service",title:item.title||"Service record",amount:Number(item.cost),detail:item.provider||"Service history"})),
     ...(state.expenses||[]).filter(item=>Number(item.amount)>0).map(item=>({date:item.date||item.createdAt,source:"Touring",title:item.vendor||String(item.type||"Touring expense").replace(/^./,letter=>letter.toUpperCase()),amount:Number(item.amount),detail:String(item.type||"expense")})),
     ...(state.upgradeProjects||[]).filter(item=>Number(item.spent)>0).map(item=>({date:item.updatedAt||item.targetDate||item.createdAt,source:"Upgrades",title:item.title||"Upgrade project",amount:Number(item.spent),detail:item.status||"project"}))
-  ],now=new Date(),cutoff=ownershipCostPeriod==="30d"?new Date(now.getTime()-30*86400000):ownershipCostPeriod==="12m"?new Date(Date.UTC(now.getUTCFullYear()-1,now.getUTCMonth(),now.getUTCDate())):null;
+  ],now=new Date(),cutoff=period==="30d"?new Date(now.getTime()-30*86400000):period==="12m"?new Date(Date.UTC(now.getUTCFullYear()-1,now.getUTCMonth(),now.getUTCDate())):null;
   return entries.filter(item=>!cutoff||new Date(item.date)>=cutoff).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+}
+function ownershipBudgetMetrics(){
+  const year=String(new Date().getFullYear()),entries=ownershipCostEntries("all").filter(item=>String(item.date||"").slice(0,4)===year),budget=state.ownershipBudget||{};
+  return [["Service","service"],["Touring","touring"],["Upgrades","upgrades"]].map(([source,key])=>({source,key,budget:Number(budget[key])||0,spent:entries.filter(item=>item.source===source).reduce((sum,item)=>sum+item.amount,0)}));
 }
 function renderOwnershipCosts(){
   const entries=ownershipCostEntries(),sources=["Service","Touring","Upgrades"],totals=Object.fromEntries(sources.map(source=>[source,entries.filter(item=>item.source===source).reduce((sum,item)=>sum+item.amount,0)])),total=entries.reduce((sum,item)=>sum+item.amount,0);
   $("#ownershipCostSummary").innerHTML=[[`€${total.toFixed(2)}`,"Recorded total"],[`€${totals.Service.toFixed(2)}`,"Service"],[`€${totals.Touring.toFixed(2)}`,"Touring"],[`€${totals.Upgrades.toFixed(2)}`,"Upgrades"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  const budgetMetrics=ownershipBudgetMetrics();
+  $("#ownershipBudgetProgress").innerHTML=budgetMetrics.map(item=>{const percent=item.budget?item.spent/item.budget*100:0,over=item.budget&&item.spent>item.budget;return `<article class="panel ownership-budget-card ${over?"over":""}"><div><span>${esc(item.source)} annual budget</span><strong>${item.budget?`€${item.spent.toFixed(2)} / €${item.budget.toFixed(2)}`:"Not set"}</strong></div><div class="touring-progress-bar"><span style="width:${Math.min(100,percent)}%"></span></div><small>${item.budget?over?`€${(item.spent-item.budget).toFixed(2)} over budget`:`€${(item.budget-item.spent).toFixed(2)} remaining`:`€${item.spent.toFixed(2)} recorded this year`}</small></article>`}).join("")+(state.ownershipBudget?.notes?`<p class="ownership-budget-notes"><strong>Budget notes:</strong> ${esc(state.ownershipBudget.notes)}</p>`:"");
   $("#ownershipCostFilters").innerHTML=[["all","All time"],["12m","Last 12 months"],["30d","Last 30 days"]].map(([id,label])=>`<button class="chip ${ownershipCostPeriod===id?"active":""}" data-ownership-cost-period="${id}">${label}</button>`).join("");
   const max=Math.max(1,...Object.values(totals));
   $("#ownershipCostInsights").innerHTML=`<article class="panel ownership-source-card"><h3>Spend by source</h3>${sources.map(source=>`<div class="ownership-source-row"><span>${source}</span><div><i style="width:${totals[source]/max*100}%"></i></div><strong>€${totals[source].toFixed(2)}</strong></div>`).join("")}<p>Totals reflect recorded entries, not bank transactions. Check for duplicates across modules.</p></article><article class="panel ownership-recent-card"><h3>Recent recorded costs</h3>${entries.length?entries.slice(0,8).map(item=>`<div><span><strong>${esc(item.title)}</strong><small>${esc(item.source)} • ${esc(formatTripDate(String(item.date).slice(0,10)))}</small></span><b>€${item.amount.toFixed(2)}</b></div>`).join(""):"<p>No costs recorded for this period.</p>"}</article>`;
@@ -1481,6 +1488,11 @@ function renderOwnershipCosts(){
 function exportOwnershipCostCsv(){
   const quote=value=>`"${String(value??"").replace(/"/g,'""')}"`,rows=ownershipCostEntries().map(item=>[String(item.date||"").slice(0,10),item.source,item.title,item.detail,item.amount.toFixed(2)]),csv=[["Date","Source","Title","Detail","Amount EUR"],...rows].map(row=>row.map(quote).join(",")).join("\r\n"),blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-ownership-costs-${ownershipCostPeriod}-${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Ownership costs exported");
 }
+function openOwnershipBudgetEditor(){
+  const budget=state.ownershipBudget||{};$("#ownershipBudgetService").value=budget.service??"";$("#ownershipBudgetTouring").value=budget.touring??"";$("#ownershipBudgetUpgrades").value=budget.upgrades??"";$("#ownershipBudgetNotes").value=budget.notes||"";const dialog=$("#ownershipBudgetDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+}
+function closeOwnershipBudgetEditor(){const dialog=$("#ownershipBudgetDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open")}
+function saveOwnershipBudget(event){event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget));state.ownershipBudget={service:Number(values.service)||0,touring:Number(values.touring)||0,upgrades:Number(values.upgrades)||0,notes:values.notes.trim(),updatedAt:new Date().toISOString()};saveState();closeOwnershipBudgetEditor();renderOwnershipCosts();renderHome();toast("Annual ownership budget saved")}
 function renderVehicle(){
   renderVehicleRecords();
   renderOwnershipCosts();
@@ -1739,6 +1751,7 @@ document.addEventListener("click",e=>{
   const vehicleViewButton=e.target.closest("[data-vehicle-view]");if(vehicleViewButton){vehicleMapView=vehicleViewButton.dataset.vehicleView;const first=DATA.vehicleExplorer.find(x=>x.view===vehicleMapView);if(first)activeVehicleHotspot=first.id;renderVehicleMap()}
   const vehicleHotspot=e.target.closest("[data-vehicle-hotspot]");if(vehicleHotspot){activeVehicleHotspot=vehicleHotspot.dataset.vehicleHotspot;renderVehicleMap()}
   const ownershipPeriodButton=e.target.closest("[data-ownership-cost-period]");if(ownershipPeriodButton){ownershipCostPeriod=ownershipPeriodButton.dataset.ownershipCostPeriod;renderOwnershipCosts()}
+  if(e.target.closest("[data-ownership-budget-cancel]"))closeOwnershipBudgetEditor();
   if(e.target.closest("[data-vehicle-profile-edit]"))openVehicleProfileEditor();
   if(e.target.closest("[data-vehicle-profile-cancel]"))closeVehicleProfileEditor();
   const configurationSection=e.target.closest("[data-configuration-section]");if(configurationSection){activeConfigurationSection=configurationSection.dataset.configurationSection;renderVehicleConfiguration()}
@@ -1814,12 +1827,14 @@ $("#editVehicleConfiguration").onclick=openConfigurationEditor;
 $("#addInventoryItem").onclick=()=>openInventoryEditor();
 $("#addUpgradeProject").onclick=()=>openUpgradeEditor();
 $("#exportOwnershipCosts").onclick=exportOwnershipCostCsv;
+$("#editOwnershipBudget").onclick=openOwnershipBudgetEditor;
+$("#ownershipBudgetForm").addEventListener("submit",saveOwnershipBudget);
 $("#inventorySearch").addEventListener("input",renderVehicleRecords);
 $("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#partsSearch").addEventListener("input",renderPartsStock);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeWorkshopMeasurementEditor();closeWorkshopPartEditor();closeWorkshopOutcome();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeWorkshopMeasurementEditor();closeWorkshopPartEditor();closeWorkshopOutcome();closeOwnershipBudgetEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("#workshopWakeLock")?.checked&&!workshopWakeLock)requestWorkshopWakeLock()});

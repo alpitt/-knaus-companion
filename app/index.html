@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 7.0.0</title>
+  <title>Knaus Companion 7.1.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=7.0.0-ownership">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=7.1.0-budgets">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 7.0.0</span>
+        <span>Version 7.1.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -235,9 +235,10 @@
           </section>
         </div>
         <section class="section-block" id="ownershipCosts">
-          <div class="section-heading"><div><span class="eyebrow">Ownership costs</span><h2>Recorded vehicle spending</h2></div><button class="secondary-btn" id="exportOwnershipCosts">Export CSV</button></div>
+          <div class="section-heading"><div><span class="eyebrow">Ownership costs</span><h2>Recorded vehicle spending</h2></div><div class="ownership-actions"><button class="secondary-btn" id="exportOwnershipCosts">Export CSV</button><button class="primary-btn" id="editOwnershipBudget">Set annual budget</button></div></div>
           <p class="section-intro">Combines service-history costs, touring expenses and upgrade spend. Avoid recording the same purchase in more than one module.</p>
           <div id="ownershipCostSummary" class="status-grid"></div>
+          <div id="ownershipBudgetProgress" class="ownership-budget-grid"></div>
           <div id="ownershipCostFilters" class="chips" aria-label="Filter ownership cost period"></div>
           <div id="ownershipCostInsights" class="ownership-cost-layout"></div>
         </section>
@@ -403,6 +404,19 @@
       <button data-route="diagnostics">Checks</button>
       <button data-route="search">Search</button>
     </nav>
+
+    <dialog id="ownershipBudgetDialog" class="detail-dialog trip-dialog">
+      <form id="ownershipBudgetForm">
+        <div class="dialog-head"><div><span class="eyebrow">Ownership budget</span><h2>Set annual allowances</h2></div><button class="icon-btn" type="button" data-ownership-budget-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Service and maintenance (€)<input id="ownershipBudgetService" name="service" type="number" min="0" step="0.01"></label>
+          <label class="trip-field">Touring (€)<input id="ownershipBudgetTouring" name="touring" type="number" min="0" step="0.01"></label>
+          <label class="trip-field">Upgrades (€)<input id="ownershipBudgetUpgrades" name="upgrades" type="number" min="0" step="0.01"></label>
+          <label class="trip-field trip-field-wide">Budget notes<textarea id="ownershipBudgetNotes" name="notes" maxlength="1000" placeholder="Planned major service, trips or upgrade priorities"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-ownership-budget-cancel>Cancel</button><button class="primary-btn" type="submit">Save annual budget</button></div>
+        </div>
+      </form>
+    </dialog>
 
     <dialog id="workshopSessionDialog" class="detail-dialog trip-dialog">
       <form id="workshopSessionForm">
@@ -731,7 +745,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=7.0.0-ownership"></script>
+  <script src="assets/js/app-v4.js?v=7.1.0-budgets"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
