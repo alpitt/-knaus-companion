@@ -1,6 +1,6 @@
 {
-  "version": "9.6.0",
-  "releaseName": "Emergency Drills",
+  "version": "9.7.0",
+  "releaseName": "Safety Equipment Register",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -232,7 +232,11 @@
     "Emergency preparedness drill log",
     "Scenario, participant, duration, outcome and lessons capture",
     "Scheduled drill review dates with dashboard alerts",
-    "Recent drill history included in emergency handoffs"
+    "Recent drill history included in emergency handoffs",
+    "Emergency safety equipment register",
+    "Equipment location, inspection, expiry and condition tracking",
+    "Expiry and replacement Operations Dashboard alerts",
+    "Safety equipment included in structured emergency handoffs"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

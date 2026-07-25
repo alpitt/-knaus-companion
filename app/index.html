@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 9.6.0</title>
+  <title>Knaus Companion 9.7.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.6.0-drills">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.7.0-equipment">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 9.6.0</span>
+        <span>Version 9.7.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -183,6 +183,10 @@
         <section class="section-block">
           <div class="section-heading"><div><span class="eyebrow">Practice and review</span><h2>Emergency drills</h2></div><button class="primary-btn" id="addEmergencyDrill">Record drill</button></div>
           <div id="emergencyDrills" class="emergency-drill-grid"></div>
+        </section>
+        <section class="section-block">
+          <div class="section-heading"><div><span class="eyebrow">Safety equipment</span><h2>Emergency equipment register</h2></div><button class="primary-btn" id="addEmergencyEquipment">Add equipment</button></div>
+          <div id="emergencyEquipment" class="emergency-equipment-grid"></div>
         </section>
         <section class="panel emergency-identity" id="emergencyIdentity"></section>
         <section class="section-block">
@@ -546,6 +550,22 @@
           <label class="trip-field trip-field-wide">What was practised<textarea id="emergencyDrillActions" name="actions" required maxlength="1600"></textarea></label>
           <label class="trip-field trip-field-wide">Lessons and follow-up<textarea id="emergencyDrillLessons" name="lessons" maxlength="1600"></textarea></label>
           <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-emergency-drill-cancel>Cancel</button><button class="primary-btn" type="submit">Save drill</button></div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="emergencyEquipmentDialog" class="detail-dialog trip-dialog">
+      <form id="emergencyEquipmentForm">
+        <div class="dialog-head"><div><span class="eyebrow">Safety equipment</span><h2 id="emergencyEquipmentDialogTitle">Add equipment</h2></div><button class="icon-btn" type="button" data-emergency-equipment-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Equipment<select id="emergencyEquipmentType" name="type"><option>Fire extinguisher</option><option>Fire blanket</option><option>Smoke alarm</option><option>Carbon monoxide alarm</option><option>First-aid kit</option><option>Emergency torch</option><option>Warning triangle</option><option>High-visibility clothing</option><option>Other</option></select></label>
+          <label class="trip-field">Name or identifier<input id="emergencyEquipmentName" name="name" required maxlength="140"></label>
+          <label class="trip-field">Stored location<input id="emergencyEquipmentLocation" name="location" maxlength="180"></label>
+          <label class="trip-field">Last checked<input id="emergencyEquipmentChecked" name="lastChecked" type="date"></label>
+          <label class="trip-field">Expiry / replace by<input id="emergencyEquipmentExpiry" name="expiry" type="date"></label>
+          <label class="trip-field">Condition<select id="emergencyEquipmentCondition" name="condition"><option value="ready">Ready</option><option value="service">Service needed</option><option value="replace">Replace</option></select></label>
+          <label class="trip-field trip-field-wide">Notes<textarea id="emergencyEquipmentNotes" name="notes" maxlength="1200"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-emergency-equipment-cancel>Cancel</button><button class="primary-btn" type="submit">Save equipment</button></div>
         </div>
       </form>
     </dialog>
@@ -944,7 +964,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=9.6.0-drills"></script>
+  <script src="assets/js/app-v4.js?v=9.7.0-equipment"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
