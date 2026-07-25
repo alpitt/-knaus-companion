@@ -110,7 +110,7 @@ jobs:
           grep -q 'const APP_VERSION="7.1.0"' app/assets/js/app-v4.js
           grep -q 'function ownershipBudgetMetrics()' app/assets/js/app-v4.js
           grep -q 'function saveOwnershipBudget(event)' app/assets/js/app-v4.js
-          grep -q 'function ownershipCostEntries()' app/assets/js/app-v4.js
+          grep -q 'function ownershipCostEntries(period=ownershipCostPeriod)' app/assets/js/app-v4.js
           grep -q 'function renderOwnershipCosts()' app/assets/js/app-v4.js
           grep -q 'function exportOwnershipCostCsv()' app/assets/js/app-v4.js
           grep -q 'function workshopHistorySearchText(session)' app/assets/js/app-v4.js
