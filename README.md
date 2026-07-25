@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 8.3.0 adds the Compliance Report. Preview a consolidated audit with vehicle identity, readiness and action counts, every tracked document, maintenance task and owner requirement, plus complete evidence-history tables; print a clean handoff or export structured JSON.
+
 Version 8.2.0 adds the Compliance Evidence Log. Retain dated completion history for every owner-defined requirement with provider, certificate/reference, validity and notes; refresh compliance status from new evidence; delete erroneous evidence safely; and include the complete trail in audit exports.
 
 Version 8.1.0 adds Compliance Requirements. Create owner-defined statutory tests, LPG inspections, habitation checks and other obligations with recurrence, authority, completion, expiry override, evidence reference and notes; include active items in readiness and dashboard alerts; edit or remove them offline.
