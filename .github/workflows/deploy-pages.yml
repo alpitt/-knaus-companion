@@ -34,7 +34,12 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 8.4.0' app/index.html
+          grep -q 'Version 9.0.0' app/index.html
+          grep -q 'data-screen="emergency"' app/index.html
+          grep -q 'id="emergencySummary"' app/index.html
+          grep -q 'id="emergencyContacts"' app/index.html
+          grep -q 'id="emergencyContactDialog"' app/index.html
+          grep -q 'id="emergencyContactForm"' app/index.html
           grep -q 'id="exportComplianceCalendar"' app/index.html
           grep -q 'id="complianceTimeline"' app/index.html
           grep -q 'id="openComplianceReport"' app/index.html
@@ -133,7 +138,11 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="8.4.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="9.0.0"' app/assets/js/app-v4.js
+          grep -q 'function renderEmergency()' app/assets/js/app-v4.js
+          grep -q 'function saveEmergencyContact(event)' app/assets/js/app-v4.js
+          grep -q 'function deleteEmergencyContact(id)' app/assets/js/app-v4.js
+          grep -q 'function saveEmergencyNotes()' app/assets/js/app-v4.js
           grep -q 'function complianceCalendarEvents()' app/assets/js/app-v4.js
           grep -q 'function renderComplianceTimeline()' app/assets/js/app-v4.js
           grep -q 'function exportComplianceCalendar()' app/assets/js/app-v4.js
