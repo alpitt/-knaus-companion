@@ -1,6 +1,6 @@
 {
-  "version": "9.5.0",
-  "releaseName": "Emergency Handoff",
+  "version": "9.6.0",
+  "releaseName": "Emergency Drills",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -228,7 +228,11 @@
     "Consolidated emergency responder and recovery handoff",
     "Vehicle identity, readiness, contacts, incidents and notes in one pack",
     "Print-ready emergency handoff",
-    "Structured emergency handoff JSON export"
+    "Structured emergency handoff JSON export",
+    "Emergency preparedness drill log",
+    "Scenario, participant, duration, outcome and lessons capture",
+    "Scheduled drill review dates with dashboard alerts",
+    "Recent drill history included in emergency handoffs"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
