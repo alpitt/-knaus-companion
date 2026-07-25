@@ -1,6 +1,6 @@
 {
-  "version": "9.7.0",
-  "releaseName": "Safety Equipment Register",
+  "version": "9.8.0",
+  "releaseName": "Emergency Calendar",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -236,7 +236,11 @@
     "Emergency safety equipment register",
     "Equipment location, inspection, expiry and condition tracking",
     "Expiry and replacement Operations Dashboard alerts",
-    "Safety equipment included in structured emergency handoffs"
+    "Safety equipment included in structured emergency handoffs",
+    "Combined emergency review and replacement timeline",
+    "Overdue and next-12-month event grouping",
+    "Drill review and equipment expiry events",
+    "Emergency-only iCalendar export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

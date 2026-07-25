@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 9.7.0</title>
+  <title>Knaus Companion 9.8.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.7.0-equipment">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.8.0-calendar">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 9.7.0</span>
+        <span>Version 9.8.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -187,6 +187,10 @@
         <section class="section-block">
           <div class="section-heading"><div><span class="eyebrow">Safety equipment</span><h2>Emergency equipment register</h2></div><button class="primary-btn" id="addEmergencyEquipment">Add equipment</button></div>
           <div id="emergencyEquipment" class="emergency-equipment-grid"></div>
+        </section>
+        <section class="section-block emergency-calendar-block">
+          <div class="section-heading"><div><span class="eyebrow">Emergency calendar</span><h2>Reviews and replacement dates</h2></div><button class="secondary-btn" id="exportEmergencyCalendar">Export calendar</button></div>
+          <div id="emergencyCalendar" class="emergency-calendar"></div>
         </section>
         <section class="panel emergency-identity" id="emergencyIdentity"></section>
         <section class="section-block">
@@ -964,7 +968,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=9.7.0-equipment"></script>
+  <script src="assets/js/app-v4.js?v=9.8.0-calendar"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
