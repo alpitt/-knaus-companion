@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 9.9.0 adds Contact Verification. Record when insurer, recovery, service and personal emergency details were last checked, schedule the next review, highlight stale entries, surface overdue verification on the Operations Dashboard and include reviews in the Emergency Calendar.
+
 Version 9.8.0 adds the Emergency Calendar. See overdue and next-12-month drill reviews and safety-equipment expiry dates in one timeline, jump directly to the underlying record, and export upcoming reminders as an iCalendar file.
 
 Version 9.7.0 adds the Safety Equipment Register. Track extinguishers, blankets, smoke and carbon-monoxide alarms, first-aid kits, torches and roadside warning equipment with storage location, last check, expiry, condition and notes; expiring or unserviceable items appear on the Operations Dashboard and in structured Emergency Handoffs.

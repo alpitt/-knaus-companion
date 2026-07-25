@@ -1,6 +1,6 @@
 {
-  "version": "9.8.0",
-  "releaseName": "Emergency Calendar",
+  "version": "9.9.0",
+  "releaseName": "Contact Verification",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -240,7 +240,11 @@
     "Combined emergency review and replacement timeline",
     "Overdue and next-12-month event grouping",
     "Drill review and equipment expiry events",
-    "Emergency-only iCalendar export"
+    "Emergency-only iCalendar export",
+    "Emergency contact verification dates",
+    "Scheduled contact and policy-reference reviews",
+    "Stale-contact Operations Dashboard alerts",
+    "Contact reviews included in the Emergency Calendar"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

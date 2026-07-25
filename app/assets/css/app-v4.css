@@ -666,3 +666,6 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .emergency-calendar{display:grid;gap:14px}.emergency-calendar-group{display:grid;grid-template-columns:150px 1fr;gap:14px}.emergency-calendar-group h3{margin:0;padding:12px;color:var(--muted)}.emergency-calendar-group.overdue h3{color:#b91c1c}.emergency-calendar-group>div{display:grid;gap:7px}.emergency-calendar-group button{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);text-align:left}.emergency-calendar-group button span:nth-child(2){display:grid;gap:3px}.emergency-calendar-group small{color:var(--muted)}.emergency-calendar-group.overdue button{border-left:5px solid #dc2626}
 @media(max-width:650px){.emergency-calendar-block .section-heading{display:grid}.emergency-calendar-block .section-heading button{width:100%}.emergency-calendar-group{grid-template-columns:1fr}.emergency-calendar-group h3{padding:0}}
 
+/* v9.9 contact verification */
+.emergency-contact-card.review-overdue{border-left:5px solid #dc2626}.emergency-contact-card.review-overdue>div:first-child>span{color:#b91c1c;font-weight:800}
+
