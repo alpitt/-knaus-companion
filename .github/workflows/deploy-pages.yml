@@ -34,7 +34,9 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 9.7.0' app/index.html
+          grep -q 'Version 9.8.0' app/index.html
+          grep -q 'id="emergencyCalendar"' app/index.html
+          grep -q 'id="exportEmergencyCalendar"' app/index.html
           grep -q 'id="emergencyEquipment"' app/index.html
           grep -q 'id="emergencyEquipmentDialog"' app/index.html
           grep -q 'id="emergencyEquipmentForm"' app/index.html
@@ -151,7 +153,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="9.7.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="9.8.0"' app/assets/js/app-v4.js
+          grep -q 'function emergencyCalendarEvents()' app/assets/js/app-v4.js
+          grep -q 'function renderEmergencyCalendar()' app/assets/js/app-v4.js
+          grep -q 'function exportEmergencyCalendar()' app/assets/js/app-v4.js
           grep -q 'function emergencyEquipmentStatus(item)' app/assets/js/app-v4.js
           grep -q 'function openEmergencyEquipmentEditor(id=null)' app/assets/js/app-v4.js
           grep -q 'function saveEmergencyEquipment(event)' app/assets/js/app-v4.js
