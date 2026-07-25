@@ -1,5 +1,5 @@
 
-const APP_VERSION="6.6.0";
+const APP_VERSION="7.0.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -51,6 +51,7 @@ let activeConfigurationSection="identity";
 let workshopWakeLock=null;
 let activeWorkshopReportId=null;
 let workshopHistoryFilter="all";
+let ownershipCostPeriod="all";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -81,6 +82,8 @@ function setActiveRoute(id){
   $$(".screen").forEach(s=>s.classList.toggle("active",s.dataset.screen===id));
   $$("[data-route]").forEach(b=>b.classList.toggle("active",b.dataset.route===id));
   if(id==="home")renderHome();
+  if(id==="vehicle")renderVehicle();
+  if(id==="workshop")renderWorkshop();
   $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
@@ -1460,8 +1463,27 @@ function saveUpgradeProject(event){
 }
 function setUpgradeStatus(id,status){const project=(state.upgradeProjects||[]).find(item=>item.id===id);if(!project)return;project.status=status;project.updatedAt=new Date().toISOString();saveState();renderVehicle();renderHome();toast(status==="complete"?"Project completed":"Project reopened")}
 function deleteUpgradeProject(id){const project=(state.upgradeProjects||[]).find(item=>item.id===id);if(!project||!confirm(`Delete “${project.title}”?`))return;state.upgradeProjects=state.upgradeProjects.filter(item=>item.id!==id);saveState();renderVehicle();renderHome();toast("Upgrade project deleted")}
+function ownershipCostEntries(){
+  const entries=[
+    ...(state.logs||[]).filter(item=>Number(item.cost)>0).map(item=>({date:item.date||item.createdAt,source:"Service",title:item.title||"Service record",amount:Number(item.cost),detail:item.provider||"Service history"})),
+    ...(state.expenses||[]).filter(item=>Number(item.amount)>0).map(item=>({date:item.date||item.createdAt,source:"Touring",title:item.vendor||String(item.type||"Touring expense").replace(/^./,letter=>letter.toUpperCase()),amount:Number(item.amount),detail:String(item.type||"expense")})),
+    ...(state.upgradeProjects||[]).filter(item=>Number(item.spent)>0).map(item=>({date:item.updatedAt||item.targetDate||item.createdAt,source:"Upgrades",title:item.title||"Upgrade project",amount:Number(item.spent),detail:item.status||"project"}))
+  ],now=new Date(),cutoff=ownershipCostPeriod==="30d"?new Date(now.getTime()-30*86400000):ownershipCostPeriod==="12m"?new Date(Date.UTC(now.getUTCFullYear()-1,now.getUTCMonth(),now.getUTCDate())):null;
+  return entries.filter(item=>!cutoff||new Date(item.date)>=cutoff).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+}
+function renderOwnershipCosts(){
+  const entries=ownershipCostEntries(),sources=["Service","Touring","Upgrades"],totals=Object.fromEntries(sources.map(source=>[source,entries.filter(item=>item.source===source).reduce((sum,item)=>sum+item.amount,0)])),total=entries.reduce((sum,item)=>sum+item.amount,0);
+  $("#ownershipCostSummary").innerHTML=[[`€${total.toFixed(2)}`,"Recorded total"],[`€${totals.Service.toFixed(2)}`,"Service"],[`€${totals.Touring.toFixed(2)}`,"Touring"],[`€${totals.Upgrades.toFixed(2)}`,"Upgrades"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
+  $("#ownershipCostFilters").innerHTML=[["all","All time"],["12m","Last 12 months"],["30d","Last 30 days"]].map(([id,label])=>`<button class="chip ${ownershipCostPeriod===id?"active":""}" data-ownership-cost-period="${id}">${label}</button>`).join("");
+  const max=Math.max(1,...Object.values(totals));
+  $("#ownershipCostInsights").innerHTML=`<article class="panel ownership-source-card"><h3>Spend by source</h3>${sources.map(source=>`<div class="ownership-source-row"><span>${source}</span><div><i style="width:${totals[source]/max*100}%"></i></div><strong>€${totals[source].toFixed(2)}</strong></div>`).join("")}<p>Totals reflect recorded entries, not bank transactions. Check for duplicates across modules.</p></article><article class="panel ownership-recent-card"><h3>Recent recorded costs</h3>${entries.length?entries.slice(0,8).map(item=>`<div><span><strong>${esc(item.title)}</strong><small>${esc(item.source)} • ${esc(formatTripDate(String(item.date).slice(0,10)))}</small></span><b>€${item.amount.toFixed(2)}</b></div>`).join(""):"<p>No costs recorded for this period.</p>"}</article>`;
+}
+function exportOwnershipCostCsv(){
+  const quote=value=>`"${String(value??"").replace(/"/g,'""')}"`,rows=ownershipCostEntries().map(item=>[String(item.date||"").slice(0,10),item.source,item.title,item.detail,item.amount.toFixed(2)]),csv=[["Date","Source","Title","Detail","Amount EUR"],...rows].map(row=>row.map(quote).join(",")).join("\r\n"),blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-ownership-costs-${ownershipCostPeriod}-${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Ownership costs exported");
+}
 function renderVehicle(){
   renderVehicleRecords();
+  renderOwnershipCosts();
   renderVehicleConfiguration();
   renderVehiclePhotos();
   renderPartsStock();
@@ -1716,6 +1738,7 @@ document.addEventListener("click",e=>{
   const workshopHistoryFilterButton=e.target.closest("[data-workshop-history-filter]");if(workshopHistoryFilterButton){workshopHistoryFilter=workshopHistoryFilterButton.dataset.workshopHistoryFilter;renderWorkshopHistory()}
   const vehicleViewButton=e.target.closest("[data-vehicle-view]");if(vehicleViewButton){vehicleMapView=vehicleViewButton.dataset.vehicleView;const first=DATA.vehicleExplorer.find(x=>x.view===vehicleMapView);if(first)activeVehicleHotspot=first.id;renderVehicleMap()}
   const vehicleHotspot=e.target.closest("[data-vehicle-hotspot]");if(vehicleHotspot){activeVehicleHotspot=vehicleHotspot.dataset.vehicleHotspot;renderVehicleMap()}
+  const ownershipPeriodButton=e.target.closest("[data-ownership-cost-period]");if(ownershipPeriodButton){ownershipCostPeriod=ownershipPeriodButton.dataset.ownershipCostPeriod;renderOwnershipCosts()}
   if(e.target.closest("[data-vehicle-profile-edit]"))openVehicleProfileEditor();
   if(e.target.closest("[data-vehicle-profile-cancel]"))closeVehicleProfileEditor();
   const configurationSection=e.target.closest("[data-configuration-section]");if(configurationSection){activeConfigurationSection=configurationSection.dataset.configurationSection;renderVehicleConfiguration()}
@@ -1790,6 +1813,7 @@ $("#addVehicleDocument").onclick=()=>openVehicleDocumentEditor();
 $("#editVehicleConfiguration").onclick=openConfigurationEditor;
 $("#addInventoryItem").onclick=()=>openInventoryEditor();
 $("#addUpgradeProject").onclick=()=>openUpgradeEditor();
+$("#exportOwnershipCosts").onclick=exportOwnershipCostCsv;
 $("#inventorySearch").addEventListener("input",renderVehicleRecords);
 $("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#partsSearch").addEventListener("input",renderPartsStock);

@@ -1,6 +1,6 @@
 {
-  "version": "6.6.0",
-  "releaseName": "Workshop History",
+  "version": "7.0.0",
+  "releaseName": "Ownership Costs",
   "buildDate": "2026-07-24",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -153,7 +153,11 @@
     "Searchable completed workshop archive",
     "Resolved, monitoring and follow-up outcome filters",
     "Workshop time, cost and follow-up summaries",
-    "Direct report access from every history record"
+    "Direct report access from every history record",
+    "Combined ownership cost dashboard",
+    "Service, touring and upgrade spend comparison",
+    "All-time, 12-month and 30-day ownership filters",
+    "Recent ownership costs and period-aware CSV export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
