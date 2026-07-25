@@ -34,7 +34,10 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 9.5.0' app/index.html
+          grep -q 'Version 9.6.0' app/index.html
+          grep -q 'id="emergencyDrills"' app/index.html
+          grep -q 'id="emergencyDrillDialog"' app/index.html
+          grep -q 'id="emergencyDrillForm"' app/index.html
           grep -q 'id="openEmergencyHandoff"' app/index.html
           grep -q 'id="exportEmergencyHandoff"' app/index.html
           grep -q 'id="emergencyReadinessChecklist"' app/index.html
@@ -145,7 +148,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="9.5.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="9.6.0"' app/assets/js/app-v4.js
+          grep -q 'function openEmergencyDrillEditor(id=null)' app/assets/js/app-v4.js
+          grep -q 'function saveEmergencyDrill(event)' app/assets/js/app-v4.js
+          grep -q 'function deleteEmergencyDrill(id)' app/assets/js/app-v4.js
           grep -q 'function emergencyHandoffData()' app/assets/js/app-v4.js
           grep -q 'function emergencyHandoffHtml(actions=true)' app/assets/js/app-v4.js
           grep -q 'function openEmergencyHandoff()' app/assets/js/app-v4.js
