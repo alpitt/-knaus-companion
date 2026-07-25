@@ -1,7 +1,7 @@
 
-const APP_VERSION="8.4.0";
+const APP_VERSION="9.0.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const VEHICLE_PHOTOS=[
   {id:"photo-01",file:"vehicle_photo_01.jpg",title:"Calira VB06-1 and EVS installation",location:"Electrical compartment",tags:"electrical fuse distribution charger wiring VB06-1 EVS 30/20"},
@@ -60,6 +60,7 @@ let ownershipCalendarFilter="all";
 let complianceFilter="all";
 let editingComplianceRequirementId=null;
 let activeComplianceEvidenceId=null;
+let editingEmergencyContactId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -93,6 +94,7 @@ function setActiveRoute(id){
   if(id==="vehicle")renderVehicle();
   if(id==="workshop")renderWorkshop();
   if(id==="compliance")renderCompliance();
+  if(id==="emergency")renderEmergency();
   $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
@@ -101,7 +103,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
-  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -176,6 +178,7 @@ function renderHome(){
     moduleCard("diagnostics","🧰","Diagnostics","Guided checks for common problems"),
     moduleCard("maintenance","🔧","Maintenance","Tasks, service history and reminders"),
     moduleCard("compliance","🛡","Compliance","Documents, scheduled care and readiness"),
+    moduleCard("emergency","☎","Emergency centre","Vehicle identity, isolation and assistance"),
     moduleCard("workshop","🛠️","Workshop mode","Safe sequence and hands-on shortcuts"),
     moduleCard("touring","🗺️","Touring","Departure checks, campsites and packing"),
     moduleCard("settings","💾","Backup","Export, restore and recovery")
@@ -1367,6 +1370,20 @@ function openComplianceEvidence(id){activeComplianceEvidenceId=id;const item=act
 function closeComplianceEvidence(){const dialog=$("#complianceEvidenceDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");activeComplianceEvidenceId=null}
 function saveComplianceEvidence(event){event.preventDefault();const item=activeComplianceRequirement();if(!item)return;const values=Object.fromEntries(new FormData(event.currentTarget)),entry={id:`evidence-${Date.now()}`,date:values.date,validUntil:values.validUntil,provider:values.provider.trim(),reference:values.reference.trim(),notes:values.notes.trim(),createdAt:new Date().toISOString()};item.completions=[entry,...(item.completions||[])];item.lastCompleted=entry.date;item.expiry=entry.validUntil||(item.intervalMonths?addMonths(entry.date,item.intervalMonths):"");if(entry.reference)item.reference=entry.reference;if(entry.provider)item.authority=entry.provider;item.updatedAt=new Date().toISOString();saveState();event.currentTarget.reset();$("#complianceEvidenceDate").value=new Date().toISOString().slice(0,10);renderComplianceEvidence();renderCompliance();renderHome();toast("Compliance evidence recorded")}
 function deleteComplianceEvidence(id){const item=activeComplianceRequirement(),entry=(item?.completions||[]).find(record=>record.id===id);if(!item||!entry||!confirm(`Delete evidence recorded ${formatTripDate(entry.date)}?`))return;item.completions=item.completions.filter(record=>record.id!==id);const latest=[...item.completions].sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];item.lastCompleted=latest?.date||"";item.expiry=latest?.validUntil||(latest&&item.intervalMonths?addMonths(latest.date,item.intervalMonths):"");item.reference=latest?.reference||"";item.updatedAt=new Date().toISOString();saveState();renderComplianceEvidence();renderCompliance();renderHome();toast("Compliance evidence deleted")}
+function renderEmergency(){
+  const profile=state.vehicleProfile||{},contacts=[...(state.emergencyContacts||[])].sort((a,b)=>Number(b.primary)-Number(a.primary)||a.name.localeCompare(b.name)),openFaults=(state.faults||[]).filter(item=>!["fixed","closed"].includes(String(item.status||"").toLowerCase())).length;
+  $("#emergencySummary").innerHTML=[[contacts.length,"Saved contacts"],[contacts.filter(item=>item.primary).length,"Primary contacts"],[openFaults,"Open faults"],[state.currentMileage||0,"Current km"]].map(([value,label])=>`<article class="stat-card"><strong>${esc(value)}</strong><span>${label}</span></article>`).join("");
+  $("#emergencyIdentity").innerHTML=`<div><span class="eyebrow">Vehicle identity</span><h2>${esc(profile.make||"Knaus")} ${esc(profile.model||"Sun Traveller")}</h2><p>Keep these details ready for recovery, insurance or emergency responders.</p></div><dl><div><dt>Registration</dt><dd>${esc(profile.registration||"Not recorded")}</dd></div><div><dt>VIN</dt><dd>${esc(profile.vin||"Not recorded")}</dd></div><div><dt>Year</dt><dd>${esc(profile.year||"Not recorded")}</dd></div><div><dt>Mileage</dt><dd>${Number(state.currentMileage||0).toLocaleString()} km</dd></div></dl>`;
+  const guides=[["gas","🔥","Gas supply","If it is safe to approach, extinguish flames, ventilate and close cylinder valves. Leave immediately if gas is strongly suspected."],["electrical","⚡","Electrical supply","If safe, disconnect the external hook-up before isolating onboard 12 V power. Do not touch damaged or wet electrical equipment."],["water","💧","Water supply","Switch off the water pump and isolate the supply if a leak is causing damage. Keep water away from electrical equipment."],["diagnostics","⚠️","Fault guidance","Use saved faults and guided checks only after immediate danger has passed and the vehicle is secure."]];
+  $("#emergencyIsolation").innerHTML=guides.map(([route,icon,title,detail])=>`<button class="panel emergency-isolation-card" data-route="${route}"><span>${icon}</span><span><strong>${title}</strong><small>${detail}</small></span><b>→</b></button>`).join("");
+  $("#emergencyContacts").innerHTML=contacts.length?contacts.map(item=>{const tel=String(item.phone||"").replace(/[^\d+*#]/g,"");return `<article class="panel emergency-contact-card ${item.primary?"primary":""}"><div><span>${item.primary?"Primary • ":""}${esc(item.role)}</span><h3>${esc(item.name)}</h3><p>${esc(item.phone)}${item.reference?` • ${esc(item.reference)}`:""}</p>${item.notes?`<small>${esc(item.notes)}</small>`:""}</div><div><a class="primary-btn" href="tel:${esc(tel)}">Call</a><button class="secondary-btn" data-emergency-contact-edit="${item.id}">Edit</button><button class="danger-btn" data-emergency-contact-delete="${item.id}">Delete</button></div></article>`}).join(""):'<article class="panel emergency-empty"><strong>No assistance contacts saved</strong><p>Add your insurer, roadside provider, recovery service and trusted personal contacts.</p></article>';
+  $("#emergencyNotes").value=state.emergencyNotes||"";
+}
+function openEmergencyContactEditor(id=null){editingEmergencyContactId=id;const item=(state.emergencyContacts||[]).find(entry=>entry.id===id)||{};$("#emergencyContactDialogTitle").textContent=id?"Edit contact":"Add contact";$("#emergencyContactName").value=item.name||"";$("#emergencyContactRole").value=item.role||"Roadside assistance";$("#emergencyContactPhone").value=item.phone||"";$("#emergencyContactReference").value=item.reference||"";$("#emergencyContactNotes").value=item.notes||"";$("#emergencyContactPrimary").checked=Boolean(item.primary);const dialog=$("#emergencyContactDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","")}
+function closeEmergencyContactEditor(){const dialog=$("#emergencyContactDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");editingEmergencyContactId=null}
+function saveEmergencyContact(event){event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget)),existing=(state.emergencyContacts||[]).find(item=>item.id===editingEmergencyContactId),item={id:existing?.id||`emergency-${Date.now()}`,name:values.name.trim(),role:values.role,phone:values.phone.trim(),reference:values.reference.trim(),notes:values.notes.trim(),primary:values.primary==="on",createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};state.emergencyContacts=existing?state.emergencyContacts.map(entry=>entry.id===existing.id?item:entry):[item,...(state.emergencyContacts||[])];saveState();closeEmergencyContactEditor();renderEmergency();toast(existing?"Emergency contact updated":"Emergency contact added")}
+function deleteEmergencyContact(id){const item=(state.emergencyContacts||[]).find(entry=>entry.id===id);if(!item||!confirm(`Delete emergency contact “${item.name}”?`))return;state.emergencyContacts=state.emergencyContacts.filter(entry=>entry.id!==id);saveState();renderEmergency();toast("Emergency contact deleted")}
+function saveEmergencyNotes(){state.emergencyNotes=$("#emergencyNotes").value.trim();saveState();toast("Emergency notes saved")}
 function configurationSections(){return (DATA.vehicleConfigSchema?.sections||[]).filter(section=>section.id!=="documents")}
 function configurationProfileValue(id){
   const profile=state.vehicleProfile||{},key=id==="mam"?"maxMass":id;
@@ -1829,7 +1846,7 @@ async function init(){
     loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),loadJSON("data/vehicle_config_schema.json",{}),loadJSON("data/parts_inventory.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderWorkshop();renderSettings();
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderWorkshop();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   $("#fuseSearch")?.addEventListener("input",renderFuses);
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
@@ -1924,6 +1941,9 @@ document.addEventListener("click",e=>{
   const evidenceOpen=e.target.closest("[data-compliance-evidence-open]");if(evidenceOpen)openComplianceEvidence(evidenceOpen.dataset.complianceEvidenceOpen);
   if(e.target.closest("[data-compliance-evidence-cancel]"))closeComplianceEvidence();
   const evidenceDelete=e.target.closest("[data-compliance-evidence-delete]");if(evidenceDelete)deleteComplianceEvidence(evidenceDelete.dataset.complianceEvidenceDelete);
+  if(e.target.closest("[data-emergency-contact-cancel]"))closeEmergencyContactEditor();
+  const emergencyEdit=e.target.closest("[data-emergency-contact-edit]");if(emergencyEdit)openEmergencyContactEditor(emergencyEdit.dataset.emergencyContactEdit);
+  const emergencyDelete=e.target.closest("[data-emergency-contact-delete]");if(emergencyDelete)deleteEmergencyContact(emergencyDelete.dataset.emergencyContactDelete);
   if(e.target.closest("[data-ownership-budget-cancel]"))closeOwnershipBudgetEditor();
   if(e.target.closest("[data-ownership-commitment-add]"))openOwnershipCommitmentEditor();
   if(e.target.closest("[data-ownership-commitment-cancel]"))closeOwnershipCommitmentEditor();
@@ -2015,6 +2035,9 @@ $("#openOwnershipReport").onclick=openOwnershipReport;
 $("#exportComplianceSnapshot").onclick=exportComplianceSnapshot;
 $("#openComplianceReport").onclick=openComplianceReport;
 $("#exportComplianceCalendar").onclick=exportComplianceCalendar;
+$("#addEmergencyContact").onclick=()=>openEmergencyContactEditor();
+$("#emergencyContactForm").addEventListener("submit",saveEmergencyContact);
+$("#saveEmergencyNotes").onclick=saveEmergencyNotes;
 $("#addComplianceRequirement").onclick=()=>openComplianceRequirementEditor();
 $("#complianceRequirementForm").addEventListener("submit",saveComplianceRequirement);
 $("#complianceEvidenceForm").addEventListener("submit",saveComplianceEvidence);
@@ -2028,7 +2051,7 @@ $("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#partsSearch").addEventListener("input",renderPartsStock);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeWorkshopMeasurementEditor();closeWorkshopPartEditor();closeWorkshopOutcome();closeOwnershipBudgetEditor();closeOwnershipCommitmentEditor();closeOwnershipLedger();closeComplianceRequirementEditor();closeComplianceEvidence();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeWorkshopMeasurementEditor();closeWorkshopPartEditor();closeWorkshopOutcome();closeOwnershipBudgetEditor();closeOwnershipCommitmentEditor();closeOwnershipLedger();closeComplianceRequirementEditor();closeComplianceEvidence();closeEmergencyContactEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("#workshopWakeLock")?.checked&&!workshopWakeLock)requestWorkshopWakeLock()});

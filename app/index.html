@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 8.4.0</title>
+  <title>Knaus Companion 9.0.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=8.4.0-calendar">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.0.0-emergency">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 8.4.0</span>
+        <span>Version 9.0.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -163,6 +163,28 @@
         <section class="section-block compliance-timeline-block">
           <div class="section-heading"><div><span class="eyebrow">Compliance calendar</span><h2>Overdue and next 12 months</h2></div></div>
           <div id="complianceTimeline" class="compliance-timeline"></div>
+        </section>
+      </section>
+
+      <section class="screen" data-screen="emergency">
+        <div class="page-head">
+          <span class="eyebrow">Emergency preparedness</span>
+          <h1>Emergency centre</h1>
+          <p>Offline vehicle identity, isolation guidance and owner-managed assistance contacts.</p>
+        </div>
+        <div id="emergencySummary" class="status-grid"></div>
+        <section class="panel emergency-identity" id="emergencyIdentity"></section>
+        <section class="section-block">
+          <div class="section-heading"><div><span class="eyebrow">Make safe</span><h2>System isolation guides</h2></div></div>
+          <div id="emergencyIsolation" class="emergency-isolation-grid"></div>
+        </section>
+        <section class="section-block">
+          <div class="section-heading"><div><span class="eyebrow">Assistance</span><h2>Emergency contacts</h2></div><button class="primary-btn" id="addEmergencyContact">Add contact</button></div>
+          <div id="emergencyContacts" class="emergency-contact-grid"></div>
+        </section>
+        <section class="panel emergency-notes">
+          <label>Emergency notes<textarea id="emergencyNotes" maxlength="3000" placeholder="Medical considerations, access instructions, recovery details or information responders may need"></textarea></label>
+          <button class="primary-btn" id="saveEmergencyNotes">Save emergency notes</button>
         </section>
       </section>
 
@@ -445,6 +467,21 @@
           <label class="trip-field">Fixed commitments (€)<input id="ownershipBudgetFixed" name="fixed" type="number" min="0" step="0.01"></label>
           <label class="trip-field trip-field-wide">Budget notes<textarea id="ownershipBudgetNotes" name="notes" maxlength="1000" placeholder="Planned major service, trips or upgrade priorities"></textarea></label>
           <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-ownership-budget-cancel>Cancel</button><button class="primary-btn" type="submit">Save annual budget</button></div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="emergencyContactDialog" class="detail-dialog trip-dialog">
+      <form id="emergencyContactForm">
+        <div class="dialog-head"><div><span class="eyebrow">Emergency contact</span><h2 id="emergencyContactDialogTitle">Add contact</h2></div><button class="icon-btn" type="button" data-emergency-contact-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Name<input id="emergencyContactName" name="name" required maxlength="120"></label>
+          <label class="trip-field">Role<select id="emergencyContactRole" name="role"><option>Roadside assistance</option><option>Insurer</option><option>Recovery service</option><option>Service centre</option><option>Family contact</option><option>Medical contact</option><option>Other</option></select></label>
+          <label class="trip-field">Phone<input id="emergencyContactPhone" name="phone" type="tel" required maxlength="60"></label>
+          <label class="trip-field">Policy / reference<input id="emergencyContactReference" name="reference" maxlength="140"></label>
+          <label class="trip-field trip-field-wide">Availability or notes<textarea id="emergencyContactNotes" name="notes" maxlength="1000"></textarea></label>
+          <label class="workshop-fault-option"><input id="emergencyContactPrimary" name="primary" type="checkbox"> Show as a primary contact</label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-emergency-contact-cancel>Cancel</button><button class="primary-btn" type="submit">Save contact</button></div>
         </div>
       </form>
     </dialog>
@@ -843,7 +880,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=8.4.0-calendar"></script>
+  <script src="assets/js/app-v4.js?v=9.0.0-emergency"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

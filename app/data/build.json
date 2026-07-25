@@ -1,6 +1,6 @@
 {
-  "version": "8.4.0",
-  "releaseName": "Compliance Calendar",
+  "version": "9.0.0",
+  "releaseName": "Emergency Centre",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -203,7 +203,12 @@
     "Dedicated compliance timeline",
     "Overdue and next-12-month compliance grouping",
     "Document, maintenance and requirement due events",
-    "Compliance-only iCalendar export"
+    "Compliance-only iCalendar export",
+    "Dedicated offline Emergency Centre",
+    "Emergency vehicle identity card",
+    "Direct gas, electrical, water and fault guidance",
+    "Owner-managed tap-to-call assistance contacts",
+    "Persistent emergency notes in backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
