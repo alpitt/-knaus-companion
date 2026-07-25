@@ -34,7 +34,11 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 7.7.0' app/index.html
+          grep -q 'Version 8.0.0' app/index.html
+          grep -q 'data-screen="compliance"' app/index.html
+          grep -q 'id="complianceSummary"' app/index.html
+          grep -q 'id="complianceQueue"' app/index.html
+          grep -q 'id="exportComplianceSnapshot"' app/index.html
           grep -q 'id="openOwnershipReport"' app/index.html
           grep -q 'id="ownershipCalendar"' app/index.html
           grep -q 'id="exportOwnershipCalendar"' app/index.html
@@ -120,7 +124,11 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="7.7.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="8.0.0"' app/assets/js/app-v4.js
+          grep -q 'function complianceEntries()' app/assets/js/app-v4.js
+          grep -q 'function complianceSnapshot()' app/assets/js/app-v4.js
+          grep -q 'function renderCompliance()' app/assets/js/app-v4.js
+          grep -q 'function exportComplianceSnapshot()' app/assets/js/app-v4.js
           grep -q 'function ownershipReportData()' app/assets/js/app-v4.js
           grep -q 'function ownershipReportHtml(actions=true)' app/assets/js/app-v4.js
           grep -q 'function exportOwnershipReport()' app/assets/js/app-v4.js

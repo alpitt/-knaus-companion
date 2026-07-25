@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 8.0.0 begins the Safety & Compliance phase with a dedicated Compliance Centre. Combine document validity and scheduled-maintenance status into a readiness score and prioritized action queue, filter current, due, baseline and failed items, jump to their owning workflows and export a JSON audit snapshot.
+
 Version 7.7.0 adds the Ownership Report. Preview one consolidated current-year vehicle summary with identity, recorded costs, budgets, forecasts, fixed commitments, ledger totals, upcoming calendar items and offline record counts; print it cleanly or export structured JSON.
 
 Version 7.6.0 adds the Ownership Calendar. Review recurring payments, document expiries and scheduled maintenance in one filtered 12-month timeline, keep overdue items visible, jump directly to the relevant workflow and export upcoming events as an iCalendar file.
