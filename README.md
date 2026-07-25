@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 8.1.0 adds Compliance Requirements. Create owner-defined statutory tests, LPG inspections, habitation checks and other obligations with recurrence, authority, completion, expiry override, evidence reference and notes; include active items in readiness and dashboard alerts; edit or remove them offline.
+
 Version 8.0.0 begins the Safety & Compliance phase with a dedicated Compliance Centre. Combine document validity and scheduled-maintenance status into a readiness score and prioritized action queue, filter current, due, baseline and failed items, jump to their owning workflows and export a JSON audit snapshot.
 
 Version 7.7.0 adds the Ownership Report. Preview one consolidated current-year vehicle summary with identity, recorded costs, budgets, forecasts, fixed commitments, ledger totals, upcoming calendar items and offline record counts; print it cleanly or export structured JSON.
