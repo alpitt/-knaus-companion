@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 9.3.0</title>
+  <title>Knaus Companion 9.4.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.3.0-timeline">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.4.0-readiness">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 9.3.0</span>
+        <span>Version 9.4.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -173,6 +173,12 @@
           <p>Offline vehicle identity, isolation guidance and owner-managed assistance contacts.</p>
         </div>
         <div id="emergencySummary" class="status-grid"></div>
+        <section class="panel emergency-readiness">
+          <div class="section-heading"><div><span class="eyebrow">Preparedness</span><h2>Emergency readiness</h2></div><strong id="emergencyReadinessScore">0%</strong></div>
+          <div class="touring-progress-bar" aria-hidden="true"><span id="emergencyReadinessBar"></span></div>
+          <p id="emergencyReadinessStatus">Complete the checklist before travel.</p>
+          <div id="emergencyReadinessChecklist" class="emergency-readiness-checklist"></div>
+        </section>
         <section class="panel emergency-identity" id="emergencyIdentity"></section>
         <section class="section-block">
           <div class="section-heading"><div><span class="eyebrow">Make safe</span><h2>System isolation guides</h2></div></div>
@@ -916,7 +922,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=9.3.0-timeline"></script>
+  <script src="assets/js/app-v4.js?v=9.4.0-readiness"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

@@ -1,6 +1,6 @@
 {
-  "version": "9.3.0",
-  "releaseName": "Incident Timeline",
+  "version": "9.4.0",
+  "releaseName": "Emergency Readiness",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -220,7 +220,11 @@
     "Timestamped incident timeline updates",
     "Action, assistance, recovery, assessment and resolution events",
     "Status progression from timeline entries",
-    "Timeline chronology in printed and exported incident reports"
+    "Timeline chronology in printed and exported incident reports",
+    "Persistent emergency readiness checklist",
+    "Preparedness score and completion progress",
+    "Vehicle identity, assistance, isolation and safety-equipment checks",
+    "Offline readiness state included in application backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

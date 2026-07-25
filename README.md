@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 9.4.0 adds Emergency Readiness. Review an offline eight-point preparation checklist covering vehicle identity, assistance contacts, isolation points, fire and first-aid equipment, roadside warning kit, recovery access and emergency notes, with persistent progress and a live readiness score.
+
 Version 9.3.0 adds the Incident Timeline. Append timestamped action, assistance, recovery, assessment, follow-up and resolution updates to an emergency record; keep its current status aligned with the latest update; and include the complete chronology in print-ready and JSON reports.
 
 Version 9.2.0 adds Incident Reports. Open any emergency record as a formal handoff containing vehicle identity, timing, location, severity, actions, assistance and follow-up; print it cleanly or export that individual incident as structured JSON.
