@@ -1,5 +1,5 @@
 
-const APP_VERSION="7.7.0";
+const APP_VERSION="8.0.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -57,6 +57,7 @@ let editingOwnershipCommitmentId=null;
 let activeOwnershipLedgerId=null;
 let editingOwnershipPaymentId=null;
 let ownershipCalendarFilter="all";
+let complianceFilter="all";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -89,6 +90,7 @@ function setActiveRoute(id){
   if(id==="home")renderHome();
   if(id==="vehicle")renderVehicle();
   if(id==="workshop")renderWorkshop();
+  if(id==="compliance")renderCompliance();
   $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
@@ -97,7 +99,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
-  ["maintenance","Service & maintenance","⚙"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -170,6 +172,7 @@ function renderHome(){
     moduleCard("manuals","📘","Manuals","Companion chapters and official pages"),
     moduleCard("diagnostics","🧰","Diagnostics","Guided checks for common problems"),
     moduleCard("maintenance","🔧","Maintenance","Tasks, service history and reminders"),
+    moduleCard("compliance","🛡","Compliance","Documents, scheduled care and readiness"),
     moduleCard("workshop","🛠️","Workshop mode","Safe sequence and hands-on shortcuts"),
     moduleCard("touring","🗺️","Touring","Departure checks, campsites and packing"),
     moduleCard("settings","💾","Backup","Export, restore and recovery")
@@ -1308,6 +1311,21 @@ function vehicleDocumentStatus(document){
   if(days<=30)return {status:"expiring",label:`Expires in ${days} days`};
   return {status:"valid",label:`Valid for ${days} days`};
 }
+function complianceEntries(){
+  const documents=(state.vehicleDocuments||[]).map(document=>{const status=vehicleDocumentStatus(document),mapped=status.status==="expired"?"action":status.status==="expiring"?"due":"current";return {id:document.id,source:"Document",title:document.type||"Vehicle document",detail:[status.label,document.provider,document.reference].filter(Boolean).join(" • "),date:document.expiry||"",status:mapped,statusLabel:mapped==="action"?"Expired":mapped==="due"?"Due soon":status.status==="no-expiry"?"Reference":"Current",route:"vehicle",icon:"📄"}});
+  const maintenance=(DATA.maintenanceTasks||[]).map(maintenanceTaskStatus).map(item=>{const mapped=item.status==="overdue"?"action":item.status==="soon"?"due":item.status==="baseline"?"baseline":"current";return {id:item.task.id,source:"Maintenance",title:item.task.name||item.task.title,detail:item.dueDate?`${item.label} • ${formatTripDate(item.dueDate)}`:item.dueMileage!==null?`${item.label} • ${Number(item.dueMileage).toLocaleString()} km`:item.label,date:item.dueDate||"",status:mapped,statusLabel:mapped==="action"?"Overdue":mapped==="due"?"Due soon":mapped==="baseline"?"Baseline needed":"Current",route:"maintenance",icon:"🔧"}});
+  const order={action:0,due:1,baseline:2,current:3};
+  return [...documents,...maintenance].sort((a,b)=>order[a.status]-order[b.status]||String(a.date||"9999").localeCompare(String(b.date||"9999"))||a.title.localeCompare(b.title));
+}
+function complianceSnapshot(){
+  const entries=complianceEntries(),counts={action:entries.filter(item=>item.status==="action").length,due:entries.filter(item=>item.status==="due").length,current:entries.filter(item=>item.status==="current").length,baseline:entries.filter(item=>item.status==="baseline").length},ready=counts.current+counts.due,score=entries.length?Math.round(ready/entries.length*100):100;
+  return {app:"Knaus Companion",version:APP_VERSION,generatedAt:new Date().toISOString(),score,counts,entries};
+}
+function renderCompliance(){
+  const snapshot=complianceSnapshot(),visible=snapshot.entries.filter(item=>complianceFilter==="all"||item.status===complianceFilter),filters=[["all","All"],["action","Action needed"],["due","Due soon"],["baseline","Baseline needed"],["current","Current"]];
+  $("#complianceSummary").innerHTML=[[snapshot.counts.action,"Action needed"],[snapshot.counts.due,"Due soon"],[snapshot.counts.baseline,"Baselines"],[snapshot.counts.current,"Current"]].map(([value,label])=>`<article class="stat-card"><strong>${value}</strong><span>${label}</span></article>`).join("");$("#complianceScore").textContent=`${snapshot.score}%`;$("#complianceScoreDetail").textContent=snapshot.entries.length?`${snapshot.counts.current+snapshot.counts.due} of ${snapshot.entries.length} tracked items are current or still within their due window.`:"Add documents and maintenance baselines to begin tracking.";$("#complianceScoreBar").style.width=`${snapshot.score}%`;$("#complianceFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${complianceFilter===id?"active":""}" data-compliance-filter="${id}">${label}</button>`).join("");$("#complianceQueue").innerHTML=visible.length?visible.map(item=>`<button class="panel compliance-card status-${item.status}" data-route="${item.route}"><span class="compliance-icon">${item.icon}</span><span><small>${esc(item.source)} • ${esc(item.statusLabel)}</small><strong>${esc(item.title)}</strong><p>${esc(item.detail)}</p></span><b>→</b></button>`).join(""):'<article class="panel compliance-empty"><strong>No items in this view</strong><p>Try another filter or add the relevant vehicle records.</p></article>';
+}
+function exportComplianceSnapshot(){const snapshot=complianceSnapshot(),blob=new Blob([JSON.stringify(snapshot,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-compliance-snapshot-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Compliance audit snapshot exported")}
 function configurationSections(){return (DATA.vehicleConfigSchema?.sections||[]).filter(section=>section.id!=="documents")}
 function configurationProfileValue(id){
   const profile=state.vehicleProfile||{},key=id==="mam"?"maxMass":id;
@@ -1770,7 +1788,7 @@ async function init(){
     loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),loadJSON("data/vehicle_config_schema.json",{}),loadJSON("data/parts_inventory.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderWorkshop();renderSettings();
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderWorkshop();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   $("#fuseSearch")?.addEventListener("input",renderFuses);
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
@@ -1856,6 +1874,7 @@ document.addEventListener("click",e=>{
   const ownershipPeriodButton=e.target.closest("[data-ownership-cost-period]");if(ownershipPeriodButton){ownershipCostPeriod=ownershipPeriodButton.dataset.ownershipCostPeriod;renderOwnershipCosts()}
   const ownershipTrendButton=e.target.closest("[data-ownership-trend-year]");if(ownershipTrendButton){ownershipTrendYear=Number(ownershipTrendButton.dataset.ownershipTrendYear);renderOwnershipCosts()}
   const calendarFilterButton=e.target.closest("[data-ownership-calendar-filter]");if(calendarFilterButton){ownershipCalendarFilter=calendarFilterButton.dataset.ownershipCalendarFilter;renderOwnershipCalendar()}
+  const complianceFilterButton=e.target.closest("[data-compliance-filter]");if(complianceFilterButton){complianceFilter=complianceFilterButton.dataset.complianceFilter;renderCompliance()}
   if(e.target.closest("[data-ownership-budget-cancel]"))closeOwnershipBudgetEditor();
   if(e.target.closest("[data-ownership-commitment-add]"))openOwnershipCommitmentEditor();
   if(e.target.closest("[data-ownership-commitment-cancel]"))closeOwnershipCommitmentEditor();
@@ -1944,6 +1963,7 @@ $("#exportOwnershipCosts").onclick=exportOwnershipCostCsv;
 $("#exportOwnershipAnnualReview").onclick=exportOwnershipAnnualReview;
 $("#exportOwnershipCalendar").onclick=exportOwnershipCalendar;
 $("#openOwnershipReport").onclick=openOwnershipReport;
+$("#exportComplianceSnapshot").onclick=exportComplianceSnapshot;
 $("#editOwnershipBudget").onclick=openOwnershipBudgetEditor;
 $("#ownershipBudgetForm").addEventListener("submit",saveOwnershipBudget);
 $("#ownershipCommitmentForm").addEventListener("submit",saveOwnershipCommitment);

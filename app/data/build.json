@@ -1,6 +1,6 @@
 {
-  "version": "7.7.0",
-  "releaseName": "Ownership Report",
+  "version": "8.0.0",
+  "releaseName": "Compliance Centre",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -183,7 +183,11 @@
     "Consolidated current-year ownership report",
     "Vehicle identity, costs, budgets and forecasts in one review",
     "Commitment ledger and upcoming calendar summary",
-    "Print-ready report and structured JSON export"
+    "Print-ready report and structured JSON export",
+    "Dedicated Safety and Compliance Centre",
+    "Combined document and scheduled-maintenance action queue",
+    "Compliance readiness score and status filters",
+    "Exportable JSON audit snapshot"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
