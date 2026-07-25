@@ -1,7 +1,13 @@
 
-const APP_VERSION="9.9.0";
+const APP_VERSION="10.0.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyIncidents:[],emergencyReadiness:{},emergencyDrills:[],emergencyEquipment:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},seasonalProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyIncidents:[],emergencyReadiness:{},emergencyDrills:[],emergencyEquipment:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+
+const SEASONAL_CHECKLISTS=[
+  {id:"storage",title:"Storage preparation",detail:"Secure, clean and protect the vehicle before a period off the road.",items:[["clean","Clean interior, remove food and leave ventilation paths open","bodywork"],["battery","Charge batteries and choose a safe maintenance or isolation strategy","electrical"],["water","Drain fresh, waste and hot-water systems as conditions require","water"],["gas","Close gas cylinders and confirm appliances are off","gas"],["security","Remove valuables, secure keys and confirm storage access","vehicle"]]},
+  {id:"winter",title:"Winterisation",detail:"Protect water, energy and body systems from frost and prolonged cold.",items:[["frost","Fully drain vulnerable water circuits and open drain points","water"],["heater","Follow heater and boiler frost-protection guidance","water"],["battery","Check battery charge, terminals and low-temperature strategy","electrical"],["seals","Clean and inspect rooflights, doors, windows and exterior seals","vehicle"],["tyres","Set tyre pressures and reduce prolonged load concentration","maintenance"]]},
+  {id:"reactivate",title:"Seasonal reactivation",detail:"Return each system to service in a controlled, observable sequence.",items:[["inspect","Walk around and inspect for leaks, pests, damage and tyre condition","vehicle"],["power","Reconnect and test 12 V and mains systems safely","electrical"],["water","Close drains, refill, flush and inspect the water system","water"],["gas","Reconnect gas, leak-check appropriately and test appliances","gas"],["departure","Complete maintenance and departure checks before travel","touring"]]}
+];
 
 const EMERGENCY_READINESS_ITEMS=[
   {id:"identity",title:"Vehicle identity confirmed",detail:"Registration, VIN and vehicle details are available."},
@@ -77,6 +83,7 @@ let activeEmergencyIncidentReportId=null;
 let activeEmergencyIncidentUpdateId=null;
 let editingEmergencyDrillId=null;
 let editingEmergencyEquipmentId=null;
+let activeSeasonalMode="storage";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -111,6 +118,7 @@ function setActiveRoute(id){
   if(id==="workshop")renderWorkshop();
   if(id==="compliance")renderCompliance();
   if(id==="emergency")renderEmergency();
+  if(id==="seasonal")renderSeasonal();
   $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
@@ -119,7 +127,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
-  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["seasonal","Seasonal care","❄"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -199,6 +207,7 @@ function renderHome(){
     moduleCard("maintenance","🔧","Maintenance","Tasks, service history and reminders"),
     moduleCard("compliance","🛡","Compliance","Documents, scheduled care and readiness"),
     moduleCard("emergency","☎","Emergency centre","Vehicle identity, isolation and assistance"),
+    moduleCard("seasonal","❄","Seasonal care","Storage, winterisation and reactivation"),
     moduleCard("workshop","🛠️","Workshop mode","Safe sequence and hands-on shortcuts"),
     moduleCard("touring","🗺️","Touring","Departure checks, campsites and packing"),
     moduleCard("settings","💾","Backup","Export, restore and recovery")
@@ -1452,6 +1461,8 @@ function emergencyHandoffHtml(actions=true){
 function openEmergencyHandoff(){showDialog("Emergency handoff","Responder and recovery pack",emergencyHandoffHtml(),true)}
 function exportEmergencyHandoff(){const report=emergencyHandoffData(),blob=new Blob([JSON.stringify(report,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-emergency-handoff-${report.generatedAt.slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Emergency handoff exported")}
 function printEmergencyHandoff(){const report=emergencyHandoffData(),popup=window.open("","_blank","width=1000,height=760");if(!popup){toast("Allow pop-ups to print this handoff");return}popup.document.write(`<!doctype html><html><head><title>Knaus emergency handoff</title><style>body{font:14px system-ui;max-width:1000px;margin:28px auto;padding:0 20px;color:#172033}h1{margin-bottom:4px}.meta{color:#526071}section{margin:22px 0}.diagnostic-meta,.emergency-handoff-readiness{display:flex;gap:7px;flex-wrap:wrap}.diagnostic-meta span,.emergency-handoff-readiness span,.component-facts div{padding:8px;background:#eef2f6;border-radius:8px}.emergency-handoff-readiness .complete{background:#dcfce7}.component-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px}.component-facts dt{color:#526071}.component-facts dd{margin:3px 0 0;font-weight:700}table{width:100%;border-collapse:collapse}th,td{padding:8px;border:1px solid #cad2dc;text-align:left;vertical-align:top}th{background:#eef2f6}section>p{white-space:pre-wrap}</style></head><body><h1>Emergency handoff</h1><p class="meta">Knaus Companion responder and recovery pack</p>${emergencyHandoffHtml(false)}</body></html>`);popup.document.close();popup.focus();setTimeout(()=>popup.print(),200)}
+function renderSeasonal(){const mode=SEASONAL_CHECKLISTS.find(item=>item.id===activeSeasonalMode)||SEASONAL_CHECKLISTS[0],progress=state.seasonalProgress||{},modeDone=mode.items.filter(([id])=>progress[`${mode.id}:${id}`]).length,percent=Math.round(modeDone/mode.items.length*100);$("#seasonalSummary").innerHTML=SEASONAL_CHECKLISTS.map(list=>{const done=list.items.filter(([id])=>progress[`${list.id}:${id}`]).length;return `<article class="stat-card"><strong>${done}/${list.items.length}</strong><span>${esc(list.title)}</span></article>`}).join("");$("#seasonalModes").innerHTML=SEASONAL_CHECKLISTS.map(list=>`<button class="chip ${list.id===mode.id?"active":""}" data-seasonal-mode="${list.id}">${esc(list.title)}</button>`).join("");$("#seasonalTitle").textContent=mode.title;$("#seasonalDetail").textContent=mode.detail;$("#seasonalScore").textContent=`${percent}%`;$("#seasonalBar").style.width=`${percent}%`;$("#seasonalChecklist").innerHTML=mode.items.map(([id,title,route])=>{const complete=Boolean(progress[`${mode.id}:${id}`]);return `<article class="panel seasonal-item ${complete?"complete":""}"><button class="seasonal-check" data-seasonal-check="${mode.id}:${id}" role="checkbox" aria-checked="${complete}"><span>${complete?"✓":""}</span><strong>${esc(title)}</strong></button><button class="secondary-btn" data-route="${route}">Open guidance</button></article>`}).join("")}
+function toggleSeasonalCheck(key){state.seasonalProgress={...(state.seasonalProgress||{}),[key]:!state.seasonalProgress?.[key]};saveState();renderSeasonal();toast(state.seasonalProgress[key]?"Seasonal check complete":"Seasonal check reopened")}
 function configurationSections(){return (DATA.vehicleConfigSchema?.sections||[]).filter(section=>section.id!=="documents")}
 function configurationProfileValue(id){
   const profile=state.vehicleProfile||{},key=id==="mam"?"maxMass":id;
@@ -1914,7 +1925,7 @@ async function init(){
     loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),loadJSON("data/vehicle_config_schema.json",{}),loadJSON("data/parts_inventory.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderWorkshop();renderSettings();
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderSeasonal();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderWorkshop();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   $("#fuseSearch")?.addEventListener("input",renderFuses);
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
@@ -2003,6 +2014,8 @@ document.addEventListener("click",e=>{
   const ownershipTrendButton=e.target.closest("[data-ownership-trend-year]");if(ownershipTrendButton){ownershipTrendYear=Number(ownershipTrendButton.dataset.ownershipTrendYear);renderOwnershipCosts()}
   const calendarFilterButton=e.target.closest("[data-ownership-calendar-filter]");if(calendarFilterButton){ownershipCalendarFilter=calendarFilterButton.dataset.ownershipCalendarFilter;renderOwnershipCalendar()}
   const complianceFilterButton=e.target.closest("[data-compliance-filter]");if(complianceFilterButton){complianceFilter=complianceFilterButton.dataset.complianceFilter;renderCompliance()}
+  const seasonalModeButton=e.target.closest("[data-seasonal-mode]");if(seasonalModeButton){activeSeasonalMode=seasonalModeButton.dataset.seasonalMode;renderSeasonal()}
+  const seasonalCheck=e.target.closest("[data-seasonal-check]");if(seasonalCheck)toggleSeasonalCheck(seasonalCheck.dataset.seasonalCheck);
   if(e.target.closest("[data-compliance-requirement-cancel]"))closeComplianceRequirementEditor();
   const requirementEdit=e.target.closest("[data-compliance-requirement-edit]");if(requirementEdit)openComplianceRequirementEditor(requirementEdit.dataset.complianceRequirementEdit);
   const requirementDelete=e.target.closest("[data-compliance-requirement-delete]");if(requirementDelete)deleteComplianceRequirement(requirementDelete.dataset.complianceRequirementDelete);

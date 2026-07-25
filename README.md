@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 10.0.0 begins Seasonal Care with a dedicated offline centre. Work through storage preparation, winterisation and seasonal reactivation checklists, retain progress independently for each mode, see completion scores and open the relevant electrical, water, gas, vehicle, maintenance or touring guidance directly from each task.
+
 Version 9.9.0 adds Contact Verification. Record when insurer, recovery, service and personal emergency details were last checked, schedule the next review, highlight stale entries, surface overdue verification on the Operations Dashboard and include reviews in the Emergency Calendar.
 
 Version 9.8.0 adds the Emergency Calendar. See overdue and next-12-month drill reviews and safety-equipment expiry dates in one timeline, jump directly to the underlying record, and export upcoming reminders as an iCalendar file.

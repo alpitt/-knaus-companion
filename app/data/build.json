@@ -1,6 +1,6 @@
 {
-  "version": "9.9.0",
-  "releaseName": "Contact Verification",
+  "version": "10.0.0",
+  "releaseName": "Seasonal Care Centre",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -244,7 +244,11 @@
     "Emergency contact verification dates",
     "Scheduled contact and policy-reference reviews",
     "Stale-contact Operations Dashboard alerts",
-    "Contact reviews included in the Emergency Calendar"
+    "Contact reviews included in the Emergency Calendar",
+    "Dedicated Seasonal Care Centre",
+    "Storage, winterisation and reactivation checklists",
+    "Persistent per-mode progress and completion scores",
+    "Direct system-guidance links from seasonal tasks"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
