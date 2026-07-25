@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 10.3.0 adds Seasonal Cycle History. Once every item in a seasonal mode is complete, archive the cycle with its completion time, target and notes, then reset that checklist for the next season while retaining a durable offline record.
+
 Version 10.2.0 adds the Seasonal Calendar. Review target dates and completion state for storage, winterisation and reactivation plans, jump directly to each checklist and export incomplete upcoming plans as iCalendar reminders.
 
 Version 10.1.0 adds Seasonal Plans. Give each storage, winterisation and reactivation checklist its own target date and working notes; incomplete plans that pass their target appear on the Operations Dashboard, and all planning data remains in offline backups.

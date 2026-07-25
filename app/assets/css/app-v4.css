@@ -681,3 +681,6 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .seasonal-calendar{display:grid;gap:8px}.seasonal-calendar-event{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:11px;width:100%;color:var(--text);text-align:left}.seasonal-calendar-event>span:nth-child(2){display:grid;gap:4px}.seasonal-calendar-event small{color:var(--muted)}.seasonal-calendar-event.overdue{border-left:5px solid #dc2626}.seasonal-calendar-event.complete{border-left:5px solid #16a34a}
 @media(max-width:600px){.seasonal-calendar-block .section-heading{display:grid}.seasonal-calendar-block .section-heading button{width:100%}}
 
+/* v10.3 seasonal cycle history */
+.seasonal-archive-btn{margin-top:12px}.seasonal-history{display:grid;gap:8px}.seasonal-history-card{display:grid;grid-template-columns:38px 1fr;align-items:start;gap:11px;border-left:5px solid #16a34a}.seasonal-history-card>span{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#16a34a;color:#fff;font-weight:900}.seasonal-history-card>div{display:grid;gap:4px}.seasonal-history-card small{color:var(--muted)}.seasonal-history-card p{margin:4px 0 0;white-space:pre-wrap}
+

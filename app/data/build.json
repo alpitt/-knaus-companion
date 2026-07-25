@@ -1,6 +1,6 @@
 {
-  "version": "10.2.0",
-  "releaseName": "Seasonal Calendar",
+  "version": "10.3.0",
+  "releaseName": "Seasonal Cycle History",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -256,7 +256,11 @@
     "Seasonal target-date timeline",
     "Overdue and completed plan states",
     "Direct calendar navigation to each seasonal mode",
-    "Seasonal iCalendar export"
+    "Seasonal iCalendar export",
+    "Archivable completed seasonal cycles",
+    "Dated storage, winterisation and reactivation history",
+    "Plan target and notes retained in cycle records",
+    "Checklist reset after confirmed archival"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
