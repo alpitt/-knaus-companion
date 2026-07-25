@@ -34,7 +34,7 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 9.1.0' app/index.html
+          grep -q 'Version 9.2.0' app/index.html
           grep -q 'id="emergencyIncidents"' app/index.html
           grep -q 'id="emergencyIncidentDialog"' app/index.html
           grep -q 'id="emergencyIncidentForm"' app/index.html
@@ -141,7 +141,11 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="9.1.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="9.2.0"' app/assets/js/app-v4.js
+          grep -q 'function emergencyIncidentReportData()' app/assets/js/app-v4.js
+          grep -q 'function emergencyIncidentReportHtml(actions=true)' app/assets/js/app-v4.js
+          grep -q 'function exportEmergencyIncidentReport()' app/assets/js/app-v4.js
+          grep -q 'function printEmergencyIncidentReport()' app/assets/js/app-v4.js
           grep -q 'function openEmergencyIncidentEditor(id=null)' app/assets/js/app-v4.js
           grep -q 'function saveEmergencyIncident(event)' app/assets/js/app-v4.js
           grep -q 'function deleteEmergencyIncident(id)' app/assets/js/app-v4.js
