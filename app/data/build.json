@@ -1,6 +1,6 @@
 {
-  "version": "11.0.0",
-  "releaseName": "Seasonal Task Alerts",
+  "version": "11.1.0",
+  "releaseName": "Seasonal Task Priorities",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -288,7 +288,11 @@
     "Overdue custom seasonal task dashboard alerts",
     "Fourteen-day custom task due-soon warnings",
     "Seasonal plan alerts include custom task progress",
-    "Dashboard alerts open the relevant seasonal mode"
+    "Dashboard alerts open the relevant seasonal mode",
+    "Normal, high and critical custom task priorities",
+    "Priority-first seasonal task ordering",
+    "Priority-aware due-soon alert escalation",
+    "Task priority retained in calendars, reports and archives"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
