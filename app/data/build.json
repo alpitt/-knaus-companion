@@ -1,7 +1,7 @@
 {
-  "version": "7.1.0",
-  "releaseName": "Ownership Budgets",
-  "buildDate": "2026-07-24",
+  "version": "7.2.0",
+  "releaseName": "Ownership Forecasts",
+  "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
     "companionChapters": 44,
@@ -161,7 +161,10 @@
     "Annual service, touring and upgrade budgets",
     "Current-year spend progress and remaining allowances",
     "Persistent offline budget notes",
-    "Over-budget alerts on the Operations Dashboard"
+    "Over-budget alerts on the Operations Dashboard",
+    "Year-end ownership spend forecasts from current-year records",
+    "Budget variance and remaining monthly allowance projections",
+    "Early Operations Dashboard warnings for projected overspend"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
