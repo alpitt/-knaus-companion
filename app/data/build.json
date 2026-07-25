@@ -1,6 +1,6 @@
 {
-  "version": "9.2.0",
-  "releaseName": "Incident Reports",
+  "version": "9.3.0",
+  "releaseName": "Incident Timeline",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -216,7 +216,11 @@
     "Individual emergency incident reports",
     "Vehicle identity and incident detail handoff",
     "Print-ready incident report",
-    "Structured per-incident JSON export"
+    "Structured per-incident JSON export",
+    "Timestamped incident timeline updates",
+    "Action, assistance, recovery, assessment and resolution events",
+    "Status progression from timeline entries",
+    "Timeline chronology in printed and exported incident reports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

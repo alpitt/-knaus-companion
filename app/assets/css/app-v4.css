@@ -642,3 +642,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 /* v9.2 incident reports */
 .emergency-incident-report{display:grid;gap:4px}.emergency-incident-report section{margin:12px 0}.emergency-incident-report h3{margin:0 0 8px}.emergency-incident-report section>p{margin:0;white-space:pre-wrap;line-height:1.55}
 
+/* v9.3 incident timeline */
+.emergency-incident-card>div:first-child>small{display:block;margin-top:7px;color:var(--muted)}.emergency-incident-timeline{display:grid;gap:0;border-left:3px solid var(--line);margin-left:8px;padding-left:18px}.emergency-incident-timeline>article{position:relative;display:grid;grid-template-columns:minmax(145px,.35fr) minmax(0,1fr) auto;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.emergency-incident-timeline>article::before{content:"";position:absolute;left:-25px;top:18px;width:11px;height:11px;border-radius:50%;background:var(--accent);border:3px solid var(--panel)}.emergency-incident-timeline time,.emergency-incident-timeline small{color:var(--muted)}.emergency-incident-timeline article>div{display:grid;gap:4px}.emergency-incident-timeline p{margin:0;white-space:pre-wrap}.emergency-incident-timeline .danger-btn{align-self:start}
+@media(max-width:650px){.emergency-incident-timeline>article{grid-template-columns:1fr}.emergency-incident-timeline .danger-btn{justify-self:start}}
+

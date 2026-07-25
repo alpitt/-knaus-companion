@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 9.2.0</title>
+  <title>Knaus Companion 9.3.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.2.0-reports">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.3.0-timeline">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 9.2.0</span>
+        <span>Version 9.3.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -493,6 +493,20 @@
       </form>
     </dialog>
 
+    <dialog id="emergencyIncidentUpdateDialog" class="detail-dialog trip-dialog">
+      <form id="emergencyIncidentUpdateForm">
+        <div class="dialog-head"><div><span class="eyebrow">Incident timeline</span><h2 id="emergencyIncidentUpdateTitle">Add update</h2></div><button class="icon-btn" type="button" data-emergency-incident-update-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field">Date and time<input id="emergencyIncidentUpdateOccurred" name="occurredAt" type="datetime-local" required></label>
+          <label class="trip-field">Update type<select id="emergencyIncidentUpdateType" name="type"><option>Action</option><option>Assistance</option><option>Recovery</option><option>Assessment</option><option>Follow-up</option><option>Resolution</option></select></label>
+          <label class="trip-field">Incident status<select id="emergencyIncidentUpdateStatus" name="status"><option value="open">Open</option><option value="monitoring">Monitoring</option><option value="resolved">Resolved</option></select></label>
+          <label class="trip-field">Recorded by<input id="emergencyIncidentUpdateBy" name="recordedBy" maxlength="120" placeholder="Owner, recovery service or responder"></label>
+          <label class="trip-field trip-field-wide">Update details<textarea id="emergencyIncidentUpdateNotes" name="notes" required maxlength="2000" placeholder="What changed, who was contacted and what happens next"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-emergency-incident-update-cancel>Cancel</button><button class="primary-btn" type="submit">Add timeline update</button></div>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="emergencyContactDialog" class="detail-dialog trip-dialog">
       <form id="emergencyContactForm">
         <div class="dialog-head"><div><span class="eyebrow">Emergency contact</span><h2 id="emergencyContactDialogTitle">Add contact</h2></div><button class="icon-btn" type="button" data-emergency-contact-cancel aria-label="Close">×</button></div>
@@ -902,7 +916,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=9.2.0-reports"></script>
+  <script src="assets/js/app-v4.js?v=9.3.0-timeline"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
