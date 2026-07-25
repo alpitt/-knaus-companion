@@ -1,6 +1,6 @@
 {
-  "version": "9.1.0",
-  "releaseName": "Emergency Incident Log",
+  "version": "9.2.0",
+  "releaseName": "Incident Reports",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -212,7 +212,11 @@
     "Structured emergency and recovery incident log",
     "Time, location, category, severity and status capture",
     "Actions, assistance and follow-up records",
-    "Unresolved incident Operations Dashboard alerts"
+    "Unresolved incident Operations Dashboard alerts",
+    "Individual emergency incident reports",
+    "Vehicle identity and incident detail handoff",
+    "Print-ready incident report",
+    "Structured per-incident JSON export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
