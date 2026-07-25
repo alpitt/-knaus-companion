@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 7.5.0 adds the Commitment Ledger. Inspect every recurring-cost payment, review lifetime and current-year totals, add backdated payments, correct dates, amounts and notes, and remove erroneous entries while all ownership calculations update immediately.
+
 Version 7.4.0 adds Ownership Commitments. Track recurring insurance, tax, storage, roadside, finance, membership and other fixed costs; receive due-soon and overdue alerts; record payments with automatic next-due advancement; and include paid commitments in budgets, forecasts, trends and exports.
 
 Version 7.3.0 adds Ownership Trends. Review up to five recorded years, switch the selected annual view, compare total and average monthly costs, identify the largest category and year-on-year change, and export a month-by-month annual CSV.
