@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 7.4.0 adds Ownership Commitments. Track recurring insurance, tax, storage, roadside, finance, membership and other fixed costs; receive due-soon and overdue alerts; record payments with automatic next-due advancement; and include paid commitments in budgets, forecasts, trends and exports.
+
 Version 7.3.0 adds Ownership Trends. Review up to five recorded years, switch the selected annual view, compare total and average monthly costs, identify the largest category and year-on-year change, and export a month-by-month annual CSV.
 
 Version 7.2.0 adds Ownership Forecasts. Project year-end service, touring and upgrade spend from current-calendar-year records; compare the projected result with annual budgets; see a remaining monthly allowance; and receive early Operations Dashboard warnings when spending pace is trending over budget.

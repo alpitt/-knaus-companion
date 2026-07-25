@@ -34,7 +34,11 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 7.3.0' app/index.html
+          grep -q 'Version 7.4.0' app/index.html
+          grep -q 'id="ownershipCommitments"' app/index.html
+          grep -q 'id="ownershipCommitmentDialog"' app/index.html
+          grep -q 'id="ownershipCommitmentForm"' app/index.html
+          grep -q 'id="ownershipBudgetFixed"' app/index.html
           grep -q 'id="ownershipTrends"' app/index.html
           grep -q 'id="exportOwnershipAnnualReview"' app/index.html
           grep -q 'id="ownershipForecast"' app/index.html
@@ -110,7 +114,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="7.3.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="7.4.0"' app/assets/js/app-v4.js
+          grep -q 'function renderOwnershipCommitments()' app/assets/js/app-v4.js
+          grep -q 'function saveOwnershipCommitment(event)' app/assets/js/app-v4.js
+          grep -q 'function recordOwnershipCommitmentPayment(id)' app/assets/js/app-v4.js
           grep -q 'function ownershipTrendMetrics()' app/assets/js/app-v4.js
           grep -q 'function exportOwnershipAnnualReview()' app/assets/js/app-v4.js
           grep -q 'function ownershipForecastMetrics()' app/assets/js/app-v4.js
