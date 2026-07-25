@@ -1,6 +1,6 @@
 {
-  "version": "7.4.0",
-  "releaseName": "Ownership Commitments",
+  "version": "7.5.0",
+  "releaseName": "Commitment Ledger",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -171,7 +171,11 @@
     "Recurring insurance, tax, storage, roadside, finance and membership commitments",
     "Due-soon and overdue fixed-cost alerts",
     "Payment history with automatic next-due advancement",
-    "Fixed costs integrated into budgets, forecasts, trends and exports"
+    "Fixed costs integrated into budgets, forecasts, trends and exports",
+    "Inspectable payment ledger for every ownership commitment",
+    "Backdated fixed-cost payment entry",
+    "Payment correction and deletion",
+    "Per-commitment lifetime and current-year paid totals"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

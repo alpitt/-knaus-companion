@@ -1,5 +1,5 @@
 
-const APP_VERSION="7.4.0";
+const APP_VERSION="7.5.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -54,6 +54,8 @@ let workshopHistoryFilter="all";
 let ownershipCostPeriod="all";
 let ownershipTrendYear=new Date().getFullYear();
 let editingOwnershipCommitmentId=null;
+let activeOwnershipLedgerId=null;
+let editingOwnershipPaymentId=null;
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -1523,7 +1525,7 @@ function ownershipCommitmentStatus(item){
 }
 function renderOwnershipCommitments(){
   const commitments=[...(state.ownershipCommitments||[])].sort((a,b)=>(a.active===false)-(b.active===false)||String(a.nextDue||"").localeCompare(String(b.nextDue||""))),annualValue=commitments.filter(item=>item.active!==false).reduce((sum,item)=>sum+Number(item.amount||0)*({monthly:12,quarterly:4,annual:1}[item.frequency]||1),0);
-  $("#ownershipCommitments").innerHTML=`<div class="ownership-commitment-head"><div><span class="eyebrow">Fixed commitments</span><h3>Recurring ownership costs</h3><p>Record each payment to include it in budgets, forecasts and annual trends.</p></div><div><strong>€${annualValue.toFixed(2)}</strong><small>active annualised value</small><button class="primary-btn" data-ownership-commitment-add>Add commitment</button></div></div><div class="ownership-commitment-list">${commitments.length?commitments.map(item=>{const status=ownershipCommitmentStatus(item),payments=item.payments||[],last=[...payments].sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];return `<article class="panel ownership-commitment-card ${status.kind}"><div><span class="commitment-status">${esc(status.label)}</span><h4>${esc(item.title)}</h4><p>${esc(item.type)}${item.provider?` • ${esc(item.provider)}`:""} • ${esc(item.frequency)}</p></div><dl><div><dt>Payment</dt><dd>€${Number(item.amount||0).toFixed(2)}</dd></div><div><dt>Next due</dt><dd>${item.nextDue?esc(formatTripDate(item.nextDue)):"Not set"}</dd></div><div><dt>Last paid</dt><dd>${last?esc(formatTripDate(last.date)):"Not recorded"}</dd></div></dl><div class="ownership-commitment-actions"><button class="secondary-btn" data-ownership-commitment-edit="${item.id}">Edit</button>${item.active===false?"":`<button class="primary-btn" data-ownership-commitment-paid="${item.id}">Record payment</button>`}<button class="danger-btn" data-ownership-commitment-delete="${item.id}">Delete</button></div></article>`}).join(""):'<article class="panel ownership-commitment-empty"><h4>No fixed commitments recorded</h4><p>Add insurance, tax, storage, finance or membership costs and track each payment offline.</p></article>'}</div>`;
+  $("#ownershipCommitments").innerHTML=`<div class="ownership-commitment-head"><div><span class="eyebrow">Fixed commitments</span><h3>Recurring ownership costs</h3><p>Record each payment to include it in budgets, forecasts and annual trends.</p></div><div><strong>€${annualValue.toFixed(2)}</strong><small>active annualised value</small><button class="primary-btn" data-ownership-commitment-add>Add commitment</button></div></div><div class="ownership-commitment-list">${commitments.length?commitments.map(item=>{const status=ownershipCommitmentStatus(item),payments=item.payments||[],last=[...payments].sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0],paid=payments.reduce((sum,payment)=>sum+Number(payment.amount||0),0);return `<article class="panel ownership-commitment-card ${status.kind}"><div><span class="commitment-status">${esc(status.label)}</span><h4>${esc(item.title)}</h4><p>${esc(item.type)}${item.provider?` • ${esc(item.provider)}`:""} • ${esc(item.frequency)}</p></div><dl><div><dt>Payment</dt><dd>€${Number(item.amount||0).toFixed(2)}</dd></div><div><dt>Next due</dt><dd>${item.nextDue?esc(formatTripDate(item.nextDue)):"Not set"}</dd></div><div><dt>Last paid</dt><dd>${last?esc(formatTripDate(last.date)):"Not recorded"}</dd></div><div><dt>Ledger total</dt><dd>€${paid.toFixed(2)}</dd></div></dl><div class="ownership-commitment-actions"><button class="secondary-btn" data-ownership-ledger-open="${item.id}">History (${payments.length})</button><button class="secondary-btn" data-ownership-commitment-edit="${item.id}">Edit</button>${item.active===false?"":`<button class="primary-btn" data-ownership-commitment-paid="${item.id}">Record payment</button>`}<button class="danger-btn" data-ownership-commitment-delete="${item.id}">Delete</button></div></article>`}).join(""):'<article class="panel ownership-commitment-empty"><h4>No fixed commitments recorded</h4><p>Add insurance, tax, storage, finance or membership costs and track each payment offline.</p></article>'}</div>`;
 }
 function openOwnershipCommitmentEditor(id=null){
   editingOwnershipCommitmentId=id;const item=(state.ownershipCommitments||[]).find(entry=>entry.id===id)||{};$("#ownershipCommitmentDialogTitle").textContent=id?"Edit recurring cost":"Add recurring cost";$("#ownershipCommitmentTitle").value=item.title||"";$("#ownershipCommitmentType").value=item.type||"Insurance";$("#ownershipCommitmentProvider").value=item.provider||"";$("#ownershipCommitmentAmount").value=item.amount??"";$("#ownershipCommitmentFrequency").value=item.frequency||"annual";$("#ownershipCommitmentNextDue").value=item.nextDue||"";$("#ownershipCommitmentActive").checked=item.active!==false;$("#ownershipCommitmentNotes").value=item.notes||"";const dialog=$("#ownershipCommitmentDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
@@ -1539,6 +1541,26 @@ function recordOwnershipCommitmentPayment(id){
   const item=(state.ownershipCommitments||[]).find(entry=>entry.id===id);if(!item||!confirm(`Record €${Number(item.amount||0).toFixed(2)} paid for “${item.title}” today?`))return;item.payments=[...(item.payments||[]),{id:`payment-${Date.now()}`,date:new Date().toISOString().slice(0,10),amount:Number(item.amount)||0}];item.nextDue=nextCommitmentDue(item.nextDue||new Date().toISOString().slice(0,10),item.frequency);item.updatedAt=new Date().toISOString();saveState();renderOwnershipCosts();renderHome();toast("Payment recorded and next due date advanced");
 }
 function deleteOwnershipCommitment(id){const item=(state.ownershipCommitments||[]).find(entry=>entry.id===id);if(!item||!confirm(`Delete “${item.title}” and its payment history?`))return;state.ownershipCommitments=state.ownershipCommitments.filter(entry=>entry.id!==id);saveState();renderOwnershipCosts();renderHome();toast("Commitment deleted")}
+function activeOwnershipCommitment(){return (state.ownershipCommitments||[]).find(item=>item.id===activeOwnershipLedgerId)}
+function resetOwnershipPaymentForm(){
+  editingOwnershipPaymentId=null;const item=activeOwnershipCommitment();$("#ownershipPaymentFormTitle").textContent="Add historical payment";$("#ownershipPaymentDate").value=new Date().toISOString().slice(0,10);$("#ownershipPaymentAmount").value=item?.amount??"";$("#ownershipPaymentNotes").value="";
+}
+function renderOwnershipLedger(){
+  const item=activeOwnershipCommitment();if(!item)return;const payments=[...(item.payments||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date))),total=payments.reduce((sum,payment)=>sum+Number(payment.amount||0),0),year=String(new Date().getFullYear()),yearTotal=payments.filter(payment=>String(payment.date||"").startsWith(year)).reduce((sum,payment)=>sum+Number(payment.amount||0),0);$("#ownershipLedgerTitle").textContent=item.title;$("#ownershipLedgerSummary").innerHTML=[[payments.length,"Payments"],[`€${total.toFixed(2)}`,"Ledger total"],[`€${yearTotal.toFixed(2)}`,`${year} paid`],[item.nextDue?formatTripDate(item.nextDue):"Not set","Next due"]].map(([value,label])=>`<article class="stat-card"><strong>${esc(value)}</strong><span>${esc(label)}</span></article>`).join("");$("#ownershipLedgerList").innerHTML=payments.length?payments.map(payment=>`<article class="ownership-payment-row"><div><strong>€${Number(payment.amount||0).toFixed(2)}</strong><span>${esc(formatTripDate(payment.date))}</span>${payment.notes?`<small>${esc(payment.notes)}</small>`:""}</div><div><button class="secondary-btn" data-ownership-payment-edit="${payment.id}">Edit</button><button class="danger-btn" data-ownership-payment-delete="${payment.id}">Delete</button></div></article>`).join(""):'<div class="ownership-ledger-empty"><strong>No payments recorded</strong><p>Add a historical payment below or use Record payment from the commitment card.</p></div>';
+}
+function openOwnershipLedger(id){
+  activeOwnershipLedgerId=id;resetOwnershipPaymentForm();renderOwnershipLedger();const dialog=$("#ownershipLedgerDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+}
+function closeOwnershipLedger(){const dialog=$("#ownershipLedgerDialog");if(typeof dialog.close==="function"&&dialog.open)dialog.close();else dialog.removeAttribute("open");activeOwnershipLedgerId=null;editingOwnershipPaymentId=null}
+function editOwnershipPayment(id){
+  const payment=(activeOwnershipCommitment()?.payments||[]).find(item=>item.id===id);if(!payment)return;editingOwnershipPaymentId=id;$("#ownershipPaymentFormTitle").textContent="Correct payment";$("#ownershipPaymentDate").value=payment.date||"";$("#ownershipPaymentAmount").value=payment.amount??"";$("#ownershipPaymentNotes").value=payment.notes||"";$("#ownershipPaymentForm").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function saveOwnershipPayment(event){
+  event.preventDefault();const item=activeOwnershipCommitment();if(!item)return;const values=Object.fromEntries(new FormData(event.currentTarget)),existing=(item.payments||[]).find(payment=>payment.id===editingOwnershipPaymentId),payment={id:existing?.id||`payment-${Date.now()}`,date:values.date,amount:Number(values.amount)||0,notes:values.notes.trim(),createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};item.payments=existing?item.payments.map(entry=>entry.id===existing.id?payment:entry):[...(item.payments||[]),payment];item.updatedAt=new Date().toISOString();saveState();resetOwnershipPaymentForm();renderOwnershipLedger();renderOwnershipCosts();renderHome();toast(existing?"Payment corrected":"Historical payment added");
+}
+function deleteOwnershipPayment(id){
+  const item=activeOwnershipCommitment(),payment=(item?.payments||[]).find(entry=>entry.id===id);if(!item||!payment||!confirm(`Delete the €${Number(payment.amount||0).toFixed(2)} payment from ${formatTripDate(payment.date)}?`))return;item.payments=item.payments.filter(entry=>entry.id!==id);item.updatedAt=new Date().toISOString();saveState();resetOwnershipPaymentForm();renderOwnershipLedger();renderOwnershipCosts();renderHome();toast("Payment deleted");
+}
 function openOwnershipBudgetEditor(){
   const budget=state.ownershipBudget||{};$("#ownershipBudgetService").value=budget.service??"";$("#ownershipBudgetTouring").value=budget.touring??"";$("#ownershipBudgetUpgrades").value=budget.upgrades??"";$("#ownershipBudgetFixed").value=budget.fixed??"";$("#ownershipBudgetNotes").value=budget.notes||"";const dialog=$("#ownershipBudgetDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
 }
@@ -1806,9 +1828,13 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-ownership-budget-cancel]"))closeOwnershipBudgetEditor();
   if(e.target.closest("[data-ownership-commitment-add]"))openOwnershipCommitmentEditor();
   if(e.target.closest("[data-ownership-commitment-cancel]"))closeOwnershipCommitmentEditor();
+  if(e.target.closest("[data-ownership-ledger-cancel]"))closeOwnershipLedger();
+  const ledgerOpen=e.target.closest("[data-ownership-ledger-open]");if(ledgerOpen)openOwnershipLedger(ledgerOpen.dataset.ownershipLedgerOpen);
   const commitmentEdit=e.target.closest("[data-ownership-commitment-edit]");if(commitmentEdit)openOwnershipCommitmentEditor(commitmentEdit.dataset.ownershipCommitmentEdit);
   const commitmentPaid=e.target.closest("[data-ownership-commitment-paid]");if(commitmentPaid)recordOwnershipCommitmentPayment(commitmentPaid.dataset.ownershipCommitmentPaid);
   const commitmentDelete=e.target.closest("[data-ownership-commitment-delete]");if(commitmentDelete)deleteOwnershipCommitment(commitmentDelete.dataset.ownershipCommitmentDelete);
+  const paymentEdit=e.target.closest("[data-ownership-payment-edit]");if(paymentEdit)editOwnershipPayment(paymentEdit.dataset.ownershipPaymentEdit);
+  const paymentDelete=e.target.closest("[data-ownership-payment-delete]");if(paymentDelete)deleteOwnershipPayment(paymentDelete.dataset.ownershipPaymentDelete);
   if(e.target.closest("[data-vehicle-profile-edit]"))openVehicleProfileEditor();
   if(e.target.closest("[data-vehicle-profile-cancel]"))closeVehicleProfileEditor();
   const configurationSection=e.target.closest("[data-configuration-section]");if(configurationSection){activeConfigurationSection=configurationSection.dataset.configurationSection;renderVehicleConfiguration()}
@@ -1888,12 +1914,14 @@ $("#exportOwnershipAnnualReview").onclick=exportOwnershipAnnualReview;
 $("#editOwnershipBudget").onclick=openOwnershipBudgetEditor;
 $("#ownershipBudgetForm").addEventListener("submit",saveOwnershipBudget);
 $("#ownershipCommitmentForm").addEventListener("submit",saveOwnershipCommitment);
+$("#ownershipPaymentForm").addEventListener("submit",saveOwnershipPayment);
+$("#ownershipPaymentReset").onclick=resetOwnershipPaymentForm;
 $("#inventorySearch").addEventListener("input",renderVehicleRecords);
 $("#photoSearch").addEventListener("input",renderVehiclePhotos);
 $("#partsSearch").addEventListener("input",renderPartsStock);
 $("#addFault").onclick=()=>openFaultEditor();
 $("#faultForm").addEventListener("submit",saveFault);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeWorkshopMeasurementEditor();closeWorkshopPartEditor();closeWorkshopOutcome();closeOwnershipBudgetEditor();closeOwnershipCommitmentEditor();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeDetail();closeTripEditor();closeExpenseEditor();closeCampsiteEditor();closePackingListEditor();closePackingItemEditor();closePayloadEditor();closeWorkshopSessionEditor();closeWorkshopMeasurementEditor();closeWorkshopPartEditor();closeWorkshopOutcome();closeOwnershipBudgetEditor();closeOwnershipCommitmentEditor();closeOwnershipLedger();closeServiceRecord();closeVehicleProfileEditor();closeConfigurationEditor();closeVehicleDocumentEditor();closeInventoryEditor();closeFaultEditor();closeUpgradeEditor();closeVehiclePhoto();closePartEditor()}});
 $("#closeDetail").onclick=closeDetail;
 $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))closeDetail()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("#workshopWakeLock")?.checked&&!workshopWakeLock)requestWorkshopWakeLock()});
