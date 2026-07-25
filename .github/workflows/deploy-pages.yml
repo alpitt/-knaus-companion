@@ -34,7 +34,9 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 10.3.0' app/index.html
+          grep -q 'Version 10.4.0' app/index.html
+          grep -q 'id="openSeasonalReport"' app/index.html
+          grep -q 'id="exportSeasonalReport"' app/index.html
           grep -q 'id="archiveSeasonalCycle"' app/index.html
           grep -q 'id="seasonalHistory"' app/index.html
           grep -q 'id="seasonalCalendar"' app/index.html
@@ -163,7 +165,11 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="10.3.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="10.4.0"' app/assets/js/app-v4.js
+          grep -q 'function seasonalReportData()' app/assets/js/app-v4.js
+          grep -q 'function seasonalReportHtml(actions=true)' app/assets/js/app-v4.js
+          grep -q 'function exportSeasonalReport()' app/assets/js/app-v4.js
+          grep -q 'function printSeasonalReport()' app/assets/js/app-v4.js
           grep -q 'seasonalCycles:\[\]' app/assets/js/app-v4.js
           grep -q 'function renderSeasonalHistory()' app/assets/js/app-v4.js
           grep -q 'function archiveSeasonalCycle()' app/assets/js/app-v4.js
