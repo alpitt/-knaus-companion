@@ -1,6 +1,6 @@
 {
-  "version": "8.1.0",
-  "releaseName": "Compliance Requirements",
+  "version": "8.2.0",
+  "releaseName": "Compliance Evidence Log",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -191,7 +191,11 @@
     "Owner-defined statutory and safety requirements",
     "Recurring intervals with calculated expiry",
     "Authority, evidence reference and completion details",
-    "Requirement alerts, editing and deletion"
+    "Requirement alerts, editing and deletion",
+    "Dated completion evidence history",
+    "Provider, certificate, validity and evidence notes",
+    "Evidence-driven requirement status refresh",
+    "Full evidence trail in compliance audit exports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

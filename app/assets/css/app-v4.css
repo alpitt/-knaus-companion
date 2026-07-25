@@ -619,3 +619,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .compliance-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.compliance-actions button{padding:7px 9px}.compliance-card:has(.compliance-actions){grid-template-columns:38px minmax(0,1fr) auto}
 @media(max-width:620px){.compliance-card:has(.compliance-actions){grid-template-columns:38px 1fr}.compliance-actions{grid-column:2;justify-content:flex-start}.compliance-actions button{flex:1}}
 
+/* v8.2 compliance evidence */
+.compliance-evidence-body{display:grid;gap:16px}.compliance-evidence-list{display:grid;gap:8px;max-height:34vh;overflow:auto}.compliance-evidence-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--panel-2)}.compliance-evidence-row>div{display:grid;gap:3px}.compliance-evidence-row span,.compliance-evidence-row small{color:var(--muted)}.compliance-evidence-row button{padding:7px 10px}.compliance-evidence-empty{padding:18px;border:1px dashed var(--line);border-radius:11px;text-align:center}.compliance-evidence-empty p{margin:.35rem 0 0;color:var(--muted)}.compliance-evidence-form{padding-top:15px;border-top:1px solid var(--line)}.compliance-evidence-form h3{margin:0}
+@media(max-width:540px){.compliance-evidence-row{align-items:start}.compliance-evidence-row button{width:auto}}
+
