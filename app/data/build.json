@@ -1,6 +1,6 @@
 {
-  "version": "10.5.0",
-  "releaseName": "Seasonal Supplies",
+  "version": "10.6.0",
+  "releaseName": "Custom Seasonal Tasks",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -268,7 +268,11 @@
     "Per-mode seasonal supplies checklists",
     "Storage, frost-protection and reactivation preparation items",
     "Persistent supply readiness state",
-    "Supply readiness included in seasonal report exports"
+    "Supply readiness included in seasonal report exports",
+    "Owner-defined seasonal tasks",
+    "Per-mode task assignment and system guidance links",
+    "Independent custom-task completion state",
+    "Custom seasonal task deletion"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
