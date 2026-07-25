@@ -34,7 +34,9 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 8.3.0' app/index.html
+          grep -q 'Version 8.4.0' app/index.html
+          grep -q 'id="exportComplianceCalendar"' app/index.html
+          grep -q 'id="complianceTimeline"' app/index.html
           grep -q 'id="openComplianceReport"' app/index.html
           grep -q 'id="complianceEvidenceDialog"' app/index.html
           grep -q 'id="complianceEvidenceList"' app/index.html
@@ -131,7 +133,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="8.3.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="8.4.0"' app/assets/js/app-v4.js
+          grep -q 'function complianceCalendarEvents()' app/assets/js/app-v4.js
+          grep -q 'function renderComplianceTimeline()' app/assets/js/app-v4.js
+          grep -q 'function exportComplianceCalendar()' app/assets/js/app-v4.js
           grep -q 'function complianceReportData()' app/assets/js/app-v4.js
           grep -q 'function complianceReportHtml(actions=true)' app/assets/js/app-v4.js
           grep -q 'function exportComplianceReport()' app/assets/js/app-v4.js
