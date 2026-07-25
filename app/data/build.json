@@ -1,6 +1,6 @@
 {
-  "version": "7.2.0",
-  "releaseName": "Ownership Forecasts",
+  "version": "7.3.0",
+  "releaseName": "Ownership Trends",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -164,7 +164,10 @@
     "Over-budget alerts on the Operations Dashboard",
     "Year-end ownership spend forecasts from current-year records",
     "Budget variance and remaining monthly allowance projections",
-    "Early Operations Dashboard warnings for projected overspend"
+    "Early Operations Dashboard warnings for projected overspend",
+    "Five-year ownership spending trend",
+    "Annual total, monthly average and year-on-year comparison",
+    "Annual source breakdown and downloadable review CSV"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

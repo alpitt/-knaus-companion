@@ -1,5 +1,5 @@
 
-const APP_VERSION="7.2.0";
+const APP_VERSION="7.3.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -52,6 +52,7 @@ let workshopWakeLock=null;
 let activeWorkshopReportId=null;
 let workshopHistoryFilter="all";
 let ownershipCostPeriod="all";
+let ownershipTrendYear=new Date().getFullYear();
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -1481,6 +1482,13 @@ function ownershipForecastMetrics(){
   const now=new Date(),year=now.getFullYear(),start=new Date(year,0,1),end=new Date(year+1,0,1),day=86400000,elapsedDays=Math.max(1,Math.ceil((now-start)/day)),totalDays=Math.round((end-start)/day),remainingMonths=Math.max(1,(end-now)/(day*30.4375));
   return ownershipBudgetMetrics().map(item=>{const projected=item.spent/elapsedDays*totalDays,variance=item.budget-projected,monthlyAllowance=Math.max(0,item.budget-item.spent)/remainingMonths;return {...item,projected,variance,monthlyAllowance,elapsedDays,totalDays}});
 }
+function ownershipTrendMetrics(){
+  const entries=ownershipCostEntries("all"),currentYear=new Date().getFullYear(),sources=["Service","Touring","Upgrades"],available=[...new Set([currentYear,...entries.map(item=>Number(String(item.date||"").slice(0,4))).filter(year=>year>2000&&year<=currentYear)])].sort((a,b)=>b-a).slice(0,5);
+  if(!available.includes(ownershipTrendYear))ownershipTrendYear=available[0]||currentYear;
+  const yearSummary=year=>{const yearEntries=entries.filter(item=>Number(String(item.date||"").slice(0,4))===year),totals=Object.fromEntries(sources.map(source=>[source,yearEntries.filter(item=>item.source===source).reduce((sum,item)=>sum+item.amount,0)]));return {year,entries:yearEntries,totals,total:Object.values(totals).reduce((sum,value)=>sum+value,0)}};
+  const years=available.map(yearSummary),selected=yearSummary(ownershipTrendYear),previous=yearSummary(ownershipTrendYear-1),months=ownershipTrendYear===currentYear?new Date().getMonth()+1:12,largest=sources.reduce((best,source)=>selected.totals[source]>selected.totals[best]?source:best,sources[0]);
+  return {years,selected,previous,months,average:selected.total/months,largest:selected.total?largest:"None",delta:previous.total?(selected.total-previous.total)/previous.total*100:null};
+}
 function renderOwnershipCosts(){
   const entries=ownershipCostEntries(),sources=["Service","Touring","Upgrades"],totals=Object.fromEntries(sources.map(source=>[source,entries.filter(item=>item.source===source).reduce((sum,item)=>sum+item.amount,0)])),total=entries.reduce((sum,item)=>sum+item.amount,0);
   $("#ownershipCostSummary").innerHTML=[[`€${total.toFixed(2)}`,"Recorded total"],[`€${totals.Service.toFixed(2)}`,"Service"],[`€${totals.Touring.toFixed(2)}`,"Touring"],[`€${totals.Upgrades.toFixed(2)}`,"Upgrades"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
@@ -1488,12 +1496,17 @@ function renderOwnershipCosts(){
   $("#ownershipBudgetProgress").innerHTML=budgetMetrics.map(item=>{const percent=item.budget?item.spent/item.budget*100:0,over=item.budget&&item.spent>item.budget;return `<article class="panel ownership-budget-card ${over?"over":""}"><div><span>${esc(item.source)} annual budget</span><strong>${item.budget?`€${item.spent.toFixed(2)} / €${item.budget.toFixed(2)}`:"Not set"}</strong></div><div class="touring-progress-bar"><span style="width:${Math.min(100,percent)}%"></span></div><small>${item.budget?over?`€${(item.spent-item.budget).toFixed(2)} over budget`:`€${(item.budget-item.spent).toFixed(2)} remaining`:`€${item.spent.toFixed(2)} recorded this year`}</small></article>`}).join("")+(state.ownershipBudget?.notes?`<p class="ownership-budget-notes"><strong>Budget notes:</strong> ${esc(state.ownershipBudget.notes)}</p>`:"");
   const forecasts=ownershipForecastMetrics(),configured=forecasts.filter(item=>item.budget>0);
   $("#ownershipForecast").innerHTML=configured.length?`<div class="ownership-forecast-head"><div><span class="eyebrow">Year-end forecast</span><h3>Current spending pace</h3></div><small>Projected from ${forecasts[0].elapsedDays} days of recorded costs</small></div>${configured.map(item=>{const trendingOver=item.projected>item.budget;return `<article class="panel ownership-forecast-card ${trendingOver?"over":""}"><div><span>${esc(item.source)}</span><strong>€${item.projected.toFixed(2)}</strong><small>projected year-end spend</small></div><dl><div><dt>Budget variance</dt><dd>${item.variance>=0?`€${item.variance.toFixed(2)} under`:`€${Math.abs(item.variance).toFixed(2)} over`}</dd></div><div><dt>Monthly allowance left</dt><dd>€${item.monthlyAllowance.toFixed(2)}</dd></div></dl></article>`}).join("")}`:"";
+  const trends=ownershipTrendMetrics(),trendMax=Math.max(1,...trends.years.map(item=>item.total));
+  $("#ownershipTrends").innerHTML=`<div class="ownership-trend-head"><div><span class="eyebrow">Ownership trends</span><h3>Annual cost review</h3></div><div class="chips" aria-label="Select ownership cost year">${trends.years.map(item=>`<button class="chip ${item.year===ownershipTrendYear?"active":""}" data-ownership-trend-year="${item.year}">${item.year}</button>`).join("")}</div></div><div class="ownership-trend-layout"><article class="panel ownership-year-chart"><h4>Five-year recorded spend</h4>${[...trends.years].reverse().map(item=>`<button class="${item.year===ownershipTrendYear?"active":""}" data-ownership-trend-year="${item.year}"><span>${item.year}</span><i><b style="width:${item.total/trendMax*100}%"></b></i><strong>€${item.total.toFixed(2)}</strong></button>`).join("")}</article><article class="panel ownership-year-review"><h4>${ownershipTrendYear} at a glance</h4><div class="ownership-review-stats"><div><span>Total</span><strong>€${trends.selected.total.toFixed(2)}</strong></div><div><span>Monthly average</span><strong>€${trends.average.toFixed(2)}</strong></div><div><span>Largest category</span><strong>${esc(trends.largest)}</strong></div><div><span>Year-on-year</span><strong>${trends.delta===null?"No comparison":`${trends.delta>=0?"+":""}${trends.delta.toFixed(1)}%`}</strong></div></div>${["Service","Touring","Upgrades"].map(source=>`<div class="ownership-review-source"><span>${source}</span><strong>€${trends.selected.totals[source].toFixed(2)}</strong></div>`).join("")}</article></div>`;
   $("#ownershipCostFilters").innerHTML=[["all","All time"],["12m","Last 12 months"],["30d","Last 30 days"]].map(([id,label])=>`<button class="chip ${ownershipCostPeriod===id?"active":""}" data-ownership-cost-period="${id}">${label}</button>`).join("");
   const max=Math.max(1,...Object.values(totals));
   $("#ownershipCostInsights").innerHTML=`<article class="panel ownership-source-card"><h3>Spend by source</h3>${sources.map(source=>`<div class="ownership-source-row"><span>${source}</span><div><i style="width:${totals[source]/max*100}%"></i></div><strong>€${totals[source].toFixed(2)}</strong></div>`).join("")}<p>Totals reflect recorded entries, not bank transactions. Check for duplicates across modules.</p></article><article class="panel ownership-recent-card"><h3>Recent recorded costs</h3>${entries.length?entries.slice(0,8).map(item=>`<div><span><strong>${esc(item.title)}</strong><small>${esc(item.source)} • ${esc(formatTripDate(String(item.date).slice(0,10)))}</small></span><b>€${item.amount.toFixed(2)}</b></div>`).join(""):"<p>No costs recorded for this period.</p>"}</article>`;
 }
 function exportOwnershipCostCsv(){
   const quote=value=>`"${String(value??"").replace(/"/g,'""')}"`,rows=ownershipCostEntries().map(item=>[String(item.date||"").slice(0,10),item.source,item.title,item.detail,item.amount.toFixed(2)]),csv=[["Date","Source","Title","Detail","Amount EUR"],...rows].map(row=>row.map(quote).join(",")).join("\r\n"),blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-ownership-costs-${ownershipCostPeriod}-${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Ownership costs exported");
+}
+function exportOwnershipAnnualReview(){
+  const trends=ownershipTrendMetrics(),quote=value=>`"${String(value??"").replace(/"/g,'""')}"`,months=Array.from({length:12},(_,index)=>String(index+1).padStart(2,"0")),sources=["Service","Touring","Upgrades"],rows=months.map(month=>{const matches=trends.selected.entries.filter(item=>String(item.date||"").slice(5,7)===month),totals=sources.map(source=>matches.filter(item=>item.source===source).reduce((sum,item)=>sum+item.amount,0));return [`${ownershipTrendYear}-${month}`,...totals,totals.reduce((sum,value)=>sum+value,0)]}),csv=[["Ownership annual review",ownershipTrendYear],["Recorded total",trends.selected.total.toFixed(2)],["Monthly average",trends.average.toFixed(2)],["Year-on-year change",trends.delta===null?"":`${trends.delta.toFixed(1)}%`],[],["Month",...sources,"Total"],...rows].map(row=>row.map(quote).join(",")).join("\r\n"),blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-ownership-review-${ownershipTrendYear}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast(`${ownershipTrendYear} annual review exported`);
 }
 function openOwnershipBudgetEditor(){
   const budget=state.ownershipBudget||{};$("#ownershipBudgetService").value=budget.service??"";$("#ownershipBudgetTouring").value=budget.touring??"";$("#ownershipBudgetUpgrades").value=budget.upgrades??"";$("#ownershipBudgetNotes").value=budget.notes||"";const dialog=$("#ownershipBudgetDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
@@ -1758,6 +1771,7 @@ document.addEventListener("click",e=>{
   const vehicleViewButton=e.target.closest("[data-vehicle-view]");if(vehicleViewButton){vehicleMapView=vehicleViewButton.dataset.vehicleView;const first=DATA.vehicleExplorer.find(x=>x.view===vehicleMapView);if(first)activeVehicleHotspot=first.id;renderVehicleMap()}
   const vehicleHotspot=e.target.closest("[data-vehicle-hotspot]");if(vehicleHotspot){activeVehicleHotspot=vehicleHotspot.dataset.vehicleHotspot;renderVehicleMap()}
   const ownershipPeriodButton=e.target.closest("[data-ownership-cost-period]");if(ownershipPeriodButton){ownershipCostPeriod=ownershipPeriodButton.dataset.ownershipCostPeriod;renderOwnershipCosts()}
+  const ownershipTrendButton=e.target.closest("[data-ownership-trend-year]");if(ownershipTrendButton){ownershipTrendYear=Number(ownershipTrendButton.dataset.ownershipTrendYear);renderOwnershipCosts()}
   if(e.target.closest("[data-ownership-budget-cancel]"))closeOwnershipBudgetEditor();
   if(e.target.closest("[data-vehicle-profile-edit]"))openVehicleProfileEditor();
   if(e.target.closest("[data-vehicle-profile-cancel]"))closeVehicleProfileEditor();
@@ -1834,6 +1848,7 @@ $("#editVehicleConfiguration").onclick=openConfigurationEditor;
 $("#addInventoryItem").onclick=()=>openInventoryEditor();
 $("#addUpgradeProject").onclick=()=>openUpgradeEditor();
 $("#exportOwnershipCosts").onclick=exportOwnershipCostCsv;
+$("#exportOwnershipAnnualReview").onclick=exportOwnershipAnnualReview;
 $("#editOwnershipBudget").onclick=openOwnershipBudgetEditor;
 $("#ownershipBudgetForm").addEventListener("submit",saveOwnershipBudget);
 $("#inventorySearch").addEventListener("input",renderVehicleRecords);
