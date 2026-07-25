@@ -684,3 +684,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 /* v10.3 seasonal cycle history */
 .seasonal-archive-btn{margin-top:12px}.seasonal-history{display:grid;gap:8px}.seasonal-history-card{display:grid;grid-template-columns:38px 1fr;align-items:start;gap:11px;border-left:5px solid #16a34a}.seasonal-history-card>span{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#16a34a;color:#fff;font-weight:900}.seasonal-history-card>div{display:grid;gap:4px}.seasonal-history-card small{color:var(--muted)}.seasonal-history-card p{margin:4px 0 0;white-space:pre-wrap}
 
+/* v10.4 seasonal report */
+.seasonal-report-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.seasonal-report{display:grid;gap:5px}.seasonal-report section{margin:13px 0}.seasonal-report h3{margin:0 0 9px}.seasonal-report table{width:100%;border-collapse:collapse}.seasonal-report th,.seasonal-report td{padding:9px;border:1px solid var(--line);text-align:left;vertical-align:top}.seasonal-report th{background:var(--panel-2)}.seasonal-report ul{margin:0;padding-left:20px}
+@media(max-width:680px){.seasonal-report-actions{display:grid}.seasonal-report-actions button{width:100%}.seasonal-report section{overflow-x:auto}.seasonal-report table{min-width:650px}}
+

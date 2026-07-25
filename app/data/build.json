@@ -1,6 +1,6 @@
 {
-  "version": "10.3.0",
-  "releaseName": "Seasonal Cycle History",
+  "version": "10.4.0",
+  "releaseName": "Seasonal Care Report",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -260,7 +260,11 @@
     "Archivable completed seasonal cycles",
     "Dated storage, winterisation and reactivation history",
     "Plan target and notes retained in cycle records",
-    "Checklist reset after confirmed archival"
+    "Checklist reset after confirmed archival",
+    "Consolidated seasonal care report",
+    "Vehicle, plan, checklist and cycle-history handoff",
+    "Print-ready seasonal report",
+    "Structured seasonal report JSON export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

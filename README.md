@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 10.4.0 adds the Seasonal Care Report. Review vehicle identity, every active seasonal plan, checklist completion and archived cycle history in one handoff, then print it cleanly or export the full record as structured JSON.
+
 Version 10.3.0 adds Seasonal Cycle History. Once every item in a seasonal mode is complete, archive the cycle with its completion time, target and notes, then reset that checklist for the next season while retaining a durable offline record.
 
 Version 10.2.0 adds the Seasonal Calendar. Review target dates and completion state for storage, winterisation and reactivation plans, jump directly to each checklist and export incomplete upcoming plans as iCalendar reminders.
