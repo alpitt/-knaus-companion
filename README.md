@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 7.6.0 adds the Ownership Calendar. Review recurring payments, document expiries and scheduled maintenance in one filtered 12-month timeline, keep overdue items visible, jump directly to the relevant workflow and export upcoming events as an iCalendar file.
+
 Version 7.5.0 adds the Commitment Ledger. Inspect every recurring-cost payment, review lifetime and current-year totals, add backdated payments, correct dates, amounts and notes, and remove erroneous entries while all ownership calculations update immediately.
 
 Version 7.4.0 adds Ownership Commitments. Track recurring insurance, tax, storage, roadside, finance, membership and other fixed costs; receive due-soon and overdue alerts; record payments with automatic next-due advancement; and include paid commitments in budgets, forecasts, trends and exports.

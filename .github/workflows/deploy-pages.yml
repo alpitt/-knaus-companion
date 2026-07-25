@@ -34,7 +34,9 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 7.5.0' app/index.html
+          grep -q 'Version 7.6.0' app/index.html
+          grep -q 'id="ownershipCalendar"' app/index.html
+          grep -q 'id="exportOwnershipCalendar"' app/index.html
           grep -q 'id="ownershipLedgerDialog"' app/index.html
           grep -q 'id="ownershipLedgerList"' app/index.html
           grep -q 'id="ownershipPaymentForm"' app/index.html
@@ -117,7 +119,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="7.5.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="7.6.0"' app/assets/js/app-v4.js
+          grep -q 'function ownershipCalendarEvents()' app/assets/js/app-v4.js
+          grep -q 'function renderOwnershipCalendar()' app/assets/js/app-v4.js
+          grep -q 'function exportOwnershipCalendar()' app/assets/js/app-v4.js
           grep -q 'function renderOwnershipLedger()' app/assets/js/app-v4.js
           grep -q 'function saveOwnershipPayment(event)' app/assets/js/app-v4.js
           grep -q 'function deleteOwnershipPayment(id)' app/assets/js/app-v4.js
