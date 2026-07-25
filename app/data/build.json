@@ -1,6 +1,6 @@
 {
-  "version": "9.4.0",
-  "releaseName": "Emergency Readiness",
+  "version": "9.5.0",
+  "releaseName": "Emergency Handoff",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -224,7 +224,11 @@
     "Persistent emergency readiness checklist",
     "Preparedness score and completion progress",
     "Vehicle identity, assistance, isolation and safety-equipment checks",
-    "Offline readiness state included in application backups"
+    "Offline readiness state included in application backups",
+    "Consolidated emergency responder and recovery handoff",
+    "Vehicle identity, readiness, contacts, incidents and notes in one pack",
+    "Print-ready emergency handoff",
+    "Structured emergency handoff JSON export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
