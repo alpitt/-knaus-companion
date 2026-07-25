@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 9.1.0 adds the Emergency Incident Log. Record breakdowns, collisions, safety concerns and recovery events with date, location, category, severity, actions, assistance and follow-up; track open, monitoring and resolved states; and surface unresolved incidents on the Operations Dashboard.
+
 Version 9.0.0 begins Emergency Preparedness with a dedicated offline Emergency Centre. Keep vehicle identity and mileage ready, open gas, electrical, water and fault guidance, manage owner-controlled insurer, recovery, service and personal contacts with tap-to-call actions, and retain emergency notes in backups.
 
 Version 8.4.0 adds the Compliance Calendar. Review all overdue and next-12-month document, maintenance and owner-requirement dates in a grouped timeline, jump back to each source workflow and export future compliance events as an all-day iCalendar file.
