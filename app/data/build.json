@@ -1,6 +1,6 @@
 {
-  "version": "10.7.0",
-  "releaseName": "Custom Task Integration",
+  "version": "10.8.0",
+  "releaseName": "Seasonal Task Editor",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -276,7 +276,11 @@
     "Custom tasks included in seasonal completion scores",
     "Custom task completion required before cycle archival",
     "Reusable custom tasks reset after cycle archival",
-    "Custom tasks retained in cycle history and seasonal reports"
+    "Custom tasks retained in cycle history and seasonal reports",
+    "In-place custom seasonal task editing",
+    "Editable task title and linked system guidance",
+    "Completion state preserved while editing",
+    "Cancel-safe seasonal task edit workflow"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
