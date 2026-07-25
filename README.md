@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 7.2.0 adds Ownership Forecasts. Project year-end service, touring and upgrade spend from current-calendar-year records; compare the projected result with annual budgets; see a remaining monthly allowance; and receive early Operations Dashboard warnings when spending pace is trending over budget.
+
 Version 7.1.0 adds Ownership Budgets. Set annual service, touring and upgrade allowances; compare current-year recorded costs with each budget; retain planning notes offline; and surface overspend on the Operations Dashboard.
 
 Version 7.0.0 begins the Ownership phase with a combined cost dashboard. Compare service-history costs, touring expenses and upgrade spend across all time, 12 months or 30 days; inspect recent recorded costs; and export the selected period as CSV.

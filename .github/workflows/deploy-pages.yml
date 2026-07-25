@@ -34,7 +34,8 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 7.1.0' app/index.html
+          grep -q 'Version 7.2.0' app/index.html
+          grep -q 'id="ownershipForecast"' app/index.html
           grep -q 'id="ownershipBudgetProgress"' app/index.html
           grep -q 'id="ownershipBudgetDialog"' app/index.html
           grep -q 'id="ownershipBudgetForm"' app/index.html
@@ -107,7 +108,8 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="7.1.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="7.2.0"' app/assets/js/app-v4.js
+          grep -q 'function ownershipForecastMetrics()' app/assets/js/app-v4.js
           grep -q 'function ownershipBudgetMetrics()' app/assets/js/app-v4.js
           grep -q 'function saveOwnershipBudget(event)' app/assets/js/app-v4.js
           grep -q 'function ownershipCostEntries(period=ownershipCostPeriod)' app/assets/js/app-v4.js
