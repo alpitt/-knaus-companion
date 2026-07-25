@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 9.0.0</title>
+  <title>Knaus Companion 9.1.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.0.0-emergency">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=9.1.0-incidents">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 9.0.0</span>
+        <span>Version 9.1.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -181,6 +181,10 @@
         <section class="section-block">
           <div class="section-heading"><div><span class="eyebrow">Assistance</span><h2>Emergency contacts</h2></div><button class="primary-btn" id="addEmergencyContact">Add contact</button></div>
           <div id="emergencyContacts" class="emergency-contact-grid"></div>
+        </section>
+        <section class="section-block">
+          <div class="section-heading"><div><span class="eyebrow">Incident log</span><h2>Emergency and recovery records</h2></div><button class="primary-btn" id="addEmergencyIncident">Record incident</button></div>
+          <div id="emergencyIncidents" class="emergency-incident-grid"></div>
         </section>
         <section class="panel emergency-notes">
           <label>Emergency notes<textarea id="emergencyNotes" maxlength="3000" placeholder="Medical considerations, access instructions, recovery details or information responders may need"></textarea></label>
@@ -467,6 +471,24 @@
           <label class="trip-field">Fixed commitments (€)<input id="ownershipBudgetFixed" name="fixed" type="number" min="0" step="0.01"></label>
           <label class="trip-field trip-field-wide">Budget notes<textarea id="ownershipBudgetNotes" name="notes" maxlength="1000" placeholder="Planned major service, trips or upgrade priorities"></textarea></label>
           <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-ownership-budget-cancel>Cancel</button><button class="primary-btn" type="submit">Save annual budget</button></div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="emergencyIncidentDialog" class="detail-dialog trip-dialog">
+      <form id="emergencyIncidentForm">
+        <div class="dialog-head"><div><span class="eyebrow">Emergency incident</span><h2 id="emergencyIncidentDialogTitle">Record incident</h2></div><button class="icon-btn" type="button" data-emergency-incident-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">Incident title<input id="emergencyIncidentTitle" name="title" required maxlength="140"></label>
+          <label class="trip-field">Date and time<input id="emergencyIncidentOccurred" name="occurredAt" type="datetime-local" required></label>
+          <label class="trip-field">Location<input id="emergencyIncidentLocation" name="location" maxlength="180"></label>
+          <label class="trip-field">Category<select id="emergencyIncidentCategory" name="category"><option>Breakdown</option><option>Collision</option><option>Fire or smoke</option><option>Gas concern</option><option>Electrical concern</option><option>Water damage</option><option>Medical</option><option>Security</option><option>Other</option></select></label>
+          <label class="trip-field">Severity<select id="emergencyIncidentSeverity" name="severity"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label>
+          <label class="trip-field">Status<select id="emergencyIncidentStatus" name="status"><option value="open">Open</option><option value="monitoring">Monitoring</option><option value="resolved">Resolved</option></select></label>
+          <label class="trip-field">Assistance contacted<input id="emergencyIncidentContacted" name="contacted" maxlength="180"></label>
+          <label class="trip-field trip-field-wide">Actions taken<textarea id="emergencyIncidentActions" name="actions" required maxlength="2000"></textarea></label>
+          <label class="trip-field trip-field-wide">Follow-up required<textarea id="emergencyIncidentFollowUp" name="followUp" maxlength="1600"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-emergency-incident-cancel>Cancel</button><button class="primary-btn" type="submit">Save incident</button></div>
         </div>
       </form>
     </dialog>
@@ -880,7 +902,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=9.0.0-emergency"></script>
+  <script src="assets/js/app-v4.js?v=9.1.0-incidents"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

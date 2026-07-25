@@ -1,6 +1,6 @@
 {
-  "version": "9.0.0",
-  "releaseName": "Emergency Centre",
+  "version": "9.1.0",
+  "releaseName": "Emergency Incident Log",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -208,7 +208,11 @@
     "Emergency vehicle identity card",
     "Direct gas, electrical, water and fault guidance",
     "Owner-managed tap-to-call assistance contacts",
-    "Persistent emergency notes in backups"
+    "Persistent emergency notes in backups",
+    "Structured emergency and recovery incident log",
+    "Time, location, category, severity and status capture",
+    "Actions, assistance and follow-up records",
+    "Unresolved incident Operations Dashboard alerts"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
