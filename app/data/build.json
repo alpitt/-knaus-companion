@@ -1,6 +1,6 @@
 {
-  "version": "7.3.0",
-  "releaseName": "Ownership Trends",
+  "version": "7.4.0",
+  "releaseName": "Ownership Commitments",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -167,7 +167,11 @@
     "Early Operations Dashboard warnings for projected overspend",
     "Five-year ownership spending trend",
     "Annual total, monthly average and year-on-year comparison",
-    "Annual source breakdown and downloadable review CSV"
+    "Annual source breakdown and downloadable review CSV",
+    "Recurring insurance, tax, storage, roadside, finance and membership commitments",
+    "Due-soon and overdue fixed-cost alerts",
+    "Payment history with automatic next-due advancement",
+    "Fixed costs integrated into budgets, forecasts, trends and exports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

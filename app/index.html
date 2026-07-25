@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 7.3.0</title>
+  <title>Knaus Companion 7.4.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=7.3.0-trends">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=7.4.0-commitments">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 7.3.0</span>
+        <span>Version 7.4.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -241,6 +241,7 @@
           <div id="ownershipBudgetProgress" class="ownership-budget-grid"></div>
           <div id="ownershipForecast" class="ownership-forecast-grid"></div>
           <div id="ownershipTrends" class="ownership-trends"></div>
+          <div id="ownershipCommitments" class="ownership-commitments"></div>
           <div id="ownershipCostFilters" class="chips" aria-label="Filter ownership cost period"></div>
           <div id="ownershipCostInsights" class="ownership-cost-layout"></div>
         </section>
@@ -414,8 +415,26 @@
           <label class="trip-field">Service and maintenance (€)<input id="ownershipBudgetService" name="service" type="number" min="0" step="0.01"></label>
           <label class="trip-field">Touring (€)<input id="ownershipBudgetTouring" name="touring" type="number" min="0" step="0.01"></label>
           <label class="trip-field">Upgrades (€)<input id="ownershipBudgetUpgrades" name="upgrades" type="number" min="0" step="0.01"></label>
+          <label class="trip-field">Fixed commitments (€)<input id="ownershipBudgetFixed" name="fixed" type="number" min="0" step="0.01"></label>
           <label class="trip-field trip-field-wide">Budget notes<textarea id="ownershipBudgetNotes" name="notes" maxlength="1000" placeholder="Planned major service, trips or upgrade priorities"></textarea></label>
           <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-ownership-budget-cancel>Cancel</button><button class="primary-btn" type="submit">Save annual budget</button></div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="ownershipCommitmentDialog" class="detail-dialog trip-dialog">
+      <form id="ownershipCommitmentForm">
+        <div class="dialog-head"><div><span class="eyebrow">Ownership commitment</span><h2 id="ownershipCommitmentDialogTitle">Add recurring cost</h2></div><button class="icon-btn" type="button" data-ownership-commitment-cancel aria-label="Close">×</button></div>
+        <div class="dialog-body trip-form-grid">
+          <label class="trip-field trip-field-wide">Name<input id="ownershipCommitmentTitle" name="title" required maxlength="120" placeholder="Motor insurance"></label>
+          <label class="trip-field">Type<select id="ownershipCommitmentType" name="type"><option>Insurance</option><option>Motor tax</option><option>Storage</option><option>Roadside cover</option><option>Finance</option><option>Membership</option><option>Other</option></select></label>
+          <label class="trip-field">Provider<input id="ownershipCommitmentProvider" name="provider" maxlength="120"></label>
+          <label class="trip-field">Payment amount (€)<input id="ownershipCommitmentAmount" name="amount" type="number" required min="0.01" step="0.01"></label>
+          <label class="trip-field">Frequency<select id="ownershipCommitmentFrequency" name="frequency"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="annual" selected>Annual</option></select></label>
+          <label class="trip-field">Next due date<input id="ownershipCommitmentNextDue" name="nextDue" type="date" required></label>
+          <label class="workshop-fault-option"><input id="ownershipCommitmentActive" name="active" type="checkbox" checked> Track renewal and payment alerts</label>
+          <label class="trip-field trip-field-wide">Notes<textarea id="ownershipCommitmentNotes" name="notes" maxlength="1000"></textarea></label>
+          <div class="trip-form-actions trip-field-wide"><button class="secondary-btn" type="button" data-ownership-commitment-cancel>Cancel</button><button class="primary-btn" type="submit">Save commitment</button></div>
         </div>
       </form>
     </dialog>
@@ -747,7 +766,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=7.3.0-trends"></script>
+  <script src="assets/js/app-v4.js?v=7.4.0-commitments"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
