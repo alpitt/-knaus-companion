@@ -1,5 +1,5 @@
 
-const APP_VERSION="10.9.0";
+const APP_VERSION="11.0.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},seasonalProgress:{},seasonalPlans:{},seasonalSupplies:{},seasonalCustomTasks:[],seasonalCycles:[],workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyIncidents:[],emergencyReadiness:{},emergencyDrills:[],emergencyEquipment:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -155,7 +155,8 @@ function dashboardAlerts(){
   (state.emergencyDrills||[]).filter(item=>item.nextReview&&item.nextReview<new Date().toISOString().slice(0,10)).forEach(item=>alerts.push({priority:item.outcome==="action"?1:2,kind:item.outcome==="action"?"urgent":"warning",icon:"🧯",title:`${item.scenario} drill review overdue`,detail:`Review was due ${formatTripDate(item.nextReview)}`,route:"emergency"}));
   (state.emergencyEquipment||[]).map(item=>({item,status:emergencyEquipmentStatus(item)})).filter(entry=>entry.status.status!=="ready").forEach(({item,status})=>alerts.push({priority:status.status==="replace"?1:2,kind:status.status==="replace"?"urgent":"warning",icon:"🧯",title:`${item.name} ${status.label.toLowerCase()}`,detail:item.expiry?`Expiry ${formatTripDate(item.expiry)}`:(item.location||item.type),route:"emergency"}));
   (state.emergencyContacts||[]).filter(item=>item.nextReview&&item.nextReview<new Date().toISOString().slice(0,10)).forEach(item=>alerts.push({priority:item.primary?1:2,kind:item.primary?"urgent":"warning",icon:"☎",title:`Verify ${item.name}`,detail:`Emergency contact review was due ${formatTripDate(item.nextReview)}`,route:"emergency"}));
-  SEASONAL_CHECKLISTS.forEach(list=>{const plan=state.seasonalPlans?.[list.id],done=list.items.filter(([id])=>state.seasonalProgress?.[`${list.id}:${id}`]).length;if(plan?.targetDate&&plan.targetDate<new Date().toISOString().slice(0,10)&&done<list.items.length)alerts.push({priority:2,kind:"warning",icon:"❄",title:`${list.title} overdue`,detail:`${done}/${list.items.length} checks complete • target ${formatTripDate(plan.targetDate)}`,route:"seasonal"})});
+  SEASONAL_CHECKLISTS.forEach(list=>{const plan=state.seasonalPlans?.[list.id],tasks=seasonalModeTasks(list),done=tasks.filter(item=>item.complete).length;if(plan?.targetDate&&plan.targetDate<new Date().toISOString().slice(0,10)&&done<tasks.length)alerts.push({priority:2,kind:"warning",icon:"❄",title:`${list.title} overdue`,detail:`${done}/${tasks.length} tasks complete • target ${formatTripDate(plan.targetDate)}`,route:"seasonal",seasonalMode:list.id})});
+  (state.seasonalCustomTasks||[]).filter(item=>item.dueDate&&!item.complete).forEach(item=>{const days=Math.ceil((new Date(`${item.dueDate}T23:59:59`)-new Date())/86400000);if(days<0)alerts.push({priority:1,kind:"urgent",icon:"❄",title:`${item.title} overdue`,detail:`Custom ${item.mode} task • due ${formatTripDate(item.dueDate)}`,route:"seasonal",seasonalMode:item.mode});else if(days<=14)alerts.push({priority:3,kind:"warning",icon:"❄",title:`${item.title} due soon`,detail:`Custom ${item.mode} task • due ${formatTripDate(item.dueDate)}`,route:"seasonal",seasonalMode:item.mode})});
   (state.upgradeProjects||[]).filter(project=>project.status!=="complete").forEach(project=>{
     if(project.status==="blocked")alerts.push({priority:2,kind:"warning",icon:"🧱",title:`${project.title} is blocked`,detail:"Review the upgrade plan and next action",route:"vehicle"});
     else if(Number(project.budget)>0&&Number(project.spent)>Number(project.budget))alerts.push({priority:2,kind:"warning",icon:"💶",title:`${project.title} is over budget`,detail:`€${(Number(project.spent)-Number(project.budget)).toFixed(2)} over plan`,route:"vehicle"});
@@ -165,7 +166,7 @@ function dashboardAlerts(){
 }
 function renderDashboard(){
   const alerts=dashboardAlerts();
-  $("#operationsAlerts").innerHTML=alerts.length?alerts.slice(0,8).map(alert=>`<button class="dashboard-alert ${alert.kind}" data-route="${alert.route}"><span aria-hidden="true">${alert.icon}</span><span><strong>${esc(alert.title)}</strong><small>${esc(alert.detail)}</small></span><b aria-hidden="true">→</b></button>`).join(""):'<div class="dashboard-clear"><span aria-hidden="true">✓</span><div><strong>No active alerts</strong><p>Maintenance, documents, faults and packing allowances are clear.</p></div></div>';
+  $("#operationsAlerts").innerHTML=alerts.length?alerts.slice(0,8).map(alert=>`<button class="dashboard-alert ${alert.kind}" data-route="${alert.route}"${alert.seasonalMode?` data-seasonal-alert-mode="${alert.seasonalMode}"`:""}><span aria-hidden="true">${alert.icon}</span><span><strong>${esc(alert.title)}</strong><small>${esc(alert.detail)}</small></span><b aria-hidden="true">→</b></button>`).join(""):'<div class="dashboard-clear"><span aria-hidden="true">✓</span><div><strong>No active alerts</strong><p>Maintenance, documents, faults and packing allowances are clear.</p></div></div>';
   const touringLists=DATA.touringOperations?.lists||[],touringTotal=touringLists.reduce((sum,list)=>sum+list.items.length,0),touringDone=touringLists.reduce((sum,list)=>sum+list.items.filter(item=>state.touringProgress?.[`${list.id}:${item.id}`]).length,0);
   const maintenance=(DATA.maintenanceTasks||[]).map(maintenanceTaskStatus),maintenanceClear=!maintenance.some(item=>item.status==="overdue");
   const documentsClear=!(state.vehicleDocuments||[]).some(document=>["expired","expiring"].includes(vehicleDocumentStatus(document).status));
@@ -1979,7 +1980,7 @@ async function init(){
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
 }
 document.addEventListener("click",e=>{
-  const routeButton=e.target.closest("[data-route]");if(routeButton){e.preventDefault();navigate(routeButton.dataset.route)}
+  const routeButton=e.target.closest("[data-route]");if(routeButton){e.preventDefault();if(routeButton.dataset.seasonalAlertMode)activeSeasonalMode=routeButton.dataset.seasonalAlertMode;navigate(routeButton.dataset.route)}
   const prompt=e.target.closest("[data-prompt]");if(prompt){$("#assistantInput").value=prompt.dataset.prompt;askAssistant()}
   const tab=e.target.closest("[data-library]");if(tab){libraryMode=tab.dataset.library;$$(".tab").forEach(x=>x.classList.toggle("active",x===tab));renderLibrary()}
   const touring=e.target.closest("[data-touring]");if(touring)openTouringSection(touring.dataset.touring);
