@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 10.8.0</title>
+  <title>Knaus Companion 10.9.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=10.8.0-editor">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=10.9.0-scheduling">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 10.8.0</span>
+        <span>Version 10.9.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -218,7 +218,7 @@
         <section class="panel seasonal-progress"><div><span class="eyebrow">Checklist progress</span><h2 id="seasonalTitle">Storage preparation</h2><p id="seasonalDetail"></p><button class="secondary-btn seasonal-archive-btn" id="archiveSeasonalCycle" disabled>Archive completed cycle</button></div><strong id="seasonalScore">0%</strong><div class="touring-progress-bar"><span id="seasonalBar"></span></div></section>
         <form id="seasonalPlanForm" class="panel seasonal-plan"><div><span class="eyebrow">Seasonal plan</span><h2>Target and notes</h2></div><label>Target date<input id="seasonalPlanTarget" name="targetDate" type="date"></label><label>Working notes<textarea id="seasonalPlanNotes" name="notes" maxlength="1600" placeholder="Storage location, supplies needed, access arrangements or follow-up"></textarea></label><button class="primary-btn" type="submit">Save plan</button></form>
         <div id="seasonalChecklist" class="seasonal-checklist"></div>
-        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Vehicle-specific work</span><h2>Custom seasonal tasks</h2></div></div><form id="seasonalCustomTaskForm" class="panel seasonal-custom-form"><input id="seasonalCustomTaskId" name="id" type="hidden"><label>Task<input id="seasonalCustomTaskTitle" name="title" required maxlength="160" placeholder="Lubricate habitation door hinges"></label><label>System<select id="seasonalCustomTaskRoute" name="route"><option value="vehicle">Vehicle</option><option value="maintenance">Maintenance</option><option value="electrical">Electrical</option><option value="water">Water</option><option value="gas">Gas</option><option value="touring">Touring</option></select></label><div class="seasonal-custom-actions"><button class="primary-btn" type="submit"><span id="seasonalCustomTaskSubmitLabel">Add task</span></button><button id="cancelSeasonalCustomTaskEdit" class="secondary-btn" type="button" hidden>Cancel</button></div></form><div id="seasonalCustomTasks" class="seasonal-checklist"></div></section>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Vehicle-specific work</span><h2>Custom seasonal tasks</h2></div></div><form id="seasonalCustomTaskForm" class="panel seasonal-custom-form"><input id="seasonalCustomTaskId" name="id" type="hidden"><label>Task<input id="seasonalCustomTaskTitle" name="title" required maxlength="160" placeholder="Lubricate habitation door hinges"></label><label>System<select id="seasonalCustomTaskRoute" name="route"><option value="vehicle">Vehicle</option><option value="maintenance">Maintenance</option><option value="electrical">Electrical</option><option value="water">Water</option><option value="gas">Gas</option><option value="touring">Touring</option></select></label><label>Due date<input id="seasonalCustomTaskDueDate" name="dueDate" type="date"></label><div class="seasonal-custom-actions"><button class="primary-btn" type="submit"><span id="seasonalCustomTaskSubmitLabel">Add task</span></button><button id="cancelSeasonalCustomTaskEdit" class="secondary-btn" type="button" hidden>Cancel</button></div></form><div id="seasonalCustomTasks" class="seasonal-checklist"></div></section>
         <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Preparation supplies</span><h2 id="seasonalSuppliesTitle">Storage supplies</h2></div><strong id="seasonalSuppliesScore">0/0 ready</strong></div><div id="seasonalSupplies" class="seasonal-supplies"></div></section>
         <section class="section-block seasonal-calendar-block"><div class="section-heading"><div><span class="eyebrow">Seasonal calendar</span><h2>Plan targets</h2></div><button class="secondary-btn" id="exportSeasonalCalendar">Export calendar</button></div><div id="seasonalCalendar" class="seasonal-calendar"></div></section>
         <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Seasonal records</span><h2>Completed cycle history</h2></div></div><div id="seasonalHistory" class="seasonal-history"></div></section>
@@ -983,7 +983,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=10.8.0-editor"></script>
+  <script src="assets/js/app-v4.js?v=10.9.0-scheduling"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

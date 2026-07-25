@@ -1,6 +1,6 @@
 {
-  "version": "10.8.0",
-  "releaseName": "Seasonal Task Editor",
+  "version": "10.9.0",
+  "releaseName": "Seasonal Task Scheduling",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -280,7 +280,11 @@
     "In-place custom seasonal task editing",
     "Editable task title and linked system guidance",
     "Completion state preserved while editing",
-    "Cancel-safe seasonal task edit workflow"
+    "Cancel-safe seasonal task edit workflow",
+    "Optional due dates for custom seasonal tasks",
+    "Overdue custom-task highlighting",
+    "Custom task dates in the Seasonal Calendar",
+    "Dated custom tasks included in iCalendar and report exports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

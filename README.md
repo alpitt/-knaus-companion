@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 10.9.0 adds Seasonal Task Scheduling. Assign optional due dates to custom seasonal work, see overdue tasks immediately and include task deadlines in the combined Seasonal Calendar, iCalendar download and structured care report.
+
 Version 10.8.0 adds the Seasonal Task Editor. Revise an existing custom task's title and linked system guidance in place, preserve its completion state, cancel edits safely and return automatically to add mode when changing seasonal workflows.
 
 Version 10.7.0 adds Custom Task Integration. Owner-defined seasonal work now contributes to completion scores, gates cycle archival, resets for reuse with each new cycle and appears in printed and structured seasonal reports.
