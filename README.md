@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 7.7.0 adds the Ownership Report. Preview one consolidated current-year vehicle summary with identity, recorded costs, budgets, forecasts, fixed commitments, ledger totals, upcoming calendar items and offline record counts; print it cleanly or export structured JSON.
+
 Version 7.6.0 adds the Ownership Calendar. Review recurring payments, document expiries and scheduled maintenance in one filtered 12-month timeline, keep overdue items visible, jump directly to the relevant workflow and export upcoming events as an iCalendar file.
 
 Version 7.5.0 adds the Commitment Ledger. Inspect every recurring-cost payment, review lifetime and current-year totals, add backdated payments, correct dates, amounts and notes, and remove erroneous entries while all ownership calculations update immediately.
