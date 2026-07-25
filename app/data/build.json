@@ -1,6 +1,6 @@
 {
-  "version": "10.0.0",
-  "releaseName": "Seasonal Care Centre",
+  "version": "10.1.0",
+  "releaseName": "Seasonal Plans",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -248,7 +248,11 @@
     "Dedicated Seasonal Care Centre",
     "Storage, winterisation and reactivation checklists",
     "Persistent per-mode progress and completion scores",
-    "Direct system-guidance links from seasonal tasks"
+    "Direct system-guidance links from seasonal tasks",
+    "Per-mode seasonal target dates",
+    "Persistent seasonal working notes",
+    "Overdue incomplete-plan Operations Dashboard alerts",
+    "Plan state included in application backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

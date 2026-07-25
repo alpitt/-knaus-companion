@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 10.1.0 adds Seasonal Plans. Give each storage, winterisation and reactivation checklist its own target date and working notes; incomplete plans that pass their target appear on the Operations Dashboard, and all planning data remains in offline backups.
+
 Version 10.0.0 begins Seasonal Care with a dedicated offline centre. Work through storage preparation, winterisation and seasonal reactivation checklists, retain progress independently for each mode, see completion scores and open the relevant electrical, water, gas, vehicle, maintenance or touring guidance directly from each task.
 
 Version 9.9.0 adds Contact Verification. Record when insurer, recovery, service and personal emergency details were last checked, schedule the next review, highlight stale entries, surface overdue verification on the Operations Dashboard and include reviews in the Emergency Calendar.
