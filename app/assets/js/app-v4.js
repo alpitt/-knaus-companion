@@ -1,5 +1,5 @@
 
-const APP_VERSION="10.6.0";
+const APP_VERSION="10.7.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},seasonalProgress:{},seasonalPlans:{},seasonalSupplies:{},seasonalCustomTasks:[],seasonalCycles:[],workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyIncidents:[],emergencyReadiness:{},emergencyDrills:[],emergencyEquipment:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -1480,6 +1480,35 @@ function seasonalReportHtml(actions=true){const report=seasonalReportData();retu
 function openSeasonalReport(){showDialog("Seasonal care report","Plans, progress and completed cycles",seasonalReportHtml(),true)}
 function exportSeasonalReport(){const report=seasonalReportData(),blob=new Blob([JSON.stringify(report,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-seasonal-report-${report.generatedAt.slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Seasonal report exported")}
 function printSeasonalReport(){const popup=window.open("","_blank","width=1000,height=760");if(!popup){toast("Allow pop-ups to print this report");return}popup.document.write(`<!doctype html><html><head><title>Knaus seasonal care report</title><style>body{font:14px system-ui;max-width:1000px;margin:28px auto;padding:0 20px;color:#172033}section{margin:22px 0}.diagnostic-meta{display:flex;gap:7px;flex-wrap:wrap}.diagnostic-meta span{padding:8px;background:#eef2f6;border-radius:8px}table{width:100%;border-collapse:collapse}th,td{padding:8px;border:1px solid #cad2dc;text-align:left;vertical-align:top}th{background:#eef2f6}ul{padding-left:20px}</style></head><body><h1>Seasonal care report</h1>${seasonalReportHtml(false)}</body></html>`);popup.document.close();popup.focus();setTimeout(()=>popup.print(),200)}
+
+// v10.7 promotes owner-defined tasks into progress, archives and reports.
+function seasonalModeTasks(mode){
+  const standard=mode.items.map(([id,title,route])=>({id,title,route,complete:Boolean(state.seasonalProgress?.[`${mode.id}:${id}`]),custom:false}));
+  const custom=(state.seasonalCustomTasks||[]).filter(item=>item.mode===mode.id).map(item=>({...item,custom:true,complete:Boolean(item.complete)}));
+  return [...standard,...custom];
+}
+function renderSeasonal(){
+  const mode=SEASONAL_CHECKLISTS.find(item=>item.id===activeSeasonalMode)||SEASONAL_CHECKLISTS[0],progress=state.seasonalProgress||{},plan=state.seasonalPlans?.[mode.id]||{},supplies=state.seasonalSupplies||{},modeTasks=seasonalModeTasks(mode),modeDone=modeTasks.filter(item=>item.complete).length,supplyDone=mode.supplies.filter(([id])=>supplies[`${mode.id}:${id}`]).length,percent=Math.round(modeDone/modeTasks.length*100);
+  $("#seasonalSummary").innerHTML=SEASONAL_CHECKLISTS.map(list=>{const tasks=seasonalModeTasks(list),done=tasks.filter(item=>item.complete).length;return `<article class="stat-card"><strong>${done}/${tasks.length}</strong><span>${esc(list.title)}</span></article>`}).join("");
+  $("#seasonalModes").innerHTML=SEASONAL_CHECKLISTS.map(list=>`<button class="chip ${list.id===mode.id?"active":""}" data-seasonal-mode="${list.id}">${esc(list.title)}</button>`).join("");
+  $("#seasonalTitle").textContent=mode.title;$("#seasonalDetail").textContent=mode.detail;$("#seasonalScore").textContent=`${percent}%`;$("#seasonalBar").style.width=`${percent}%`;$("#archiveSeasonalCycle").disabled=modeDone<modeTasks.length;$("#seasonalPlanTarget").value=plan.targetDate||"";$("#seasonalPlanNotes").value=plan.notes||"";
+  $("#seasonalChecklist").innerHTML=mode.items.map(([id,title,route])=>{const complete=Boolean(progress[`${mode.id}:${id}`]);return `<article class="panel seasonal-item ${complete?"complete":""}"><button class="seasonal-check" data-seasonal-check="${mode.id}:${id}" role="checkbox" aria-checked="${complete}"><span>${complete?"✓":""}</span><strong>${esc(title)}</strong></button><button class="secondary-btn" data-route="${route}">Open guidance</button></article>`}).join("");
+  $("#seasonalSuppliesTitle").textContent=`${mode.title} supplies`;$("#seasonalSuppliesScore").textContent=`${supplyDone}/${mode.supplies.length} ready`;$("#seasonalSupplies").innerHTML=mode.supplies.map(([id,title])=>{const ready=Boolean(supplies[`${mode.id}:${id}`]);return `<button class="panel seasonal-supply ${ready?"ready":""}" data-seasonal-supply="${mode.id}:${id}" role="checkbox" aria-checked="${ready}"><span>${ready?"✓":""}</span><strong>${esc(title)}</strong></button>`}).join("");
+  renderSeasonalCustomTasks();renderSeasonalCalendar();renderSeasonalHistory();
+}
+function archiveSeasonalCycle(){
+  const mode=SEASONAL_CHECKLISTS.find(item=>item.id===activeSeasonalMode),items=mode?seasonalModeTasks(mode):[],done=items.filter(item=>item.complete).length;
+  if(!mode||done<items.length)return;
+  const plan=state.seasonalPlans?.[mode.id]||{};if(!confirm(`Archive the completed ${mode.title} cycle and reset its checklist?`))return;
+  state.seasonalCycles=[{id:`seasonal-cycle-${Date.now()}`,mode:mode.id,title:mode.title,targetDate:plan.targetDate||"",notes:plan.notes||"",completedAt:new Date().toISOString(),items:items.map(item=>({id:item.id,title:item.title,complete:true,custom:item.custom}))},...(state.seasonalCycles||[])];
+  const progress={...(state.seasonalProgress||{})};mode.items.forEach(([id])=>delete progress[`${mode.id}:${id}`]);state.seasonalProgress=progress;
+  state.seasonalCustomTasks=(state.seasonalCustomTasks||[]).map(item=>item.mode===mode.id?{...item,complete:false,updatedAt:new Date().toISOString()}:item);
+  state.seasonalPlans={...(state.seasonalPlans||{}),[mode.id]:{targetDate:"",notes:"",updatedAt:new Date().toISOString()}};saveState();renderSeasonal();renderHome();toast("Seasonal cycle archived");
+}
+function seasonalReportData(){
+  const profile=state.vehicleProfile||{},modes=SEASONAL_CHECKLISTS.map(list=>{const plan=state.seasonalPlans?.[list.id]||{},items=seasonalModeTasks(list),supplies=list.supplies.map(([id,title])=>({id,title,ready:Boolean(state.seasonalSupplies?.[`${list.id}:${id}`])})),done=items.filter(item=>item.complete).length;return{id:list.id,title:list.title,detail:list.detail,targetDate:plan.targetDate||"",notes:plan.notes||"",complete:done,total:items.length,score:Math.round(done/items.length*100),items,supplies}});
+  return{app:"Knaus Companion",version:APP_VERSION,generatedAt:new Date().toISOString(),vehicle:{make:profile.make||"Knaus",model:profile.model||"Sun Traveller",registration:profile.registration||"",vin:profile.vin||"",mileage:Number(state.currentMileage)||0},modes,completedCycles:[...(state.seasonalCycles||[])].sort((a,b)=>String(b.completedAt).localeCompare(String(a.completedAt)))};
+}
 function configurationSections(){return (DATA.vehicleConfigSchema?.sections||[]).filter(section=>section.id!=="documents")}
 function configurationProfileValue(id){
   const profile=state.vehicleProfile||{},key=id==="mam"?"maxMass":id;

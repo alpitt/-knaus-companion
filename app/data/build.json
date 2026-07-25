@@ -1,6 +1,6 @@
 {
-  "version": "10.6.0",
-  "releaseName": "Custom Seasonal Tasks",
+  "version": "10.7.0",
+  "releaseName": "Custom Task Integration",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -272,7 +272,11 @@
     "Owner-defined seasonal tasks",
     "Per-mode task assignment and system guidance links",
     "Independent custom-task completion state",
-    "Custom seasonal task deletion"
+    "Custom seasonal task deletion",
+    "Custom tasks included in seasonal completion scores",
+    "Custom task completion required before cycle archival",
+    "Reusable custom tasks reset after cycle archival",
+    "Custom tasks retained in cycle history and seasonal reports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
