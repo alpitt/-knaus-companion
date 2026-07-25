@@ -1,6 +1,6 @@
 {
-  "version": "11.1.0",
-  "releaseName": "Seasonal Task Priorities",
+  "version": "11.2.0",
+  "releaseName": "Seasonal Task Filters",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -292,7 +292,11 @@
     "Normal, high and critical custom task priorities",
     "Priority-first seasonal task ordering",
     "Priority-aware due-soon alert escalation",
-    "Task priority retained in calendars, reports and archives"
+    "Task priority retained in calendars, reports and archives",
+    "All, open, due, high-priority and completed task filters",
+    "Live per-filter seasonal task counts",
+    "Accessible filtered-result summary",
+    "Filter-aware empty states"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

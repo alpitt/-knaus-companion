@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 11.2.0 adds Seasonal Task Filters. Focus each seasonal mode on all, open, due, high-priority or completed custom work with live counts, an accessible result summary and clear filter-aware empty states.
+
 Version 11.1.0 adds Seasonal Task Priorities. Mark custom work as normal, high or critical, see important tasks first, escalate due-soon dashboard warnings by priority and retain priority context in calendars, reports and archived cycles.
 
 Version 11.0.0 adds Seasonal Task Alerts. Due-soon and overdue custom work now appears on the Operations Dashboard, seasonal plan warnings include owner-defined task progress and each alert opens the relevant storage, winterisation or reactivation workflow directly.
