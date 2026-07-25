@@ -34,7 +34,12 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 6.6.0' app/index.html
+          grep -q 'Version 7.0.0' app/index.html
+          grep -q 'id="ownershipCosts"' app/index.html
+          grep -q 'id="ownershipCostSummary"' app/index.html
+          grep -q 'id="ownershipCostFilters"' app/index.html
+          grep -q 'id="ownershipCostInsights"' app/index.html
+          grep -q 'id="exportOwnershipCosts"' app/index.html
           grep -q 'id="workshopHistoryArchive"' app/index.html
           grep -q 'id="workshopHistorySummary"' app/index.html
           grep -q 'id="workshopHistorySearch"' app/index.html
@@ -99,7 +104,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="6.6.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="7.0.0"' app/assets/js/app-v4.js
+          grep -q 'function ownershipCostEntries()' app/assets/js/app-v4.js
+          grep -q 'function renderOwnershipCosts()' app/assets/js/app-v4.js
+          grep -q 'function exportOwnershipCostCsv()' app/assets/js/app-v4.js
           grep -q 'function workshopHistorySearchText(session)' app/assets/js/app-v4.js
           grep -q 'function renderWorkshopHistory()' app/assets/js/app-v4.js
           grep -q 'function completeWorkshopSession(event)' app/assets/js/app-v4.js
