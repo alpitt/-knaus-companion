@@ -1,5 +1,5 @@
 
-const APP_VERSION="7.5.0";
+const APP_VERSION="7.6.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -56,6 +56,7 @@ let ownershipTrendYear=new Date().getFullYear();
 let editingOwnershipCommitmentId=null;
 let activeOwnershipLedgerId=null;
 let editingOwnershipPaymentId=null;
+let ownershipCalendarFilter="all";
 
 function $(s,r=document){return r.querySelector(s)}
 function $$(s,r=document){return [...r.querySelectorAll(s)]}
@@ -1504,6 +1505,7 @@ function renderOwnershipCosts(){
   const trends=ownershipTrendMetrics(),trendMax=Math.max(1,...trends.years.map(item=>item.total));
   $("#ownershipTrends").innerHTML=`<div class="ownership-trend-head"><div><span class="eyebrow">Ownership trends</span><h3>Annual cost review</h3></div><div class="chips" aria-label="Select ownership cost year">${trends.years.map(item=>`<button class="chip ${item.year===ownershipTrendYear?"active":""}" data-ownership-trend-year="${item.year}">${item.year}</button>`).join("")}</div></div><div class="ownership-trend-layout"><article class="panel ownership-year-chart"><h4>Five-year recorded spend</h4>${[...trends.years].reverse().map(item=>`<button class="${item.year===ownershipTrendYear?"active":""}" data-ownership-trend-year="${item.year}"><span>${item.year}</span><i><b style="width:${item.total/trendMax*100}%"></b></i><strong>€${item.total.toFixed(2)}</strong></button>`).join("")}</article><article class="panel ownership-year-review"><h4>${ownershipTrendYear} at a glance</h4><div class="ownership-review-stats"><div><span>Total</span><strong>€${trends.selected.total.toFixed(2)}</strong></div><div><span>Monthly average</span><strong>€${trends.average.toFixed(2)}</strong></div><div><span>Largest category</span><strong>${esc(trends.largest)}</strong></div><div><span>Year-on-year</span><strong>${trends.delta===null?"No comparison":`${trends.delta>=0?"+":""}${trends.delta.toFixed(1)}%`}</strong></div></div>${sources.map(source=>`<div class="ownership-review-source"><span>${source}</span><strong>€${trends.selected.totals[source].toFixed(2)}</strong></div>`).join("")}</article></div>`;
   renderOwnershipCommitments();
+  renderOwnershipCalendar();
   $("#ownershipCostFilters").innerHTML=[["all","All time"],["12m","Last 12 months"],["30d","Last 30 days"]].map(([id,label])=>`<button class="chip ${ownershipCostPeriod===id?"active":""}" data-ownership-cost-period="${id}">${label}</button>`).join("");
   const max=Math.max(1,...Object.values(totals));
   $("#ownershipCostInsights").innerHTML=`<article class="panel ownership-source-card"><h3>Spend by source</h3>${sources.map(source=>`<div class="ownership-source-row"><span>${source}</span><div><i style="width:${totals[source]/max*100}%"></i></div><strong>€${totals[source].toFixed(2)}</strong></div>`).join("")}<p>Totals reflect recorded entries, not bank transactions. Check for duplicates across modules.</p></article><article class="panel ownership-recent-card"><h3>Recent recorded costs</h3>${entries.length?entries.slice(0,8).map(item=>`<div><span><strong>${esc(item.title)}</strong><small>${esc(item.source)} • ${esc(formatTripDate(String(item.date).slice(0,10)))}</small></span><b>€${item.amount.toFixed(2)}</b></div>`).join(""):"<p>No costs recorded for this period.</p>"}</article>`;
@@ -1560,6 +1562,21 @@ function saveOwnershipPayment(event){
 }
 function deleteOwnershipPayment(id){
   const item=activeOwnershipCommitment(),payment=(item?.payments||[]).find(entry=>entry.id===id);if(!item||!payment||!confirm(`Delete the €${Number(payment.amount||0).toFixed(2)} payment from ${formatTripDate(payment.date)}?`))return;item.payments=item.payments.filter(entry=>entry.id!==id);item.updatedAt=new Date().toISOString();saveState();resetOwnershipPaymentForm();renderOwnershipLedger();renderOwnershipCosts();renderHome();toast("Payment deleted");
+}
+function ownershipCalendarEvents(){
+  const today=new Date(`${new Date().toISOString().slice(0,10)}T00:00:00Z`),end=new Date(today);end.setUTCFullYear(end.getUTCFullYear()+1);
+  return [
+    ...(state.ownershipCommitments||[]).filter(item=>item.active!==false&&item.nextDue).map(item=>({id:item.id,type:"commitments",date:item.nextDue,title:item.title,detail:`€${Number(item.amount||0).toFixed(2)} ${item.frequency} payment${item.provider?` • ${item.provider}`:""}`,route:"vehicle",icon:"💶"})),
+    ...(state.vehicleDocuments||[]).filter(item=>item.expiry).map(item=>({id:item.id,type:"documents",date:item.expiry,title:`${item.type||"Vehicle document"} expires`,detail:item.provider||item.reference||"Review renewal details",route:"vehicle",icon:"📄"})),
+    ...(DATA.maintenanceTasks||[]).map(maintenanceTaskStatus).filter(item=>item.dueDate).map(item=>({id:item.task.id,type:"maintenance",date:item.dueDate,title:item.task.name,detail:item.dueMileage?`Also due at ${Number(item.dueMileage).toLocaleString()} km`:"Scheduled maintenance",route:"maintenance",icon:"🔧"}))
+  ].filter(item=>{const date=new Date(`${item.date}T00:00:00Z`);return date<today||date<=end}).sort((a,b)=>String(a.date).localeCompare(String(b.date))||a.title.localeCompare(b.title));
+}
+function renderOwnershipCalendar(){
+  const all=ownershipCalendarEvents(),events=all.filter(item=>ownershipCalendarFilter==="all"||item.type===ownershipCalendarFilter),today=new Date().toISOString().slice(0,10),groups=new Map();events.forEach(item=>{const key=item.date<today?"overdue":item.date.slice(0,7);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(item)});const labels={all:"All",commitments:"Payments",documents:"Documents",maintenance:"Maintenance"};
+  $("#ownershipCalendar").innerHTML=`<div class="ownership-calendar-head"><div><span class="eyebrow">Ownership calendar</span><h3>Next 12 months</h3><p>Payments, renewals and scheduled work in one timeline.</p></div><div class="chips" aria-label="Filter ownership calendar">${Object.entries(labels).map(([id,label])=>`<button class="chip ${ownershipCalendarFilter===id?"active":""}" data-ownership-calendar-filter="${id}">${label}</button>`).join("")}</div></div><div class="ownership-calendar-groups">${groups.size?[...groups].map(([key,items])=>`<section class="ownership-calendar-group ${key==="overdue"?"overdue":""}"><h4>${key==="overdue"?"Overdue":new Date(`${key}-01T00:00:00Z`).toLocaleDateString(undefined,{month:"long",year:"numeric",timeZone:"UTC"})}</h4><div>${items.map(item=>`<button class="ownership-calendar-event" data-route="${item.route}"><span>${item.icon}</span><span><strong>${esc(item.title)}</strong><small>${esc(formatTripDate(item.date))} • ${esc(item.detail)}</small></span><b>→</b></button>`).join("")}</div></section>`).join(""):'<article class="panel ownership-calendar-empty"><strong>No events in this view</strong><p>Add commitments, document expiry dates or service baselines to build the calendar.</p></article>'}</div>`;
+}
+function exportOwnershipCalendar(){
+  const events=ownershipCalendarEvents().filter(item=>item.date>=new Date().toISOString().slice(0,10)),escapeIcs=value=>String(value||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;"),stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,""),lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Knaus Companion//Ownership Calendar//EN","CALSCALE:GREGORIAN",...events.flatMap(item=>["BEGIN:VEVENT",`UID:${escapeIcs(`${item.type}-${item.id}-${item.date}@knaus-companion`)}`,`DTSTAMP:${stamp}`,`DTSTART;VALUE=DATE:${item.date.replace(/-/g,"")}`,`SUMMARY:${escapeIcs(item.title)}`,`DESCRIPTION:${escapeIcs(item.detail)}`,"END:VEVENT"]),"END:VCALENDAR"],blob=new Blob([lines.join("\r\n")],{type:"text/calendar;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-ownership-calendar-${new Date().toISOString().slice(0,10)}.ics`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast(`${events.length} calendar events exported`);
 }
 function openOwnershipBudgetEditor(){
   const budget=state.ownershipBudget||{};$("#ownershipBudgetService").value=budget.service??"";$("#ownershipBudgetTouring").value=budget.touring??"";$("#ownershipBudgetUpgrades").value=budget.upgrades??"";$("#ownershipBudgetFixed").value=budget.fixed??"";$("#ownershipBudgetNotes").value=budget.notes||"";const dialog=$("#ownershipBudgetDialog");if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
@@ -1825,6 +1842,7 @@ document.addEventListener("click",e=>{
   const vehicleHotspot=e.target.closest("[data-vehicle-hotspot]");if(vehicleHotspot){activeVehicleHotspot=vehicleHotspot.dataset.vehicleHotspot;renderVehicleMap()}
   const ownershipPeriodButton=e.target.closest("[data-ownership-cost-period]");if(ownershipPeriodButton){ownershipCostPeriod=ownershipPeriodButton.dataset.ownershipCostPeriod;renderOwnershipCosts()}
   const ownershipTrendButton=e.target.closest("[data-ownership-trend-year]");if(ownershipTrendButton){ownershipTrendYear=Number(ownershipTrendButton.dataset.ownershipTrendYear);renderOwnershipCosts()}
+  const calendarFilterButton=e.target.closest("[data-ownership-calendar-filter]");if(calendarFilterButton){ownershipCalendarFilter=calendarFilterButton.dataset.ownershipCalendarFilter;renderOwnershipCalendar()}
   if(e.target.closest("[data-ownership-budget-cancel]"))closeOwnershipBudgetEditor();
   if(e.target.closest("[data-ownership-commitment-add]"))openOwnershipCommitmentEditor();
   if(e.target.closest("[data-ownership-commitment-cancel]"))closeOwnershipCommitmentEditor();
@@ -1911,6 +1929,7 @@ $("#addInventoryItem").onclick=()=>openInventoryEditor();
 $("#addUpgradeProject").onclick=()=>openUpgradeEditor();
 $("#exportOwnershipCosts").onclick=exportOwnershipCostCsv;
 $("#exportOwnershipAnnualReview").onclick=exportOwnershipAnnualReview;
+$("#exportOwnershipCalendar").onclick=exportOwnershipCalendar;
 $("#editOwnershipBudget").onclick=openOwnershipBudgetEditor;
 $("#ownershipBudgetForm").addEventListener("submit",saveOwnershipBudget);
 $("#ownershipCommitmentForm").addEventListener("submit",saveOwnershipCommitment);

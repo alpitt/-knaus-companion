@@ -1,6 +1,6 @@
 {
-  "version": "7.5.0",
-  "releaseName": "Commitment Ledger",
+  "version": "7.6.0",
+  "releaseName": "Ownership Calendar",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -175,7 +175,11 @@
     "Inspectable payment ledger for every ownership commitment",
     "Backdated fixed-cost payment entry",
     "Payment correction and deletion",
-    "Per-commitment lifetime and current-year paid totals"
+    "Per-commitment lifetime and current-year paid totals",
+    "Combined 12-month ownership calendar",
+    "Payment, document-expiry and scheduled-maintenance events",
+    "Overdue timeline and source filters",
+    "Downloadable iCalendar export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
