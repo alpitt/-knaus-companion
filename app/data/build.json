@@ -1,6 +1,6 @@
 {
-  "version": "10.1.0",
-  "releaseName": "Seasonal Plans",
+  "version": "10.2.0",
+  "releaseName": "Seasonal Calendar",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -252,7 +252,11 @@
     "Per-mode seasonal target dates",
     "Persistent seasonal working notes",
     "Overdue incomplete-plan Operations Dashboard alerts",
-    "Plan state included in application backups"
+    "Plan state included in application backups",
+    "Seasonal target-date timeline",
+    "Overdue and completed plan states",
+    "Direct calendar navigation to each seasonal mode",
+    "Seasonal iCalendar export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

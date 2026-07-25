@@ -677,3 +677,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .seasonal-plan{display:grid;grid-template-columns:minmax(180px,.55fr) minmax(170px,.35fr) minmax(240px,1fr) auto;align-items:end;gap:12px;margin-bottom:14px}.seasonal-plan h2{margin:.3rem 0}.seasonal-plan label{display:grid;gap:6px;font-weight:750}.seasonal-plan textarea{min-height:72px}
 @media(max-width:900px){.seasonal-plan{grid-template-columns:1fr 1fr}.seasonal-plan>div,.seasonal-plan label:last-of-type{grid-column:1/-1}}@media(max-width:560px){.seasonal-plan{grid-template-columns:1fr}.seasonal-plan>*{grid-column:1!important}.seasonal-plan button{width:100%}}
 
+/* v10.2 seasonal calendar */
+.seasonal-calendar{display:grid;gap:8px}.seasonal-calendar-event{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:11px;width:100%;color:var(--text);text-align:left}.seasonal-calendar-event>span:nth-child(2){display:grid;gap:4px}.seasonal-calendar-event small{color:var(--muted)}.seasonal-calendar-event.overdue{border-left:5px solid #dc2626}.seasonal-calendar-event.complete{border-left:5px solid #16a34a}
+@media(max-width:600px){.seasonal-calendar-block .section-heading{display:grid}.seasonal-calendar-block .section-heading button{width:100%}}
+

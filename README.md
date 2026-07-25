@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 10.2.0 adds the Seasonal Calendar. Review target dates and completion state for storage, winterisation and reactivation plans, jump directly to each checklist and export incomplete upcoming plans as iCalendar reminders.
+
 Version 10.1.0 adds Seasonal Plans. Give each storage, winterisation and reactivation checklist its own target date and working notes; incomplete plans that pass their target appear on the Operations Dashboard, and all planning data remains in offline backups.
 
 Version 10.0.0 begins Seasonal Care with a dedicated offline centre. Work through storage preparation, winterisation and seasonal reactivation checklists, retain progress independently for each mode, see completion scores and open the relevant electrical, water, gas, vehicle, maintenance or touring guidance directly from each task.

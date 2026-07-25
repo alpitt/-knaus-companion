@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 10.1.0</title>
+  <title>Knaus Companion 10.2.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=10.1.0-plans">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=10.2.0-calendar">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 10.1.0</span>
+        <span>Version 10.2.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -218,6 +218,7 @@
         <section class="panel seasonal-progress"><div><span class="eyebrow">Checklist progress</span><h2 id="seasonalTitle">Storage preparation</h2><p id="seasonalDetail"></p></div><strong id="seasonalScore">0%</strong><div class="touring-progress-bar"><span id="seasonalBar"></span></div></section>
         <form id="seasonalPlanForm" class="panel seasonal-plan"><div><span class="eyebrow">Seasonal plan</span><h2>Target and notes</h2></div><label>Target date<input id="seasonalPlanTarget" name="targetDate" type="date"></label><label>Working notes<textarea id="seasonalPlanNotes" name="notes" maxlength="1600" placeholder="Storage location, supplies needed, access arrangements or follow-up"></textarea></label><button class="primary-btn" type="submit">Save plan</button></form>
         <div id="seasonalChecklist" class="seasonal-checklist"></div>
+        <section class="section-block seasonal-calendar-block"><div class="section-heading"><div><span class="eyebrow">Seasonal calendar</span><h2>Plan targets</h2></div><button class="secondary-btn" id="exportSeasonalCalendar">Export calendar</button></div><div id="seasonalCalendar" class="seasonal-calendar"></div></section>
       </section>
 
       <section class="screen" data-screen="diagnostics">
@@ -979,7 +980,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=10.1.0-plans"></script>
+  <script src="assets/js/app-v4.js?v=10.2.0-calendar"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
