@@ -1,6 +1,6 @@
 {
-  "version": "11.3.0",
-  "releaseName": "Seasonal Bulk Actions",
+  "version": "11.4.0",
+  "releaseName": "Cross-Mode Task Assignment",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -300,7 +300,11 @@
     "Complete all visible custom seasonal tasks",
     "Reopen all visible custom seasonal tasks",
     "Bulk actions preserve filtered-out and other-mode tasks",
-    "Dashboard alerts refresh after bulk updates"
+    "Dashboard alerts refresh after bulk updates",
+    "Create custom tasks for any seasonal mode",
+    "Move existing tasks between seasonal modes",
+    "Moved tasks preserve completion, priority and due dates",
+    "Mode reassignment refreshes reports, calendars and alerts"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

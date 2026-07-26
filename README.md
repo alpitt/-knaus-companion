@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 11.4.0 adds Cross-Mode Task Assignment. Create custom work for any seasonal workflow or move an existing task between storage, winterisation and reactivation while preserving completion, priority, dates and downstream reporting.
+
 Version 11.3.0 adds Seasonal Bulk Actions. Complete or reopen every task in the current filtered view together while leaving filtered-out tasks and other seasonal modes unchanged, then refresh dashboard alerts immediately.
 
 Version 11.2.0 adds Seasonal Task Filters. Focus each seasonal mode on all, open, due, high-priority or completed custom work with live counts, an accessible result summary and clear filter-aware empty states.
