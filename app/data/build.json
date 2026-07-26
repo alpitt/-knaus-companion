@@ -1,6 +1,6 @@
 {
-  "version": "12.6.0",
-  "releaseName": "Printable Heating Report",
+  "version": "12.7.0",
+  "releaseName": "Heating Service Schedule",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -342,7 +342,11 @@
     "Dated portable heating evidence files",
     "Print-ready heating system report",
     "Configuration and readiness workshop handoff",
-    "Complete dated heating test evidence table"
+    "Complete dated heating test evidence table",
+    "Persistent heating service schedule",
+    "Calculated recurring heating service due dates",
+    "Overdue and due-soon heating service dashboard alerts",
+    "Heating service details in evidence exports and backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

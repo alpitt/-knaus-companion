@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 12.6.0</title>
+  <title>Knaus Companion 12.7.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=12.6.0-heating-report">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=12.7.0-heating-service">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 12.6.0</span>
+        <span>Version 12.7.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -423,6 +423,7 @@
         <div class="gas-emergency" role="note"><strong>If a CO alarm sounds or combustion fumes are suspected</strong><span>Switch the appliance off only if safe, ventilate, evacuate and obtain competent help. Never obstruct heater air inlets, outlets or the external flue.</span></div>
         <form id="heatingProfileForm" class="panel heating-profile-form"><div class="section-heading"><div><span class="eyebrow">Fitted equipment</span><h2>Heating configuration</h2></div><span id="heatingProfileStatus" class="meta">Not confirmed</span></div><div class="heating-profile-grid"><label>Appliance / model<input id="heatingProfileAppliance" name="appliance" maxlength="100" placeholder="Confirm from appliance label"></label><label>Energy type<select id="heatingProfileEnergy" name="energy"><option value="">Not confirmed</option><option>LPG</option><option>Diesel</option><option>Electric</option><option>Dual fuel</option><option>Other</option></select></label><label>Controller<input id="heatingProfileController" name="controller" maxlength="100" placeholder="Controller model or type"></label><label>Appliance location<input id="heatingProfileLocation" name="location" maxlength="120" placeholder="Locker, seat base or wardrobe"></label></div><label>Configuration notes<textarea id="heatingProfileNotes" name="notes" rows="2" maxlength="600" placeholder="Fuel isolation, fuse reference, outlet or frost-protection notes"></textarea></label><button class="primary-btn" type="submit">Save heating configuration</button></form>
         <section class="panel heating-readiness"><div class="section-heading"><div><span class="eyebrow">Before starting</span><h2>Heating readiness</h2></div><strong id="heatingReadinessScore">0%</strong></div><div class="progress"><span id="heatingReadinessBar"></span></div><div id="heatingReadinessChecklist" class="seasonal-checklist"></div></section>
+        <form id="heatingServiceForm" class="panel heating-profile-form heating-service-form"><div class="section-heading"><div><span class="eyebrow">Planned care</span><h2>Heating service schedule</h2></div><span id="heatingServiceStatus" class="meta">Service baseline not recorded</span></div><div class="heating-profile-grid"><label>Last service<input id="heatingServiceLastDate" name="lastService" type="date" required></label><label>Interval (months)<input id="heatingServiceInterval" name="intervalMonths" type="number" min="1" max="120" value="12" required></label><label>Provider<input id="heatingServiceProvider" name="provider" maxlength="120" placeholder="Workshop or technician"></label><label>Reference<input id="heatingServiceReference" name="reference" maxlength="100" placeholder="Invoice or certificate"></label></div><label>Service notes<textarea id="heatingServiceNotes" name="notes" rows="2" maxlength="600" placeholder="Work completed, parts fitted or next-service instructions"></textarea></label><button class="primary-btn" type="submit">Save service schedule</button></form>
         <section class="heating-runs"><div class="section-heading"><div><span class="eyebrow">Operational evidence</span><h2>Heating test runs</h2></div><span id="heatingRunSummary" class="meta">No tests recorded</span></div><form id="heatingRunForm" class="panel heating-run-form"><label>Test date<input id="heatingRunDate" name="date" type="date" required></label><label>Mode<select name="mode"><option>Space heating</option><option>Hot water</option><option>Combined</option><option>Fan only</option></select></label><label>Duration (minutes)<input name="duration" type="number" min="1" max="600" value="20" required></label><label>Result<select name="result"><option value="normal">Normal</option><option value="monitor">Monitor</option><option value="action">Action required</option></select></label><label>Fault code<input name="faultCode" maxlength="40" placeholder="Optional"></label><label class="heating-run-notes">Observations<textarea name="notes" rows="2" maxlength="600" placeholder="Start-up, airflow, temperature, noise or shutdown observations"></textarea></label><button class="primary-btn" type="submit">Record test run</button></form><div id="heatingRunInsights" class="status-grid heating-run-insights" aria-label="Heating test insights"></div><div class="heating-run-toolbar"><div id="heatingRunFilters" class="chips" aria-label="Filter heating test runs"></div><span id="heatingRunResultCount" aria-live="polite">No test runs</span></div><div class="heating-run-export-actions"><button id="printHeatingReport" class="primary-btn" type="button">Print heating report</button><button id="exportHeatingRuns" class="secondary-btn" type="button">Export visible CSV</button><button id="exportHeatingEvidence" class="secondary-btn" type="button">Export evidence JSON</button></div><div id="heatingRunHistory" class="heating-run-history"></div></section>
         <div class="system-toolbar panel"><div><strong>Show heating path</strong><p>Select a view, then choose a component for its role, location, user checks and linked system guidance.</p></div><div id="heatingFilters" class="chips" aria-label="Filter heating diagram"></div></div>
         <div id="heatingSummary" class="status-grid"></div>
@@ -994,7 +995,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=12.6.0-heating-report"></script>
+  <script src="assets/js/app-v4.js?v=12.7.0-heating-service"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
