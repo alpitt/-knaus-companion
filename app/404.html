@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 12.9.0</title>
+  <title>Knaus Companion 13.0.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=12.9.0-heating-calendar">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=13.0.0-refrigeration">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 12.9.0</span>
+        <span>Version 13.0.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -428,6 +428,14 @@
         <div class="system-toolbar panel"><div><strong>Show heating path</strong><p>Select a view, then choose a component for its role, location, user checks and linked system guidance.</p></div><div id="heatingFilters" class="chips" aria-label="Filter heating diagram"></div></div>
         <div id="heatingSummary" class="status-grid"></div>
         <div class="electrical-layout heating-layout"><section class="panel electrical-map-panel" aria-label="Heating system map"><div class="electrical-legend" id="heatingLegend"></div><div class="electrical-map" id="heatingMap"></div></section><aside class="panel electrical-inspector" id="heatingInspector" aria-live="polite"></aside></div>
+      </section>
+
+      <section class="screen" data-screen="refrigeration">
+        <div class="page-head"><span class="eyebrow">Interactive systems</span><h1>Refrigeration system</h1><p>Trace controls, supported energy paths, cabinet cooling and exterior ventilation without assuming the fitted refrigerator model.</p></div>
+        <div class="gas-emergency" role="note"><strong>If gas smell, fumes, soot or heat damage is suspected</strong><span>Switch the refrigerator off only if safe, isolate the relevant energy source, ventilate, keep ignition sources away and obtain competent help.</span></div>
+        <div class="system-toolbar panel"><div><strong>Show refrigeration path</strong><p>Select a view, then choose a component for its role, location, safe checks and linked system guidance.</p></div><div id="refrigerationFilters" class="chips" aria-label="Filter refrigeration diagram"></div></div>
+        <div id="refrigerationSummary" class="status-grid"></div>
+        <div class="electrical-layout refrigeration-layout"><section class="panel electrical-map-panel" aria-label="Refrigeration system map"><div class="electrical-legend" id="refrigerationLegend"></div><div class="electrical-map" id="refrigerationMap"></div></section><aside class="panel electrical-inspector" id="refrigerationInspector" aria-live="polite"></aside></div>
       </section>
 
       <section class="screen" data-screen="workshop">
@@ -995,7 +1003,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=12.9.0-heating-calendar"></script>
+  <script src="assets/js/app-v4.js?v=13.0.0-refrigeration"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

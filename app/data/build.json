@@ -1,6 +1,6 @@
 {
-  "version": "12.9.0",
-  "releaseName": "Heating Service Calendar Export",
+  "version": "13.0.0",
+  "releaseName": "Interactive Refrigeration System",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -354,7 +354,12 @@
     "Heating next-service iCalendar export",
     "All-day portable service due event",
     "Provider, reference and notes in calendar detail",
-    "Built-in 30-day heating service reminder"
+    "Built-in 30-day heating service reminder",
+    "Dedicated interactive refrigeration system route",
+    "Control, energy, cooling, ventilation and safety views",
+    "Nine inspectable configuration-neutral refrigerator components",
+    "12 V, 230 V and LPG energy-path guidance",
+    "Refrigeration access from home, navigation and workshop mode"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
