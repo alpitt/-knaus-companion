@@ -1,6 +1,6 @@
 {
-  "version": "13.2.0",
-  "releaseName": "Refrigeration Readiness",
+  "version": "13.3.0",
+  "releaseName": "Refrigeration Cooling Tests",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -369,7 +369,12 @@
     "Live refrigeration readiness score and progress",
     "Levelling, ventilation, energy, seal, cool-down and temperature checks",
     "Direct guidance from every refrigeration readiness item",
-    "Refrigeration readiness state included in backups"
+    "Refrigeration readiness state included in backups",
+    "Dated refrigeration cooling test records",
+    "Energy mode, duration and start/end temperature capture",
+    "Normal, monitor and action-required refrigeration outcomes",
+    "Refrigeration test history retained in offline backups",
+    "Latest non-normal refrigeration result on the Operations Dashboard"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

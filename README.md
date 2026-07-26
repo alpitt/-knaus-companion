@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 13.3.0 adds Refrigeration Cooling Tests. Record dated operational tests with energy mode, duration, start and end cabinet temperatures, outcome and observations, retain offline history, and surface the latest monitor or action-required result on the Operations Dashboard.
+
 Version 13.2.0 adds Refrigeration Readiness. Complete a persistent six-point pre-operation sequence for vehicle levelling, exterior vents, energy mode, door seal, cool-down time and verified cabinet temperature with a live score and direct guidance.
 
 Version 13.1.0 adds the Refrigeration Configuration Profile. Record the fitted model, cooling technology, supported energy modes, installation location and operating notes offline, track completeness, and show owner-confirmed context throughout component inspection.
