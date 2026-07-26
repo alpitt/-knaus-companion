@@ -1,6 +1,6 @@
 {
-  "version": "13.9.1",
-  "releaseName": "Electrical Measurement Layout Refinement",
+  "version": "13.10.0",
+  "releaseName": "Electrical Measurement Insights",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -396,7 +396,9 @@
     "Test-point, value, unit, condition and observation capture",
     "Electrical measurements in offline search, backups and evidence exports",
     "Container-safe electrical measurement form",
-    "Desktop, tablet and mobile measurement control reflow"
+    "Desktop, tablet and mobile measurement control reflow",
+    "Electrical measurement activity insights",
+    "Voltage, current, temperature and other reading filters"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
