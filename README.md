@@ -2,6 +2,14 @@
 
 GitHub Pages host for the preserved Knaus Companion Ultimate workshop application.
 
+## Vehicle evidence statuses
+
+Vehicle-specific configuration uses six evidence states. **Confirmed from vehicle plate** has the highest confidence, followed by **Owner confirmed**, **Confirmed from photograph**, **Manufacturer manual reference**, **Estimated**, and **Unknown**. This priority helps compare confidence only; it never silently replaces one recorded value with another. A manual reference describes manufacturer information and does not by itself confirm what is fitted to this vehicle.
+
+## Data compatibility
+
+The browser storage key remains `knaus-ultimate-v1`. Saved states and backups without a schema version are treated as schema version 1 and migrated non-destructively in memory to schema version 2. Existing plain vehicle-configuration strings and numbers retain their values with Unknown evidence, and both version-1 and version-2 backups remain importable. Exporting a backup before a major update remains recommended.
+
 ## Preserved content checks
 
 The deployment workflow refuses to publish unless the package contains:
@@ -13,13 +21,15 @@ The deployment workflow refuses to publish unless the package contains:
 
 ## Publish or update
 
-Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` branch. The GitHub Pages workflow extracts, validates and deploys it automatically.
+`main` is production. Make changes on a dedicated release branch and preserve compatibility with existing offline data. The deployed source is `app/`; after a reviewed release is merged, GitHub Actions validates it and publishes GitHub Pages. The former `Knaus_Companion_Ultimate_v1.0.zip` upload process is legacy and must not be used for current releases.
 
 ## Expected site address
 
 `https://alpitt.github.io/-knaus-companion/`
 
 ## Current release
+
+Version 13.7.0 adds the Vehicle Identity and Evidence Framework. Vehicle configuration values now carry explicit confidence, source, verification date and notes, with schema-version-2 migration, evidence-aware search and assistant answers, and compatible backups and reports.
 
 Version 13.6.0 adds a print-ready Refrigeration System Report. Create a workshop handoff containing the fitted configuration, pre-operation readiness and a complete cooling-test table with start, end and calculated temperature-drop evidence.
 

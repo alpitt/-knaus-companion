@@ -1,6 +1,6 @@
 {
-  "version": "13.6.0",
-  "releaseName": "Refrigeration System Report",
+  "version": "13.7.0",
+  "releaseName": "Vehicle Identity and Evidence Framework",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -384,7 +384,11 @@
     "Dated portable refrigeration evidence files",
     "Print-ready refrigeration system report",
     "Configuration and readiness workshop handoff",
-    "Complete cooling-test table with calculated temperature drop"
+    "Complete cooling-test table with calculated temperature drop",
+    "Central vehicle evidence status and confidence model",
+    "Non-destructive schema-version-2 saved-state migration",
+    "Evidence-aware vehicle configuration editing, search and assistant answers",
+    "Evidence-preserving backups, restores and existing JSON reports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
