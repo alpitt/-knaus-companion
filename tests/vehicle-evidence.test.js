@@ -1,0 +1,64 @@
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const vm=require("node:vm");
+
+const source=fs.readFileSync("app/assets/js/app-v4.js","utf8");
+const html=fs.readFileSync("app/index.html","utf8");
+const css=fs.readFileSync("app/assets/css/app-v4.css","utf8");
+
+function extract(start,end){const from=source.indexOf(start),to=source.indexOf(end,from);assert.ok(from>=0&&to>from,`extract ${start}`);return source.slice(from,to)}
+const modelSource=[
+  extract("const EVIDENCE_STATUSES=","const DEFAULT_STATE="),
+  extract("const DEFAULT_STATE=","const DATA="),
+  extract("function normaliseEvidence(","function loadState()"),
+  extract("function vehicleEvidenceAnswer(","function renderResults("),
+  extract("function parseBackupText(","async function restoreBackup(")
+].join("\n");
+const context={};vm.runInNewContext(`${modelSource}\nthis.api={EVIDENCE_STATUSES,VEHICLE_EVIDENCE_BASELINE,DEFAULT_STATE,normaliseEvidence,evidenceValue,migrateEvidenceState,parseBackupText,vehicleEvidenceAnswer}`,context);
+const {EVIDENCE_STATUSES,normaliseEvidence,migrateEvidenceState,parseBackupText,vehicleEvidenceAnswer}=context.api;
+
+test("status values and confidence order are exact",()=>{
+  assert.deepEqual(Object.keys(EVIDENCE_STATUSES),["owner-confirmed","photograph-confirmed","plate-confirmed","manual-reference","estimated","unknown"]);
+  assert.deepEqual(Object.entries(EVIDENCE_STATUSES).sort((a,b)=>a[1].priority-b[1].priority).map(([key])=>key),["plate-confirmed","owner-confirmed","photograph-confirmed","manual-reference","estimated","unknown"]);
+  assert.deepEqual(Object.values(EVIDENCE_STATUSES).map(item=>item.label),["Owner confirmed","Confirmed from photograph","Confirmed from vehicle plate","Manufacturer manual reference","Estimated","Unknown"]);
+});
+
+test("schema v1 primitives migrate non-destructively and idempotently",()=>{
+  const old={vehicleProfile:{make:"Custom make",model:"Custom model"},vehicleConfiguration:{charger:"Legacy charger",year:2008},logs:[{id:"keep-me"}],faults:[{id:"fault-1"}]};
+  const migrated=migrateEvidenceState(old),again=migrateEvidenceState(migrated);
+  assert.equal(migrated.schemaVersion,2);assert.equal(migrated.vehicleConfiguration.charger.value,"Legacy charger");assert.equal(migrated.vehicleConfiguration.charger.status,"unknown");assert.equal(migrated.vehicleConfiguration.year.value,2008);assert.equal(migrated.vehicleConfiguration.make.value,"Custom make");assert.deepEqual(migrated.logs,old.logs);assert.deepEqual(migrated.faults,old.faults);assert.deepEqual(again.vehicleConfiguration,migrated.vehicleConfiguration);
+});
+
+test("all evidence metadata survives normalisation and reload migration",()=>{
+  for(const status of Object.keys(EVIDENCE_STATUSES)){
+    const evidence=normaliseEvidence({value:"Test value",status,source:"Test source",lastVerified:"2026-07-26",notes:"Test notes"});
+    const migrated=migrateEvidenceState({schemaVersion:2,vehicleConfiguration:{test:evidence}}).vehicleConfiguration.test;
+    assert.deepEqual(migrated,evidence);assert.equal(migrated.status,status);
+  }
+});
+
+test("baseline values are evidence-aware and never replace existing values",()=>{
+  const state=migrateEvidenceState({vehicleConfiguration:{charger:"Owner charger"}});
+  assert.equal(state.vehicleConfiguration.charger.value,"Owner charger");assert.equal(state.vehicleConfiguration.charger.status,"unknown");
+  assert.equal(state.vehicleConfiguration.heating.value,"Truma Trumatic C 4002");assert.equal(state.vehicleConfiguration.heating.status,"photograph-confirmed");
+  assert.equal(state.vehicleConfiguration.fridge.status,"unknown");
+});
+
+test("schema v1 and v2 backups restore while invalid JSON is rejected",()=>{
+  const v1=parseBackupText(JSON.stringify({state:{vehicleConfiguration:{engine:"Legacy engine"},logs:[{id:"v1-log"}]}}));
+  const v2=parseBackupText(JSON.stringify({schemaVersion:2,state:{schemaVersion:2,vehicleConfiguration:{engine:{value:"Verified engine",status:"plate-confirmed",source:"Engine plate",lastVerified:"2026-07-26",notes:""}},logs:[{id:"v2-log"}]}}));
+  assert.equal(v1.vehicleConfiguration.engine.value,"Legacy engine");assert.equal(v1.vehicleConfiguration.engine.status,"unknown");assert.equal(v1.logs[0].id,"v1-log");
+  assert.equal(v2.vehicleConfiguration.engine.status,"plate-confirmed");assert.equal(v2.vehicleConfiguration.engine.source,"Engine plate");assert.equal(v2.logs[0].id,"v2-log");
+  assert.throws(()=>parseBackupText("not json"),/Backup could not be read/);assert.throws(()=>parseBackupText("[]"),/structure is invalid/);
+});
+
+test("assistant distinguishes confirmed, estimated, unknown and manual evidence",()=>{
+  const field={label:"Charger"},answer=status=>vehicleEvidenceAnswer({field,evidence:{value:"Example",status,source:"Evidence source",notes:"Confirm from plate"}});
+  assert.match(answer("photograph-confirmed"),/confirmed from photograph/);assert.match(answer("estimated"),/estimated/);assert.match(answer("unknown"),/currently unknown/);assert.match(answer("manual-reference"),/does not confirm the equipment fitted/);
+});
+
+test("production integrations retain compatibility controls",()=>{
+  assert.match(source,/const STORE_KEY="knaus-ultimate-v1"/);assert.match(source,/schemaVersion:2/);assert.match(source,/state:\{\.\.\.state,schemaVersion:2\}/);assert.match(source,/const safetyCopy=state/);assert.match(source,/function vehicleEvidenceAnswer\(/);assert.match(source,/function evidenceBadge\(/);
+  assert.match(html,/Version 13\.7\.0/);for(const route of ["home","manuals","maintenance","diagnostics","workshop","heating","refrigeration","touring","vehicle","compliance","emergency","seasonal","settings"])assert.match(html,new RegExp(`data-screen="${route}"`));assert.match(source,/DATA\.chapters\.forEach/);assert.match(source,/DATA\.pages\.forEach/);assert.match(css,/@media\(max-width:620px\).*configuration-evidence-editor/s);assert.match(css,/\.evidence-badge/);
+});

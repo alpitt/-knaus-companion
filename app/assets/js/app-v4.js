@@ -2091,10 +2091,14 @@ function exportBackup(){
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-companion-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
-async function restoreBackup(file){
-  let payload;try{payload=JSON.parse(await file.text())}catch{throw new Error("Backup could not be read. Choose a valid Knaus Companion JSON backup.")}
+function parseBackupText(text){
+  let payload;try{payload=JSON.parse(text)}catch{throw new Error("Backup could not be read. Choose a valid Knaus Companion JSON backup.")}
   const incoming=payload?.state||payload;if(!incoming||typeof incoming!=="object"||Array.isArray(incoming))throw new Error("Backup structure is invalid. No data was changed.");
-  const safetyCopy=state;try{const restored=migrateEvidenceState(incoming);if(!restored.vehicleConfiguration||restored.schemaVersion!==2)throw new Error("migration");state=restored;saveState()}catch{state=safetyCopy;throw new Error("Backup restore failed. Your current data was left unchanged.")}
+  return migrateEvidenceState(incoming);
+}
+async function restoreBackup(file){
+  const safetyCopy=state;let restored;try{restored=parseBackupText(await file.text())}catch(error){state=safetyCopy;throw error}
+  try{if(!restored.vehicleConfiguration||restored.schemaVersion!==2)throw new Error("migration");state=restored;saveState()}catch{state=safetyCopy;throw new Error("Backup restore failed. Your current data was left unchanged.")}
   toast("Backup restored");setTimeout(()=>location.reload(),600);
 }
 async function clearCache(){
