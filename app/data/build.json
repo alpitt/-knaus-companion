@@ -1,6 +1,6 @@
 {
-  "version": "13.9.0",
-  "releaseName": "Electrical Measurement Evidence",
+  "version": "13.9.1",
+  "releaseName": "Electrical Measurement Layout Refinement",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -394,7 +394,9 @@
     "Schema-version-2 electrical component and connection evidence export",
     "Dated electrical readings linked to digital-twin components",
     "Test-point, value, unit, condition and observation capture",
-    "Electrical measurements in offline search, backups and evidence exports"
+    "Electrical measurements in offline search, backups and evidence exports",
+    "Container-safe electrical measurement form",
+    "Desktop, tablet and mobile measurement control reflow"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
