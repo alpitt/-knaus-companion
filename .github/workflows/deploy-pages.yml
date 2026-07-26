@@ -34,7 +34,11 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 11.5.0' app/index.html
+          grep -q 'Version 12.0.0' app/index.html
+          grep -q 'data-screen="heating"' app/index.html
+          grep -q 'id="heatingFilters"' app/index.html
+          grep -q 'id="heatingMap"' app/index.html
+          grep -q 'id="heatingInspector"' app/index.html
           grep -q 'id="seasonalCustomTaskMode"' app/index.html
           grep -q 'id="completeVisibleSeasonalTasks"' app/index.html
           grep -q 'id="reopenVisibleSeasonalTasks"' app/index.html
@@ -178,7 +182,11 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="11.5.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="12.0.0"' app/assets/js/app-v4.js
+          grep -q 'const HEATING_COMPONENTS=' app/assets/js/app-v4.js
+          grep -q 'function renderHeating()' app/assets/js/app-v4.js
+          grep -q 'function renderHeatingInspector()' app/assets/js/app-v4.js
+          grep -q 'data-heating-component' app/assets/js/app-v4.js
           grep -q 'function duplicateSeasonalCustomTask(id)' app/assets/js/app-v4.js
           grep -q 'data-seasonal-custom-copy' app/assets/js/app-v4.js
           grep -q 'Add copy' app/assets/js/app-v4.js
