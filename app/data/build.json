@@ -1,6 +1,6 @@
 {
-  "version": "13.1.0",
-  "releaseName": "Refrigeration Configuration Profile",
+  "version": "13.2.0",
+  "releaseName": "Refrigeration Readiness",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -364,7 +364,12 @@
     "Refrigerator model, technology, energy-mode and location capture",
     "Refrigeration configuration completeness status",
     "Owner-confirmed context in refrigeration component inspection",
-    "Refrigeration notes included in application backups"
+    "Refrigeration notes included in application backups",
+    "Persistent six-point refrigeration readiness checklist",
+    "Live refrigeration readiness score and progress",
+    "Levelling, ventilation, energy, seal, cool-down and temperature checks",
+    "Direct guidance from every refrigeration readiness item",
+    "Refrigeration readiness state included in backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

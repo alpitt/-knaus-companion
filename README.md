@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 13.2.0 adds Refrigeration Readiness. Complete a persistent six-point pre-operation sequence for vehicle levelling, exterior vents, energy mode, door seal, cool-down time and verified cabinet temperature with a live score and direct guidance.
+
 Version 13.1.0 adds the Refrigeration Configuration Profile. Record the fitted model, cooling technology, supported energy modes, installation location and operating notes offline, track completeness, and show owner-confirmed context throughout component inspection.
 
 Version 13.0.0 begins Interactive Refrigeration. Trace configuration-neutral control, 12 V, 230 V, LPG, cooling, door-seal, exterior-ventilation and combustion-flue paths through nine inspectable components with user-level checks and cross-system guidance.
