@@ -1,5 +1,5 @@
 
-const APP_VERSION="13.7.0";
+const APP_VERSION="13.8.0";
 const STORE_KEY="knaus-ultimate-v1";
 const EVIDENCE_STATUSES=Object.freeze({"owner-confirmed":{label:"Owner confirmed",priority:2},"photograph-confirmed":{label:"Confirmed from photograph",priority:3},"plate-confirmed":{label:"Confirmed from vehicle plate",priority:1},"manual-reference":{label:"Manufacturer manual reference",priority:4},estimated:{label:"Estimated",priority:5},unknown:{label:"Unknown",priority:6}});
 const VEHICLE_EVIDENCE_BASELINE=Object.freeze({make:{value:"Knaus",status:"owner-confirmed",source:"Owner vehicle identification",notes:"Existing confirmed make"},model:{value:"Sun Traveller",status:"owner-confirmed",source:"Owner vehicle identification"},exactModel:{value:"Sun-Traveller 550 D",status:"estimated",source:"Knaus manual layout and vehicle evidence",notes:"Probable model; confirm from build plate or original vehicle documentation"},year:{value:2009,status:"owner-confirmed",source:"Vehicle registration details"},baseVehicle:{value:"Fiat Ducato X250",status:"estimated",source:"Vehicle age and observed cab generation",notes:"Confirm from vehicle identification documentation"},engine:{value:"2.3 Multijet 120",status:"estimated",source:"Owner information",notes:"Confirm from VIN, engine code or official vehicle documentation"},charger:{value:"Calira EVS 30/20-DS/U",status:"photograph-confirmed",source:"Installed equipment photograph"},mainFuseBox:{value:"Calira VB 06-1",status:"photograph-confirmed",source:"Installed equipment photograph"},leisureBattery:{value:"Exide EK960 AGM 96 Ah",status:"photograph-confirmed",source:"Battery label photograph"},starterBatteryLocation:{value:"Cab floor battery compartment",status:"photograph-confirmed",source:"Installed battery photograph"},heating:{value:"Truma Trumatic C 4002",status:"photograph-confirmed",source:"Installed appliance and control photographs"},fridgeManufacturer:{value:"Dometic",status:"photograph-confirmed",source:"Refrigerator photograph"},fridgeType:{value:"AES absorption refrigerator",status:"photograph-confirmed",source:"Refrigerator control photograph"},fridge:{value:"Unknown",status:"unknown",source:"",notes:"Confirm from refrigerator data plate"}});
@@ -1291,33 +1291,39 @@ function electricalView(component){
   return "12v";
 }
 function electricalComponents(){return DATA.electrical.filter(component=>electricalFilter==="all"||electricalView(component)===electricalFilter)}
+const ELECTRICAL_EVIDENCE_FIELDS=Object.freeze({"starter-battery":"starterBattery","leisure-battery":"leisureBattery","calira-evs":"charger",vb06:"mainFuseBox",vb04:"auxFuseBox",anker:"portablePower","smartshunt-future":"batteryMonitor","orion-xs-future":"dcDc"});
+function electricalComponentEvidence(component){const field=ELECTRICAL_EVIDENCE_FIELDS[component.id];if(field&&state.vehicleConfiguration?.[field])return {...normaliseEvidence(state.vehicleConfiguration[field]),field};const planned=electricalView(component)==="future";return {...normaliseEvidence({value:component.name,status:planned?"estimated":"unknown",source:planned?"Electrical upgrade plan":"Electrical reference dataset",notes:planned?"Planned equipment is not confirmed as fitted.":"Confirm the fitted component from its label, vehicle plate or photograph."}),field:""}}
+function electricalEvidenceData(){return{app:"Knaus Companion",version:APP_VERSION,schemaVersion:2,generatedAt:new Date().toISOString(),statusDefinitions:EVIDENCE_STATUSES,components:DATA.electrical.map(component=>({id:component.id,name:component.name,category:component.category,location:component.location,voltage:component.voltage,evidence:electricalComponentEvidence(component)})),connections:DATA.electricalRelations.map(link=>({...link}))}}
+function exportElectricalEvidence(){const report=electricalEvidenceData(),blob=new Blob([JSON.stringify(report,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`knaus-electrical-evidence-${report.generatedAt.slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Electrical evidence pack exported")}
 function renderElectricalInspector(){
   const component=DATA.electrical.find(item=>item.id===activeElectricalComponent)||electricalComponents()[0];
   if(!component){$("#electricalInspector").innerHTML="<h2>Electrical data unavailable</h2><p>Reload the app while online to restore the installed reference data.</p>";return}
   activeElectricalComponent=component.id;
   const related=DATA.electricalRelations.filter(link=>link.from===component.id||link.to===component.id);
-  const readings=component.normalReadings||[component.expected].filter(Boolean);
+  const readings=component.normalReadings||[component.expected].filter(Boolean),evidence=electricalComponentEvidence(component);
   $("#electricalInspector").innerHTML=`
     <span class="meta">${esc(component.category||"Electrical component")}</span><h2>${esc(component.name)}</h2>
+    <section class="electrical-evidence-context">${evidenceBadge(evidence)}<strong>${esc(String(evidence.value||component.name))}</strong>${evidence.source?`<small>Source: ${esc(evidence.source)}</small>`:""}${evidence.lastVerified?`<small>Last verified: ${esc(formatTripDate(evidence.lastVerified))}</small>`:""}${evidence.notes?`<p>${esc(evidence.notes)}</p>`:""}</section>
     <div class="diagnostic-meta"><span>${esc(component.status||"Installed")}</span><span>${esc(component.voltage||"12 V DC")}</span></div>
     <p>${esc(component.purpose||"")}</p>
     <dl class="component-facts"><div><dt>Location</dt><dd>${esc(component.location||"Confirm on vehicle")}</dd></div><div><dt>Protection</dt><dd>${esc(component.fuses||"Confirm fitted protection")}</dd></div></dl>
     ${readings.length?`<section class="detail-section"><h3>Normal readings</h3><ul>${readings.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>`:""}
     ${(component.tests||[]).length?`<section class="detail-section"><h3>Checks</h3><ol>${component.tests.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>`:""}
     ${related.length?`<section class="detail-section"><h3>Connected path</h3><ul>${related.map(link=>{const other=DATA.electrical.find(x=>x.id===(link.from===component.id?link.to:link.from));return `<li><strong>${esc(link.from===component.id?"To":"From")} ${esc(other?.name||"component")}</strong><br>${esc(link.label||link.type)}</li>`}).join("")}</ul></section>`:""}
-    <div class="diagnostic-link-row">${(component.chapters||[]).map(n=>`<button class="secondary-btn" data-chapter-nav="${Number(n)}">Chapter ${Number(n)}</button>`).join("")}${(component.officialPages||[]).map(n=>`<button class="secondary-btn" data-manual-nav="${Number(n)}">Manual p. ${Number(n)}</button>`).join("")}</div>`;
+    <div class="diagnostic-link-row">${evidence.field?'<button class="secondary-btn" data-route="vehicle">Edit registry evidence</button>':""}${(component.chapters||[]).map(n=>`<button class="secondary-btn" data-chapter-nav="${Number(n)}">Chapter ${Number(n)}</button>`).join("")}${(component.officialPages||[]).map(n=>`<button class="secondary-btn" data-manual-nav="${Number(n)}">Manual p. ${Number(n)}</button>`).join("")}</div>`;
 }
 function renderElectrical(){
   const filters=[["all","All paths"],["12v","12 V habitation"],["mains","230 V hook-up"],["future","Planned upgrades"]];
   $("#electricalFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${electricalFilter===id?"active":""}" data-electrical-filter="${id}">${label}</button>`).join("");
   const components=electricalComponents(),visibleIds=new Set(components.map(x=>x.id));
   const links=DATA.electricalRelations.filter(x=>visibleIds.has(x.from)&&visibleIds.has(x.to));
-  $("#electricalSummary").innerHTML=[[components.length,"Components"],[links.length,"Visible connections"],[components.filter(x=>x.status==="Confirmed").length,"Confirmed items"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  const evidence=components.map(electricalComponentEvidence),confirmed=evidence.filter(item=>["plate-confirmed","owner-confirmed","photograph-confirmed"].includes(item.status)).length;
+  $("#electricalSummary").innerHTML=[[components.length,"Components"],[links.length,"Visible connections"],[confirmed,"Evidence confirmed"],[evidence.filter(item=>["estimated","unknown"].includes(item.status)).length,"Needs confirmation"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
   $("#electricalLegend").innerHTML=`<span><i class="legend-dot source"></i>Source / storage</span><span><i class="legend-dot distribution"></i>Distribution</span><span><i class="legend-dot load"></i>Load</span><span><i class="legend-dot future"></i>Planned</span>`;
   $("#electricalMap").innerHTML=components.map(component=>{
     const outgoing=links.filter(x=>x.from===component.id);
     const kind=electricalView(component)==="future"?"future":/(battery|hookup|alternator|anker)/.test(component.id)?"source":/(vb0|calira|consumer)/.test(component.id)?"distribution":"load";
-    return `<article class="electrical-node ${kind} ${activeElectricalComponent===component.id?"active":""}"><button data-electrical-component="${esc(component.id)}" aria-pressed="${activeElectricalComponent===component.id}"><span class="meta">${esc(component.voltage||component.category)}</span><strong>${esc(component.name)}</strong><small>${esc(component.fuses||component.status||"")}</small></button>${outgoing.map(link=>{const target=DATA.electrical.find(x=>x.id===link.to);return `<button class="power-link" data-electrical-component="${esc(link.to)}"><span>${esc(link.label||link.type)}</span><b>→ ${esc(target?.name||link.to)}</b></button>`}).join("")}</article>`;
+    const evidence=electricalComponentEvidence(component);return `<article class="electrical-node ${kind} ${activeElectricalComponent===component.id?"active":""}"><button data-electrical-component="${esc(component.id)}" aria-pressed="${activeElectricalComponent===component.id}"><span class="meta">${esc(component.voltage||component.category)}</span><strong>${esc(component.name)}</strong>${evidenceBadge(evidence)}<small>${esc(component.fuses||component.status||"")}</small></button>${outgoing.map(link=>{const target=DATA.electrical.find(x=>x.id===link.to);return `<button class="power-link" data-electrical-component="${esc(link.to)}"><span>${esc(link.label||link.type)}</span><b>→ ${esc(target?.name||link.to)}</b></button>`}).join("")}</article>`;
   }).join("")||`<article class="panel"><p>No components match this view.</p></article>`;
   renderElectricalInspector();
 }
@@ -2380,6 +2386,7 @@ $("#printRefrigerationReport").onclick=printRefrigerationReport;
 $("#heatingRunForm").addEventListener("submit",saveHeatingRun);
 $("#exportHeatingRuns").onclick=exportHeatingRunsCsv;
 $("#exportHeatingEvidence").onclick=exportHeatingEvidence;
+$("#exportElectricalEvidence").onclick=exportElectricalEvidence;
 $("#printHeatingReport").onclick=printHeatingReport;
 $("#openEmergencyHandoff").onclick=openEmergencyHandoff;
 $("#exportEmergencyHandoff").onclick=exportEmergencyHandoff;
