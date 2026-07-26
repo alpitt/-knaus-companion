@@ -29,6 +29,8 @@ The deployment workflow refuses to publish unless the package contains:
 
 ## Current release
 
+Version 13.10.0 adds Electrical Measurement Insights. Review total readings, measured components, recent activity and the latest reading, then filter the complete offline measurement history by voltage, current, temperature or other evidence types.
+
 Version 13.9.1 refines the Electrical Measurement Evidence layout. The heading, six reading controls, notes and submit action now stay within the panel at desktop widths and reflow cleanly on tablet and mobile.
 
 Version 13.9.0 adds Electrical Measurement Evidence. Record dated readings against the selected electrical component with test point, value, unit, operating conditions and notes; review or delete them in the inspector, search them offline, and include them in the electrical evidence export and application backup.
