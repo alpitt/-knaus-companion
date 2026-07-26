@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 12.6.0 adds the Printable Heating Report. Produce a workshop-ready handoff containing the fitted configuration, pre-start readiness score and checklist, plus the complete dated operational test table with fault and observation evidence.
+
 Version 12.5.0 adds Heating Evidence Export. Download the currently filtered test history as CSV, or export a complete JSON evidence pack containing the fitted heating profile, readiness state and full operational test history.
 
 Version 12.4.0 adds Heating Test Insights. Review total test runs, observed issues and accumulated runtime, then filter the offline history by normal, monitor or action-required results with live accessible counts.

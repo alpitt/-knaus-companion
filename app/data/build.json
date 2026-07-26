@@ -1,6 +1,6 @@
 {
-  "version": "12.5.0",
-  "releaseName": "Heating Evidence Export",
+  "version": "12.6.0",
+  "releaseName": "Printable Heating Report",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -339,7 +339,10 @@
     "Accessible filter-aware test result counts",
     "Filter-aware heating test CSV export",
     "Complete heating profile, readiness and test evidence JSON export",
-    "Dated portable heating evidence files"
+    "Dated portable heating evidence files",
+    "Print-ready heating system report",
+    "Configuration and readiness workshop handoff",
+    "Complete dated heating test evidence table"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
