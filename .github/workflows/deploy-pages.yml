@@ -34,7 +34,12 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 12.9.0' app/index.html
+          grep -q 'Version 13.0.0' app/index.html
+          grep -q 'data-screen="refrigeration"' app/index.html
+          grep -q 'id="refrigerationFilters"' app/index.html
+          grep -q 'id="refrigerationSummary"' app/index.html
+          grep -q 'id="refrigerationMap"' app/index.html
+          grep -q 'id="refrigerationInspector"' app/index.html
           grep -q 'id="heatingServiceForm"' app/index.html
           grep -q 'id="heatingServiceStatus"' app/index.html
           grep -q 'id="heatingServiceLastDate"' app/index.html
@@ -205,7 +210,12 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="12.9.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="13.0.0"' app/assets/js/app-v4.js
+          grep -q 'const REFRIGERATION_COMPONENTS=' app/assets/js/app-v4.js
+          grep -q 'const REFRIGERATION_RELATIONS=' app/assets/js/app-v4.js
+          grep -q 'function renderRefrigeration()' app/assets/js/app-v4.js
+          grep -q 'function renderRefrigerationInspector()' app/assets/js/app-v4.js
+          grep -q 'data-refrigeration-component' app/assets/js/app-v4.js
           grep -q 'heatingServiceSchedule:{}' app/assets/js/app-v4.js
           grep -q 'function heatingServiceStatus()' app/assets/js/app-v4.js
           grep -q 'function renderHeatingServiceSchedule()' app/assets/js/app-v4.js
