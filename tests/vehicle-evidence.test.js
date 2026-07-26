@@ -69,5 +69,5 @@ test("production integrations retain compatibility controls",()=>{
 });
 
 test("electrical digital twin reuses registry evidence and exports connections",()=>{
-  assert.match(source,/const ELECTRICAL_EVIDENCE_FIELDS=Object\.freeze/);for(const mapping of ['"calira-evs":"charger"','vb06:"mainFuseBox"','vb04:"auxFuseBox"','"leisure-battery":"leisureBattery"'])assert.match(source,new RegExp(mapping));assert.match(source,/function electricalComponentEvidence\(/);assert.match(source,/function electricalEvidenceData\(/);assert.match(source,/connections:DATA\.electricalRelations/);assert.match(source,/function exportElectricalEvidence\(/);assert.match(html,/id="exportElectricalEvidence"/);assert.match(css,/\.electrical-evidence-context/);
+  assert.match(source,/const ELECTRICAL_EVIDENCE_FIELDS=Object\.freeze/);for(const mapping of ['"calira-evs":"charger"','vb06:"mainFuseBox"','vb04:"auxFuseBox"','"leisure-battery":"leisureBattery"'])assert.match(source,new RegExp(mapping));assert.match(source,/function electricalComponentEvidence\(component\).*configurationEvidence\(registryField\)/);assert.match(source,/function electricalEvidenceData\(/);assert.match(source,/connections:DATA\.electricalRelations/);assert.match(source,/function exportElectricalEvidence\(/);assert.match(html,/id="exportElectricalEvidence"/);assert.match(css,/\.electrical-evidence-context/);
 });
