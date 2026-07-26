@@ -34,7 +34,10 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 13.2.0' app/index.html
+          grep -q 'Version 13.3.0' app/index.html
+          grep -q 'id="refrigerationRunForm"' app/index.html
+          grep -q 'id="refrigerationRunSummary"' app/index.html
+          grep -q 'id="refrigerationRunHistory"' app/index.html
           grep -q 'id="refrigerationReadinessScore"' app/index.html
           grep -q 'id="refrigerationReadinessBar"' app/index.html
           grep -q 'id="refrigerationReadinessChecklist"' app/index.html
@@ -218,7 +221,12 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="13.2.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="13.3.0"' app/assets/js/app-v4.js
+          grep -Fq 'refrigerationRuns:[]' app/assets/js/app-v4.js
+          grep -q 'function renderRefrigerationRuns()' app/assets/js/app-v4.js
+          grep -q 'function saveRefrigerationRun(event)' app/assets/js/app-v4.js
+          grep -q 'function deleteRefrigerationRun(id)' app/assets/js/app-v4.js
+          grep -q 'latestRefrigerationRun' app/assets/js/app-v4.js
           grep -q 'refrigerationReadiness:{}' app/assets/js/app-v4.js
           grep -q 'const REFRIGERATION_READINESS_ITEMS=' app/assets/js/app-v4.js
           grep -q 'function renderRefrigerationReadiness()' app/assets/js/app-v4.js
