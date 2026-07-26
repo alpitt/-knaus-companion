@@ -1,6 +1,6 @@
 {
-  "version": "12.0.0",
-  "releaseName": "Interactive Heating System",
+  "version": "12.1.0",
+  "releaseName": "Heating Configuration Profile",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -315,7 +315,12 @@
     "Cross-links to gas, electrical, fuses, water, workshop and emergency guidance",
     "Configuration-aware heating safety boundaries",
     "Heating access from home, navigation, workshop and seasonal task guidance",
-    "Legacy winterisation task-mode migration"
+    "Legacy winterisation task-mode migration",
+    "Persistent offline heating configuration profile",
+    "Appliance, energy, controller and location capture",
+    "Heating configuration completeness status",
+    "Owner-confirmed context in component inspection",
+    "Heating notes included in application backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
