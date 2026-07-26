@@ -35,7 +35,8 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 13.7.0' app/index.html
+          grep -q 'Version 13.8.0' app/index.html
+          grep -q 'id="exportElectricalEvidence"' app/index.html
           grep -q 'const STORE_KEY="knaus-ultimate-v1"' app/assets/js/app-v4.js
           grep -q 'schemaVersion:2' app/assets/js/app-v4.js
           grep -q 'const EVIDENCE_STATUSES=' app/assets/js/app-v4.js
@@ -242,7 +243,11 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="13.7.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="13.8.0"' app/assets/js/app-v4.js
+          grep -q 'const ELECTRICAL_EVIDENCE_FIELDS=' app/assets/js/app-v4.js
+          grep -q 'function electricalComponentEvidence(' app/assets/js/app-v4.js
+          grep -q 'function electricalEvidenceData(' app/assets/js/app-v4.js
+          grep -q 'function exportElectricalEvidence(' app/assets/js/app-v4.js
           grep -q 'function refrigerationReportHtml()' app/assets/js/app-v4.js
           grep -q 'function printRefrigerationReport()' app/assets/js/app-v4.js
           grep -q 'function filteredRefrigerationRuns()' app/assets/js/app-v4.js
