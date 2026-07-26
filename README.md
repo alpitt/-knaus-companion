@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 12.4.0 adds Heating Test Insights. Review total test runs, observed issues and accumulated runtime, then filter the offline history by normal, monitor or action-required results with live accessible counts.
+
 Version 12.3.1 refines the Heating layout. Profile and test-run inputs now size to their grid cells without overflowing their cards, while retaining the existing tablet and mobile reflow.
 
 Version 12.3.0 adds Heating Test Runs. Record dated operational tests with mode, duration, result, fault code and observations, retain the offline history, and surface the latest monitor or action-required result on the Operations Dashboard.

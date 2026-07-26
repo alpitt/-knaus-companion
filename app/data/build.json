@@ -1,7 +1,7 @@
 {
-  "version": "12.3.1",
-  "releaseName": "Heating Layout Refinement",
-  "buildDate": "2026-07-25",
+  "version": "12.4.0",
+  "releaseName": "Heating Test Insights",
+  "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
     "companionChapters": 44,
@@ -333,7 +333,10 @@
     "Latest non-normal heating result shown on the Operations Dashboard",
     "Container-safe heating profile controls",
     "Container-safe heating test-run controls",
-    "Form fields shrink cleanly within responsive grid cells"
+    "Form fields shrink cleanly within responsive grid cells",
+    "Heating test-run insight totals",
+    "Normal, monitor and action-required history filters",
+    "Accessible filter-aware test result counts"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
