@@ -1,6 +1,6 @@
 {
-  "version": "11.2.0",
-  "releaseName": "Seasonal Task Filters",
+  "version": "11.3.0",
+  "releaseName": "Seasonal Bulk Actions",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -296,7 +296,11 @@
     "All, open, due, high-priority and completed task filters",
     "Live per-filter seasonal task counts",
     "Accessible filtered-result summary",
-    "Filter-aware empty states"
+    "Filter-aware empty states",
+    "Complete all visible custom seasonal tasks",
+    "Reopen all visible custom seasonal tasks",
+    "Bulk actions preserve filtered-out and other-mode tasks",
+    "Dashboard alerts refresh after bulk updates"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
