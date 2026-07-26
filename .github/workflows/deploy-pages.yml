@@ -34,13 +34,14 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 12.8.0' app/index.html
+          grep -q 'Version 12.9.0' app/index.html
           grep -q 'id="heatingServiceForm"' app/index.html
           grep -q 'id="heatingServiceStatus"' app/index.html
           grep -q 'id="heatingServiceLastDate"' app/index.html
           grep -q 'id="heatingServiceInterval"' app/index.html
           grep -q 'id="recordHeatingService"' app/index.html
           grep -q 'id="heatingServiceHistory"' app/index.html
+          grep -q 'id="exportHeatingServiceCalendar"' app/index.html
           grep -q 'id="heatingRunForm"' app/index.html
           grep -q 'id="heatingRunSummary"' app/index.html
           grep -q 'id="heatingRunInsights"' app/index.html
@@ -204,7 +205,7 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="12.8.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="12.9.0"' app/assets/js/app-v4.js
           grep -q 'heatingServiceSchedule:{}' app/assets/js/app-v4.js
           grep -q 'function heatingServiceStatus()' app/assets/js/app-v4.js
           grep -q 'function renderHeatingServiceSchedule()' app/assets/js/app-v4.js
@@ -212,6 +213,8 @@ jobs:
           grep -Fq 'heatingServiceHistory:[]' app/assets/js/app-v4.js
           grep -q 'function recordHeatingService()' app/assets/js/app-v4.js
           grep -q 'function deleteHeatingServiceRecord(id)' app/assets/js/app-v4.js
+          grep -q 'function exportHeatingServiceCalendar()' app/assets/js/app-v4.js
+          grep -q 'TRIGGER:-P30D' app/assets/js/app-v4.js
           grep -q '.heating-profile-form input,.heating-profile-form select,.heating-profile-form textarea' app/assets/css/app-v4.css
           grep -q '.heating-run-form input,.heating-run-form select,.heating-run-form textarea' app/assets/css/app-v4.css
           grep -q 'heatingRuns:\[\]' app/assets/js/app-v4.js
