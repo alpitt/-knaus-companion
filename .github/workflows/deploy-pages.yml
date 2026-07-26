@@ -34,7 +34,8 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 11.3.0' app/index.html
+          grep -q 'Version 11.4.0' app/index.html
+          grep -q 'id="seasonalCustomTaskMode"' app/index.html
           grep -q 'id="completeVisibleSeasonalTasks"' app/index.html
           grep -q 'id="reopenVisibleSeasonalTasks"' app/index.html
           grep -q 'id="seasonalCustomTaskFilters"' app/index.html
@@ -177,7 +178,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="11.3.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="11.4.0"' app/assets/js/app-v4.js
+          grep -q 'mode:values.mode' app/assets/js/app-v4.js
+          grep -q 'existing.mode!==values.mode' app/assets/js/app-v4.js
+          grep -q 'seasonalCustomTaskMode' app/assets/js/app-v4.js
           grep -q 'function setVisibleSeasonalTasksComplete(complete)' app/assets/js/app-v4.js
           grep -q 'completeVisibleSeasonalTasks' app/assets/js/app-v4.js
           grep -q 'seasonalCustomTaskFilter="all"' app/assets/js/app-v4.js
