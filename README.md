@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 13.1.0 adds the Refrigeration Configuration Profile. Record the fitted model, cooling technology, supported energy modes, installation location and operating notes offline, track completeness, and show owner-confirmed context throughout component inspection.
+
 Version 13.0.0 begins Interactive Refrigeration. Trace configuration-neutral control, 12 V, 230 V, LPG, cooling, door-seal, exterior-ventilation and combustion-flue paths through nine inspectable components with user-level checks and cross-system guidance.
 
 Version 12.9.0 adds Heating Service Calendar Export. Download the calculated next-service date as an all-day iCalendar event with provider, reference and service notes plus a built-in 30-day reminder for compatible calendar apps.

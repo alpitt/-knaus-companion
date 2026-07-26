@@ -1,6 +1,6 @@
 {
-  "version": "13.0.0",
-  "releaseName": "Interactive Refrigeration System",
+  "version": "13.1.0",
+  "releaseName": "Refrigeration Configuration Profile",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -359,7 +359,12 @@
     "Control, energy, cooling, ventilation and safety views",
     "Nine inspectable configuration-neutral refrigerator components",
     "12 V, 230 V and LPG energy-path guidance",
-    "Refrigeration access from home, navigation and workshop mode"
+    "Refrigeration access from home, navigation and workshop mode",
+    "Persistent offline refrigeration configuration profile",
+    "Refrigerator model, technology, energy-mode and location capture",
+    "Refrigeration configuration completeness status",
+    "Owner-confirmed context in refrigeration component inspection",
+    "Refrigeration notes included in application backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
