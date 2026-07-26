@@ -1,6 +1,6 @@
 {
-  "version": "11.4.0",
-  "releaseName": "Cross-Mode Task Assignment",
+  "version": "11.5.0",
+  "releaseName": "Seasonal Task Duplication",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -304,7 +304,11 @@
     "Create custom tasks for any seasonal mode",
     "Move existing tasks between seasonal modes",
     "Moved tasks preserve completion, priority and due dates",
-    "Mode reassignment refreshes reports, calendars and alerts"
+    "Mode reassignment refreshes reports, calendars and alerts",
+    "Copy action on every visible custom task",
+    "Editable prefilled task copies",
+    "Copied mode, guidance, priority and due date",
+    "Source and completion state remain unchanged"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

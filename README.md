@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 11.5.0 adds Seasonal Task Duplication. Copy any visible custom task into a prefilled, editable new record with its mode, guidance, priority and due date while leaving the source and completion state untouched.
+
 Version 11.4.0 adds Cross-Mode Task Assignment. Create custom work for any seasonal workflow or move an existing task between storage, winterisation and reactivation while preserving completion, priority, dates and downstream reporting.
 
 Version 11.3.0 adds Seasonal Bulk Actions. Complete or reopen every task in the current filtered view together while leaving filtered-out tasks and other seasonal modes unchanged, then refresh dashboard alerts immediately.
