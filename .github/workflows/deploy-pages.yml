@@ -34,12 +34,14 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 12.4.0' app/index.html
+          grep -q 'Version 12.5.0' app/index.html
           grep -q 'id="heatingRunForm"' app/index.html
           grep -q 'id="heatingRunSummary"' app/index.html
           grep -q 'id="heatingRunInsights"' app/index.html
           grep -q 'id="heatingRunFilters"' app/index.html
           grep -q 'id="heatingRunResultCount"' app/index.html
+          grep -q 'id="exportHeatingRuns"' app/index.html
+          grep -q 'id="exportHeatingEvidence"' app/index.html
           grep -q 'id="heatingRunHistory"' app/index.html
           grep -q 'id="heatingReadinessScore"' app/index.html
           grep -q 'id="heatingReadinessBar"' app/index.html
@@ -195,13 +197,16 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="12.4.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="12.5.0"' app/assets/js/app-v4.js
           grep -q '.heating-profile-form input,.heating-profile-form select,.heating-profile-form textarea' app/assets/css/app-v4.css
           grep -q '.heating-run-form input,.heating-run-form select,.heating-run-form textarea' app/assets/css/app-v4.css
           grep -q 'heatingRuns:\[\]' app/assets/js/app-v4.js
           grep -q 'function renderHeatingRuns()' app/assets/js/app-v4.js
           grep -q 'data-heating-run-filter' app/assets/js/app-v4.js
           grep -q 'heatingRunFilter="all"' app/assets/js/app-v4.js
+          grep -q 'function exportHeatingRunsCsv()' app/assets/js/app-v4.js
+          grep -q 'function heatingEvidenceData()' app/assets/js/app-v4.js
+          grep -q 'function exportHeatingEvidence()' app/assets/js/app-v4.js
           grep -q 'function saveHeatingRun(event)' app/assets/js/app-v4.js
           grep -q 'function deleteHeatingRun(id)' app/assets/js/app-v4.js
           grep -q 'latestHeatingRun' app/assets/js/app-v4.js
