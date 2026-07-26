@@ -1,6 +1,6 @@
 {
-  "version": "13.5.0",
-  "releaseName": "Refrigeration Evidence Export",
+  "version": "13.6.0",
+  "releaseName": "Refrigeration System Report",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -381,7 +381,10 @@
     "Accessible filter-aware refrigeration result counts",
     "Filter-aware refrigeration cooling-test CSV export",
     "Complete refrigeration profile, readiness and cooling-test JSON export",
-    "Dated portable refrigeration evidence files"
+    "Dated portable refrigeration evidence files",
+    "Print-ready refrigeration system report",
+    "Configuration and readiness workshop handoff",
+    "Complete cooling-test table with calculated temperature drop"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

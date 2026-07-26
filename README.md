@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 13.6.0 adds a print-ready Refrigeration System Report. Create a workshop handoff containing the fitted configuration, pre-operation readiness and a complete cooling-test table with start, end and calculated temperature-drop evidence.
+
 Version 13.5.0 adds Refrigeration Evidence Export. Download the currently filtered cooling-test history as CSV, or export a complete JSON evidence pack containing the fitted refrigeration profile, readiness state and full cooling-test history.
 
 Version 13.4.0 adds Refrigeration Cooling Test Insights. Review total tests, observed issues and average cabinet temperature drop, then filter the offline history by normal, monitor or action-required results with accessible live counts.
