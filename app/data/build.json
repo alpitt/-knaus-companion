@@ -1,6 +1,6 @@
 {
-  "version": "13.3.0",
-  "releaseName": "Refrigeration Cooling Tests",
+  "version": "13.4.0",
+  "releaseName": "Refrigeration Cooling Test Insights",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -374,7 +374,11 @@
     "Energy mode, duration and start/end temperature capture",
     "Normal, monitor and action-required refrigeration outcomes",
     "Refrigeration test history retained in offline backups",
-    "Latest non-normal refrigeration result on the Operations Dashboard"
+    "Latest non-normal refrigeration result on the Operations Dashboard",
+    "Refrigeration cooling-test insight totals",
+    "Average cabinet temperature-drop metric",
+    "Normal, monitor and action-required cooling-test filters",
+    "Accessible filter-aware refrigeration result counts"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
