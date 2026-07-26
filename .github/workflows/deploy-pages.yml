@@ -532,7 +532,7 @@ jobs:
           registry_sections = [section for section in configuration["sections"] if section["id"] != "documents"]
           configuration_ids = [field["id"] for section in registry_sections for field in section["fields"]]
           assert len(registry_sections) == 6, "Vehicle configuration registry must expose six system sections"
-          assert len(configuration_ids) == 53, "Vehicle configuration registry field count changed unexpectedly"
+          assert len(configuration_ids) == 57, "Vehicle configuration registry field count changed unexpectedly"
           assert len(configuration_ids) == len(set(configuration_ids)), "Vehicle configuration field IDs must be unique"
           print(f"Validated {len(registry_sections)} vehicle configuration sections and {len(configuration_ids)} fields.")
 
