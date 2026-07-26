@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 12.5.0 adds Heating Evidence Export. Download the currently filtered test history as CSV, or export a complete JSON evidence pack containing the fitted heating profile, readiness state and full operational test history.
+
 Version 12.4.0 adds Heating Test Insights. Review total test runs, observed issues and accumulated runtime, then filter the offline history by normal, monitor or action-required results with live accessible counts.
 
 Version 12.3.1 refines the Heating layout. Profile and test-run inputs now size to their grid cells without overflowing their cards, while retaining the existing tablet and mobile reflow.

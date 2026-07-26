@@ -1,6 +1,6 @@
 {
-  "version": "12.4.0",
-  "releaseName": "Heating Test Insights",
+  "version": "12.5.0",
+  "releaseName": "Heating Evidence Export",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -336,7 +336,10 @@
     "Form fields shrink cleanly within responsive grid cells",
     "Heating test-run insight totals",
     "Normal, monitor and action-required history filters",
-    "Accessible filter-aware test result counts"
+    "Accessible filter-aware test result counts",
+    "Filter-aware heating test CSV export",
+    "Complete heating profile, readiness and test evidence JSON export",
+    "Dated portable heating evidence files"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
