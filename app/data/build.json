@@ -1,6 +1,6 @@
 {
-  "version": "11.5.0",
-  "releaseName": "Seasonal Task Duplication",
+  "version": "12.0.0",
+  "releaseName": "Interactive Heating System",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -308,7 +308,14 @@
     "Copy action on every visible custom task",
     "Editable prefilled task copies",
     "Copied mode, guidance, priority and due date",
-    "Source and completion state remain unchanged"
+    "Source and completion state remain unchanged",
+    "Dedicated interactive heating system route",
+    "Control, energy, heat, airflow and safety views",
+    "Ten inspectable heating-path components",
+    "Cross-links to gas, electrical, fuses, water, workshop and emergency guidance",
+    "Configuration-aware heating safety boundaries",
+    "Heating access from home, navigation, workshop and seasonal task guidance",
+    "Legacy winterisation task-mode migration"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

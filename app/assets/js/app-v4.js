@@ -1,5 +1,5 @@
 
-const APP_VERSION="11.5.0";
+const APP_VERSION="12.0.0";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},seasonalProgress:{},seasonalPlans:{},seasonalSupplies:{},seasonalCustomTasks:[],seasonalCycles:[],workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyIncidents:[],emergencyReadiness:{},emergencyDrills:[],emergencyEquipment:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
@@ -8,6 +8,20 @@ const SEASONAL_CHECKLISTS=[
   {id:"winter",title:"Winterisation",detail:"Protect water, energy and body systems from frost and prolonged cold.",supplies:[["drain","Drain hoses, plugs and collection container"],["frost","Approved frost-protection materials where specified"],["battery","Battery maintenance and terminal-care supplies"],["seals","Seal cleaner and suitable treatment"]],items:[["frost","Fully drain vulnerable water circuits and open drain points","water"],["heater","Follow heater and boiler frost-protection guidance","water"],["battery","Check battery charge, terminals and low-temperature strategy","electrical"],["seals","Clean and inspect rooflights, doors, windows and exterior seals","vehicle"],["tyres","Set tyre pressures and reduce prolonged load concentration","maintenance"]]},
   {id:"reactivate",title:"Seasonal reactivation",detail:"Return each system to service in a controlled, observable sequence.",supplies:[["water","Fresh-water flushing and sanitising supplies"],["tests","Torch, pressure gauge and basic test equipment"],["gas","Approved leak-detection solution"],["service","Replacement consumables and service fluids"]],items:[["inspect","Walk around and inspect for leaks, pests, damage and tyre condition","vehicle"],["power","Reconnect and test 12 V and mains systems safely","electrical"],["water","Close drains, refill, flush and inspect the water system","water"],["gas","Reconnect gas, leak-check appropriately and test appliances","gas"],["departure","Complete maintenance and departure checks before travel","touring"]]}
 ];
+
+const HEATING_COMPONENTS=[
+  {id:"control",view:"control",name:"Heating control",category:"User control",status:"Confirm fitted model",location:"Habitation control area",purpose:"Select space-heating, hot-water and energy modes where supported.",operation:"Use the instructions for the fitted controller and appliance.",checks:["Confirm the controller powers up without a persistent fault code.","Set a modest temperature demand and listen for the normal start sequence."],routes:["gas","electrical"]},
+  {id:"room-sensor",view:"control",name:"Room temperature sensor",category:"Feedback",status:"Confirm location",location:"Habitation area away from direct outlets",purpose:"Provides cabin-temperature feedback to the heating controller.",operation:"Keep the sensing area unobstructed and away from temporary heat sources.",checks:["Check that furnishings do not cover the sensor.","Compare indicated behaviour with a separate room thermometer."],routes:["vehicle"]},
+  {id:"12v-supply",view:"energy",name:"12 V control supply",category:"Electrical input",status:"Installed supply required",location:"Protected habitation circuit",purpose:"Powers appliance controls, ignition and warm-air fan.",operation:"A low habitation-battery voltage can prevent a normal start.",checks:["Confirm habitation voltage is suitable before fault-finding.","Use the Fuse Finder to verify the documented heating circuit."],routes:["electrical","fuses"]},
+  {id:"fuel-supply",view:"energy",name:"Heating energy supply",category:"Fuel / energy",status:"Confirm fitted appliance",location:"Gas manifold or appliance-specific supply",purpose:"Provides the energy source used by the fitted heater.",operation:"Follow the fitted appliance instructions; this vehicle record does not assume a specific heater model.",checks:["For LPG equipment, confirm the cylinder and relevant isolation valve are open only when safe.","Stop if gas smell, repeated lockout or abnormal combustion is suspected."],routes:["gas"]},
+  {id:"heater",view:"heat",name:"Space-heating appliance",category:"Heat generation",status:"Confirm fitted model",location:"Confirm from vehicle configuration",purpose:"Generates heat and transfers it into the habitation-air circuit.",operation:"Control, fuel, electrical supply and unobstructed airflow must all be available.",checks:["Inspect only user-accessible areas for stored items or blocked air paths.","Record fault codes before resetting and do not repeatedly force a failed start."],routes:["gas","electrical","workshop"]},
+  {id:"fan",view:"air",name:"Warm-air fan",category:"Air movement",status:"Appliance integrated",location:"Within or adjacent to heater",purpose:"Moves heated air into the distribution ductwork.",operation:"Fan speed normally changes with heat demand and selected mode.",checks:["Listen for rubbing, surging or unusual bearing noise.","Confirm adequate return-air space around the appliance."],routes:["electrical","workshop"]},
+  {id:"ducts",view:"air",name:"Warm-air ducts",category:"Distribution",status:"Installed routing",location:"Furniture voids and floor-level routes",purpose:"Distributes warm air around the habitation area.",operation:"Airflow depends on intact ducts and balanced, unobstructed outlets.",checks:["Inspect accessible duct joints for separation or crushing.","Keep stored items clear of ducts and appliance return-air openings."],routes:["vehicle","workshop"]},
+  {id:"outlets",view:"air",name:"Cabin outlets",category:"Distribution outlets",status:"Installed",location:"Habitation and washroom areas",purpose:"Deliver warmed air and support even cabin temperature.",operation:"Keep enough outlets open to maintain the airflow required by the appliance.",checks:["Compare airflow between outlets after warm-up.","Clear lint and stored items without dismantling fixed appliance parts."],routes:["vehicle"]},
+  {id:"flue",view:"safety",name:"Combustion air and flue",category:"Safety boundary",status:"Exterior termination",location:"Exterior wall or roof — confirm fitted arrangement",purpose:"Supplies combustion air and safely discharges products of combustion.",operation:"The terminal must remain unobstructed whenever the appliance may operate.",checks:["Inspect the external terminal for covers, snow, debris or damage.","Stop using the appliance if fumes, staining or abnormal exhaust behaviour is observed."],routes:["gas","emergency"]},
+  {id:"hot-water",view:"heat",name:"Hot-water integration",category:"Water coupling",status:"Confirm combination appliance",location:"Heating appliance and hot-water circuit",purpose:"Represents hot-water heating when the fitted appliance combines space and water heating.",operation:"Water fill, drain and frost-protection state affect hot-water operation.",checks:["Confirm the boiler is filled before selecting water-heating mode where required.","Follow frost-drain and recommissioning guidance before cold-weather use."],routes:["water","seasonal"]}
+];
+const HEATING_RELATIONS=[["control","heater","requests heat"],["room-sensor","control","reports temperature"],["12v-supply","heater","powers controls and fan"],["fuel-supply","heater","supplies energy"],["heater","fan","heats airflow"],["fan","ducts","moves warm air"],["ducts","outlets","distributes air"],["heater","flue","exchanges combustion air"],["heater","hot-water","may heat water"]];
 
 const EMERGENCY_READINESS_ITEMS=[
   {id:"identity",title:"Vehicle identity confirmed",detail:"Registration, VIN and vehicle details are available."},
@@ -31,6 +45,7 @@ const VEHICLE_PHOTOS=[
 
 const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPrompts:[],build:null,electrical:[],electricalRelations:[],fuses:[],water:[],waterRelations:[],gas:[],gasRelations:[],vehicleExplorer:[],vehicleConfigSchema:null,partsInventory:[],campsites:[],touringChecks:[],touringOperations:null,packingTemplates:null};
 let state=loadState();
+if((state.seasonalCustomTasks||[]).some(item=>item.mode==="winterise")){state.seasonalCustomTasks=state.seasonalCustomTasks.map(item=>item.mode==="winterise"?{...item,mode:"winter"}:item);saveState()}
 let libraryMode="chapters";
 let activeManualPage=1;
 let activeChapterNumber=null;
@@ -42,6 +57,8 @@ let waterFilter="all";
 let activeWaterComponent="pump";
 let gasFilter="all";
 let activeGasComponent="gas-manifold";
+let heatingFilter="all";
+let activeHeatingComponent="heater";
 let vehicleMapView="interior";
 let activeVehicleHotspot="electrical-compartment";
 let fuseBoxFilter="all";
@@ -120,6 +137,7 @@ function setActiveRoute(id){
   if(id==="compliance")renderCompliance();
   if(id==="emergency")renderEmergency();
   if(id==="seasonal")renderSeasonal();
+  if(id==="heating")renderHeating();
   $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
@@ -128,7 +146,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
-  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["seasonal","Seasonal care","❄"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["seasonal","Seasonal care","❄"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["heating","Heating system","♨"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -204,6 +222,7 @@ function renderHome(){
     moduleCard("fuses","▥","Fuse finder","Identify Calira fuses and protected circuits"),
     moduleCard("water","💧","Water system","Follow fresh, hot and waste-water flow"),
     moduleCard("gas","🔥","Gas system","Trace supply, appliances and combustion safety"),
+    moduleCard("heating","♨","Heating system","Trace control, energy and warm-air distribution"),
     moduleCard("vehicle","🚐","My motorhome","Systems, photos and upgrades"),
     moduleCard("manuals","📘","Manuals","Companion chapters and official pages"),
     moduleCard("diagnostics","🧰","Diagnostics","Guided checks for common problems"),
@@ -1342,6 +1361,23 @@ function renderGas(){
   renderGasInspector();
 }
 
+function heatingComponents(){return heatingFilter==="all"?HEATING_COMPONENTS:HEATING_COMPONENTS.filter(item=>item.view===heatingFilter)}
+function renderHeatingInspector(){
+  const component=HEATING_COMPONENTS.find(item=>item.id===activeHeatingComponent)||heatingComponents()[0];
+  if(!component){$("#heatingInspector").innerHTML="<h2>No matching heating components</h2><p>Select another heating view.</p>";return}
+  activeHeatingComponent=component.id;
+  const related=HEATING_RELATIONS.filter(([from,to])=>from===component.id||to===component.id);
+  $("#heatingInspector").innerHTML=`<span class="meta">${esc(component.category)}</span><h2>${esc(component.name)}</h2><div class="diagnostic-meta"><span>${esc(component.status)}</span></div><p>${esc(component.purpose)}</p><div class="gas-caution"><strong>Configuration and safety boundary</strong><span>Confirm the fitted appliance and follow its manufacturer instructions. Combustion, gas-soundness and internal appliance work require a competent technician.</span></div><dl class="component-facts"><div><dt>Location</dt><dd>${esc(component.location)}</dd></div><div><dt>Operation</dt><dd>${esc(component.operation)}</dd></div></dl><section class="detail-section"><h3>User-level checks</h3><ol>${component.checks.map(item=>`<li>${esc(item)}</li>`).join("")}</ol></section>${related.length?`<section class="detail-section"><h3>Connected heating path</h3><ul>${related.map(([from,to,label])=>{const other=HEATING_COMPONENTS.find(item=>item.id===(from===component.id?to:from));return `<li><strong>${esc(from===component.id?"To":"From")} ${esc(other?.name||"component")}</strong><br>${esc(label)}</li>`}).join("")}</ul></section>`:""}<div class="diagnostic-link-row">${component.routes.map(route=>`<button class="secondary-btn" data-route="${route}">Open ${esc(route)}</button>`).join("")}</div>`;
+}
+function renderHeating(){
+  const filters=[["all","All paths"],["control","Controls"],["energy","Energy"],["heat","Heat generation"],["air","Warm air"],["safety","Safety"]],components=heatingComponents(),visibleIds=new Set(components.map(item=>item.id)),links=HEATING_RELATIONS.filter(([from,to])=>visibleIds.has(from)&&visibleIds.has(to));
+  $("#heatingFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${heatingFilter===id?"active":""}" data-heating-filter="${id}">${label}</button>`).join("");
+  $("#heatingSummary").innerHTML=[[components.length,"Components"],[links.length,"Visible connections"],[components.filter(item=>item.status.toLowerCase().includes("confirm")).length,"Items to confirm"]].map(([value,label])=>`<article class="stat-card"><strong>${value}</strong><span>${label}</span></article>`).join("");
+  $("#heatingLegend").innerHTML=`<span><i class="legend-dot heating-control"></i>Control</span><span><i class="legend-dot heating-energy"></i>Energy</span><span><i class="legend-dot heating-heat"></i>Heat</span><span><i class="legend-dot heating-air"></i>Airflow</span><span><i class="legend-dot heating-safety"></i>Safety</span>`;
+  $("#heatingMap").innerHTML=components.map(component=>{const outgoing=links.filter(([from])=>from===component.id);return `<article class="electrical-node heating-node heating-${component.view} ${activeHeatingComponent===component.id?"active":""}"><button data-heating-component="${component.id}" aria-pressed="${activeHeatingComponent===component.id}"><span class="meta">${esc(component.category)}</span><strong>${esc(component.name)}</strong><small>${esc(component.operation)}</small></button>${outgoing.map(([,to,label])=>{const target=HEATING_COMPONENTS.find(item=>item.id===to);return `<button class="power-link" data-heating-component="${to}"><span>${esc(label)}</span><b>→ ${esc(target?.name||to)}</b></button>`}).join("")}</article>`}).join("")||`<article class="panel"><p>No components match this view.</p></article>`;
+  renderHeatingInspector();
+}
+
 function vehicleDocumentStatus(document){
   if(!document.expiry)return {status:"no-expiry",label:"No expiry"};
   const today=new Date(`${new Date().toISOString().slice(0,10)}T00:00:00Z`),expiry=new Date(`${document.expiry}T00:00:00Z`),days=Math.ceil((expiry-today)/86400000);
@@ -1862,7 +1898,7 @@ function workshopPartsShortages(session){
 function renderWorkshop(){
   const complete=WORKSHOP_STEPS.filter((_,index)=>state.workshopSteps?.[index]).length;
   $("#workshopSummary").innerHTML=[[state.activeWorkshopSession?"Active":"None","Workshop job"],[complete,`of ${WORKSHOP_STEPS.length} safety steps`],[`${Math.round(complete/WORKSHOP_STEPS.length*100)}%`,"Sequence complete"],[(state.workshopSessions||[]).length,"Completed sessions"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");
-  $("#workshopSystemButtons").innerHTML=[["electrical","⚡","Electrical"],["fuses","▥","Fuses"],["water","💧","Water"],["gas","🔥","Gas"],["diagnostics","🧰","Diagnostics"],["vehicle","📦","Parts & vehicle"]].map(([route,icon,label])=>`<button class="workshop-button" data-route="${route}"><span>${icon}</span><strong>${label}</strong></button>`).join("");
+  $("#workshopSystemButtons").innerHTML=[["electrical","⚡","Electrical"],["fuses","▥","Fuses"],["water","💧","Water"],["gas","🔥","Gas"],["heating","♨","Heating"],["diagnostics","🧰","Diagnostics"],["vehicle","📦","Parts & vehicle"]].map(([route,icon,label])=>`<button class="workshop-button" data-route="${route}"><span>${icon}</span><strong>${label}</strong></button>`).join("");
   $("#workshopSteps").innerHTML=WORKSHOP_STEPS.map((step,index)=>{const checked=Boolean(state.workshopSteps?.[index]);return `<button class="workshop-step ${checked?"complete":""}" data-workshop-step="${index}" role="checkbox" aria-checked="${checked}"><span>${checked?"✓":index+1}</span><strong>${esc(step)}</strong></button>`}).join("");
   const session=state.activeWorkshopSession,history=(state.workshopSessions||[]).slice(0,3);
   $("#workshopSession").innerHTML=session?`<span class="meta">Active workshop job</span><h2>${esc(session.title)}</h2><div class="diagnostic-meta"><span>${vehicleSystemIcon(session.system)} ${esc(session.system)}</span><span>Started ${esc(new Date(session.startedAt).toLocaleString())}</span>${session.mileage!==null?`<span>${Number(session.mileage).toLocaleString()} km</span>`:""}</div>${session.notes?`<p class="workshop-session-notes">${esc(session.notes)}</p>`:""}${workshopMeasurementsHtml(session)}${workshopPartsHtml(session)}<div class="workshop-session-actions"><button class="secondary-btn" data-workshop-session-edit>Edit notes</button><button class="primary-btn" data-workshop-session-finish>Finish & log service</button><button class="danger-btn" data-workshop-session-discard>Discard</button></div>`:`<span class="meta">Workshop sessions</span><h2>Document the job</h2><p>Start a session before work, keep findings with it and finish into service history.</p><button class="primary-btn workshop-session-start" data-workshop-session-start>Start workshop job</button>${history.length?`<div class="workshop-session-history"><h3>Recent sessions</h3>${history.map(item=>`<button data-workshop-report="${esc(item.id)}"><strong>${esc(item.title)}</strong><small>${esc(formatTripDate(item.completedAt.slice(0,10)))} • ${Number(item.durationMinutes)||0} min • ${(item.measurements||[]).length} readings • ${(item.partsUsed||[]).reduce((sum,part)=>sum+(Number(part.quantity)||0),0)} parts</small><span aria-hidden="true">→</span></button>`).join("")}</div>`:""}`;
@@ -1979,7 +2015,7 @@ async function init(){
     loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),loadJSON("data/vehicle_config_schema.json",{}),loadJSON("data/parts_inventory.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderSeasonal();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderWorkshop();renderSettings();
+  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderSeasonal();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderHeating();renderWorkshop();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   $("#fuseSearch")?.addEventListener("input",renderFuses);
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
@@ -2042,6 +2078,8 @@ document.addEventListener("click",e=>{
   const waterComponent=e.target.closest("[data-water-component]");if(waterComponent){activeWaterComponent=waterComponent.dataset.waterComponent;renderWater()}
   const gasFilterButton=e.target.closest("[data-gas-filter]");if(gasFilterButton){gasFilter=gasFilterButton.dataset.gasFilter;const first=gasComponents()[0];if(first)activeGasComponent=first.id;renderGas()}
   const gasComponent=e.target.closest("[data-gas-component]");if(gasComponent){activeGasComponent=gasComponent.dataset.gasComponent;renderGas()}
+  const heatingFilterButton=e.target.closest("[data-heating-filter]");if(heatingFilterButton){heatingFilter=heatingFilterButton.dataset.heatingFilter;const first=heatingComponents()[0];if(first)activeHeatingComponent=first.id;renderHeating()}
+  const heatingComponent=e.target.closest("[data-heating-component]");if(heatingComponent){activeHeatingComponent=heatingComponent.dataset.heatingComponent;renderHeating()}
   const workshopStep=e.target.closest("[data-workshop-step]");if(workshopStep){const index=Number(workshopStep.dataset.workshopStep);state.workshopSteps={...(state.workshopSteps||{}),[index]:!state.workshopSteps?.[index]};saveState();renderWorkshop()}
   if(e.target.closest("[data-workshop-session-start],[data-workshop-session-edit]"))openWorkshopSessionEditor();
   if(e.target.closest("[data-workshop-session-cancel]"))closeWorkshopSessionEditor();

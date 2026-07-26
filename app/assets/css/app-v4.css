@@ -319,6 +319,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .gas-caution span{color:var(--muted);font-size:.9rem}
 .gas-node{border-top-color:#d97706}.gas-node.gas-appliance{border-top-color:#ea580c}.gas-node.gas-exhaust{border-top-color:#64748b}.gas-node.gas-safety{border-top-color:#dc2626}
 .gas-node .power-link b{color:#c2410c}
+.heating-node{border-top-color:#f59e0b}.heating-node.heating-control{border-top-color:#6366f1}.heating-node.heating-energy{border-top-color:#eab308}.heating-node.heating-heat{border-top-color:#ea580c}.heating-node.heating-air{border-top-color:#0ea5e9}.heating-node.heating-safety{border-top-color:#dc2626}.heating-node .power-link b{color:#c2410c}.legend-dot.heating-control{background:#6366f1}.legend-dot.heating-energy{background:#eab308}.legend-dot.heating-heat{background:#ea580c}.legend-dot.heating-air{background:#0ea5e9}.legend-dot.heating-safety{background:#dc2626}
 .legend-dot.gas-supply{background:#d97706}.legend-dot.gas-appliance{background:#ea580c}.legend-dot.gas-exhaust{background:#64748b}.legend-dot.gas-safety{background:#dc2626}
 
 /* v4.4 interactive vehicle map */
