@@ -1,6 +1,6 @@
 {
-  "version": "12.8.0",
-  "releaseName": "Heating Service History",
+  "version": "12.9.0",
+  "releaseName": "Heating Service Calendar Export",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -350,7 +350,11 @@
     "Durable heating service completion history",
     "Automatic next-due advancement after service completion",
     "Deletable provider, reference and work-note service records",
-    "Heating service history in evidence exports and backups"
+    "Heating service history in evidence exports and backups",
+    "Heating next-service iCalendar export",
+    "All-day portable service due event",
+    "Provider, reference and notes in calendar detail",
+    "Built-in 30-day heating service reminder"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
