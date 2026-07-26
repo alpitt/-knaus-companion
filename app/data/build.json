@@ -1,6 +1,6 @@
 {
-  "version": "13.4.0",
-  "releaseName": "Refrigeration Cooling Test Insights",
+  "version": "13.5.0",
+  "releaseName": "Refrigeration Evidence Export",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -378,7 +378,10 @@
     "Refrigeration cooling-test insight totals",
     "Average cabinet temperature-drop metric",
     "Normal, monitor and action-required cooling-test filters",
-    "Accessible filter-aware refrigeration result counts"
+    "Accessible filter-aware refrigeration result counts",
+    "Filter-aware refrigeration cooling-test CSV export",
+    "Complete refrigeration profile, readiness and cooling-test JSON export",
+    "Dated portable refrigeration evidence files"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
