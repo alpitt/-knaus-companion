@@ -209,7 +209,7 @@ jobs:
           grep -q 'function heatingServiceStatus()' app/assets/js/app-v4.js
           grep -q 'function renderHeatingServiceSchedule()' app/assets/js/app-v4.js
           grep -q 'function saveHeatingServiceSchedule(event)' app/assets/js/app-v4.js
-          grep -q 'heatingServiceHistory:[]' app/assets/js/app-v4.js
+          grep -Fq 'heatingServiceHistory:[]' app/assets/js/app-v4.js
           grep -q 'function recordHeatingService()' app/assets/js/app-v4.js
           grep -q 'function deleteHeatingServiceRecord(id)' app/assets/js/app-v4.js
           grep -q '.heating-profile-form input,.heating-profile-form select,.heating-profile-form textarea' app/assets/css/app-v4.css
