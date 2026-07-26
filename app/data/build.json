@@ -1,6 +1,6 @@
 {
-  "version": "12.3.0",
-  "releaseName": "Heating Test Runs",
+  "version": "12.3.1",
+  "releaseName": "Heating Layout Refinement",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -330,7 +330,10 @@
     "Mode, duration, result, fault-code and observation capture",
     "Normal, monitor and action-required test outcomes",
     "Heating test history retained in offline backups",
-    "Latest non-normal heating result shown on the Operations Dashboard"
+    "Latest non-normal heating result shown on the Operations Dashboard",
+    "Container-safe heating profile controls",
+    "Container-safe heating test-run controls",
+    "Form fields shrink cleanly within responsive grid cells"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

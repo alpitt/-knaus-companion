@@ -1,5 +1,5 @@
 
-const APP_VERSION="12.3.0";
+const APP_VERSION="12.3.1";
 const STORE_KEY="knaus-ultimate-v1";
 const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},seasonalProgress:{},seasonalPlans:{},seasonalSupplies:{},seasonalCustomTasks:[],seasonalCycles:[],heatingProfile:{},heatingReadiness:{},heatingRuns:[],workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyIncidents:[],emergencyReadiness:{},emergencyDrills:[],emergencyEquipment:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 

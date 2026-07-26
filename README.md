@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 12.3.1 refines the Heating layout. Profile and test-run inputs now size to their grid cells without overflowing their cards, while retaining the existing tablet and mobile reflow.
+
 Version 12.3.0 adds Heating Test Runs. Record dated operational tests with mode, duration, result, fault code and observations, retain the offline history, and surface the latest monitor or action-required result on the Operations Dashboard.
 
 Version 12.2.0 adds the Heating Readiness Checklist. Complete a persistent six-point pre-start sequence for alarm readiness, flue clearance, airflow, 12 V power, energy supply and hot-water state with a live score and direct guidance.
