@@ -1,6 +1,6 @@
 {
-  "version": "12.1.0",
-  "releaseName": "Heating Configuration Profile",
+  "version": "12.2.0",
+  "releaseName": "Heating Readiness Checklist",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -320,7 +320,12 @@
     "Appliance, energy, controller and location capture",
     "Heating configuration completeness status",
     "Owner-confirmed context in component inspection",
-    "Heating notes included in application backups"
+    "Heating notes included in application backups",
+    "Persistent six-point heating pre-start checklist",
+    "Live heating readiness score and progress",
+    "Power, fuel, airflow, flue, water and alarm checks",
+    "Direct guidance from every readiness item",
+    "Heating readiness state included in backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [

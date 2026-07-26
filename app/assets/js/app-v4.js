@@ -1,7 +1,7 @@
 
-const APP_VERSION="12.1.0";
+const APP_VERSION="12.2.0";
 const STORE_KEY="knaus-ultimate-v1";
-const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},seasonalProgress:{},seasonalPlans:{},seasonalSupplies:{},seasonalCustomTasks:[],seasonalCycles:[],heatingProfile:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyIncidents:[],emergencyReadiness:{},emergencyDrills:[],emergencyEquipment:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
+const DEFAULT_STATE={theme:"light",logs:[],maintenance:{},departure:{},touringProgress:{},seasonalProgress:{},seasonalPlans:{},seasonalSupplies:{},seasonalCustomTasks:[],seasonalCycles:[],heatingProfile:{},heatingReadiness:{},workshopSteps:{},activeWorkshopSession:null,workshopSessions:[],trips:[],expenses:[],savedCampsites:[],packingLists:[],payloadPlan:{},ownershipBudget:{},ownershipCommitments:[],complianceRequirements:[],emergencyContacts:[],emergencyIncidents:[],emergencyReadiness:{},emergencyDrills:[],emergencyEquipment:[],emergencyNotes:"",vehicleProfile:{make:"Knaus",model:"Sun Traveller"},vehicleConfiguration:{},vehicleDocuments:[],upgradeProjects:[],vehiclePhotoNotes:{},partsStock:{},currentMileage:0,faults:[],inventory:[],assistantHistory:[],manualBookmarks:[],manualOcrVisible:false,diagnosticReports:[]};
 
 const SEASONAL_CHECKLISTS=[
   {id:"storage",title:"Storage preparation",detail:"Secure, clean and protect the vehicle before a period off the road.",supplies:[["cleaners","Interior-safe cleaning supplies"],["moisture","Moisture control and ventilation aids"],["battery","Battery charger or maintenance equipment"],["security","Keys, covers and security equipment"]],items:[["clean","Clean interior, remove food and leave ventilation paths open","bodywork"],["battery","Charge batteries and choose a safe maintenance or isolation strategy","electrical"],["water","Drain fresh, waste and hot-water systems as conditions require","water"],["gas","Close gas cylinders and confirm appliances are off","gas"],["security","Remove valuables, secure keys and confirm storage access","vehicle"]]},
@@ -22,6 +22,14 @@ const HEATING_COMPONENTS=[
   {id:"hot-water",view:"heat",name:"Hot-water integration",category:"Water coupling",status:"Confirm combination appliance",location:"Heating appliance and hot-water circuit",purpose:"Represents hot-water heating when the fitted appliance combines space and water heating.",operation:"Water fill, drain and frost-protection state affect hot-water operation.",checks:["Confirm the boiler is filled before selecting water-heating mode where required.","Follow frost-drain and recommissioning guidance before cold-weather use."],routes:["water","seasonal"]}
 ];
 const HEATING_RELATIONS=[["control","heater","requests heat"],["room-sensor","control","reports temperature"],["12v-supply","heater","powers controls and fan"],["fuel-supply","heater","supplies energy"],["heater","fan","heats airflow"],["fan","ducts","moves warm air"],["ducts","outlets","distributes air"],["heater","flue","exchanges combustion air"],["heater","hot-water","may heat water"]];
+const HEATING_READINESS_ITEMS=[
+  {id:"alarm",title:"CO alarm and ventilation ready",detail:"Alarm status is normal and fixed ventilation is unobstructed.",route:"emergency"},
+  {id:"flue",title:"External flue clear",detail:"No cover, snow, debris, staining or visible damage is present.",route:"gas"},
+  {id:"airflow",title:"Return air, ducts and outlets clear",detail:"Stored items do not restrict the heater or warm-air circuit.",route:"heating"},
+  {id:"power",title:"12 V supply suitable",detail:"Habitation voltage and the documented heating circuit are available.",route:"electrical"},
+  {id:"energy",title:"Heating energy supply ready",detail:"The confirmed fuel or energy source is available with no warning signs.",route:"gas"},
+  {id:"water",title:"Hot-water state confirmed",detail:"The boiler is filled or correctly isolated for the selected operating mode.",route:"water"}
+];
 
 const EMERGENCY_READINESS_ITEMS=[
   {id:"identity",title:"Vehicle identity confirmed",detail:"Registration, VIN and vehicle details are available."},
@@ -1364,6 +1372,8 @@ function renderGas(){
 function heatingComponents(){return heatingFilter==="all"?HEATING_COMPONENTS:HEATING_COMPONENTS.filter(item=>item.view===heatingFilter)}
 function renderHeatingProfile(){const form=$("#heatingProfileForm"),profile=state.heatingProfile||{};if(!form.dataset.loaded){$("#heatingProfileAppliance").value=profile.appliance||"";$("#heatingProfileEnergy").value=profile.energy||"";$("#heatingProfileController").value=profile.controller||"";$("#heatingProfileLocation").value=profile.location||"";$("#heatingProfileNotes").value=profile.notes||"";form.dataset.loaded="true"}const confirmed=[profile.appliance,profile.energy,profile.controller,profile.location].filter(Boolean).length;$("#heatingProfileStatus").textContent=confirmed===4?"Configuration confirmed":confirmed?`${confirmed}/4 details confirmed`:"Not confirmed"}
 function saveHeatingProfile(event){event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget));state.heatingProfile={appliance:values.appliance.trim(),energy:values.energy,controller:values.controller.trim(),location:values.location.trim(),notes:values.notes.trim(),updatedAt:new Date().toISOString()};saveState();delete event.currentTarget.dataset.loaded;renderHeating();toast("Heating configuration saved")}
+function renderHeatingReadiness(){const readiness=state.heatingReadiness||{},done=HEATING_READINESS_ITEMS.filter(item=>readiness[item.id]).length,score=Math.round(done/HEATING_READINESS_ITEMS.length*100);$("#heatingReadinessScore").textContent=`${score}%`;$("#heatingReadinessBar").style.width=`${score}%`;$("#heatingReadinessChecklist").innerHTML=HEATING_READINESS_ITEMS.map(item=>{const complete=Boolean(readiness[item.id]);return `<article class="heating-readiness-item ${complete?"complete":""}"><button data-heating-readiness="${item.id}" role="checkbox" aria-checked="${complete}"><span>${complete?"✓":""}</span><span><strong>${esc(item.title)}</strong><small>${esc(item.detail)}</small></span></button><button class="secondary-btn" data-route="${item.route}">Guidance</button></article>`}).join("")}
+function toggleHeatingReadiness(id){state.heatingReadiness={...(state.heatingReadiness||{}),[id]:!state.heatingReadiness?.[id],updatedAt:new Date().toISOString()};saveState();renderHeatingReadiness();toast(state.heatingReadiness[id]?"Heating readiness check complete":"Heating readiness check reopened")}
 function renderHeatingInspector(){
   const component=HEATING_COMPONENTS.find(item=>item.id===activeHeatingComponent)||heatingComponents()[0];
   if(!component){$("#heatingInspector").innerHTML="<h2>No matching heating components</h2><p>Select another heating view.</p>";return}
@@ -1374,6 +1384,7 @@ function renderHeatingInspector(){
 }
 function renderHeating(){
   renderHeatingProfile();
+  renderHeatingReadiness();
   const filters=[["all","All paths"],["control","Controls"],["energy","Energy"],["heat","Heat generation"],["air","Warm air"],["safety","Safety"]],components=heatingComponents(),visibleIds=new Set(components.map(item=>item.id)),links=HEATING_RELATIONS.filter(([from,to])=>visibleIds.has(from)&&visibleIds.has(to));
   $("#heatingFilters").innerHTML=filters.map(([id,label])=>`<button class="chip ${heatingFilter===id?"active":""}" data-heating-filter="${id}">${label}</button>`).join("");
   $("#heatingSummary").innerHTML=[[components.length,"Components"],[links.length,"Visible connections"],[components.filter(item=>item.status.toLowerCase().includes("confirm")).length,"Items to confirm"]].map(([value,label])=>`<article class="stat-card"><strong>${value}</strong><span>${label}</span></article>`).join("");
@@ -2084,6 +2095,7 @@ document.addEventListener("click",e=>{
   const gasComponent=e.target.closest("[data-gas-component]");if(gasComponent){activeGasComponent=gasComponent.dataset.gasComponent;renderGas()}
   const heatingFilterButton=e.target.closest("[data-heating-filter]");if(heatingFilterButton){heatingFilter=heatingFilterButton.dataset.heatingFilter;const first=heatingComponents()[0];if(first)activeHeatingComponent=first.id;renderHeating()}
   const heatingComponent=e.target.closest("[data-heating-component]");if(heatingComponent){activeHeatingComponent=heatingComponent.dataset.heatingComponent;renderHeating()}
+  const heatingReadiness=e.target.closest("[data-heating-readiness]");if(heatingReadiness)toggleHeatingReadiness(heatingReadiness.dataset.heatingReadiness);
   const workshopStep=e.target.closest("[data-workshop-step]");if(workshopStep){const index=Number(workshopStep.dataset.workshopStep);state.workshopSteps={...(state.workshopSteps||{}),[index]:!state.workshopSteps?.[index]};saveState();renderWorkshop()}
   if(e.target.closest("[data-workshop-session-start],[data-workshop-session-edit]"))openWorkshopSessionEditor();
   if(e.target.closest("[data-workshop-session-cancel]"))closeWorkshopSessionEditor();

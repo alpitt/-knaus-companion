@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 12.2.0 adds the Heating Readiness Checklist. Complete a persistent six-point pre-start sequence for alarm readiness, flue clearance, airflow, 12 V power, energy supply and hot-water state with a live score and direct guidance.
+
 Version 12.1.0 adds the Heating Configuration Profile. Record the fitted appliance, energy type, controller, location and owner notes offline, track configuration completeness and carry confirmed context into every heating component inspection and application backup.
 
 Version 12.0.0 adds the Interactive Heating System. Trace controls, energy supply, heat generation, warm-air distribution, hot-water coupling and combustion airflow through a dedicated configuration-aware explorer with safety boundaries and cross-system guidance.
