@@ -65,5 +65,9 @@ test("profile edits update lower-confidence evidence but preserve plate evidence
 
 test("production integrations retain compatibility controls",()=>{
   assert.match(source,/const STORE_KEY="knaus-ultimate-v1"/);assert.match(source,/schemaVersion:2/);assert.match(source,/state:\{\.\.\.state,schemaVersion:2\}/);assert.match(source,/const safetyCopy=state/);assert.match(source,/function vehicleEvidenceAnswer\(/);assert.match(source,/function evidenceBadge\(/);
-  assert.match(html,/Version 13\.7\.0/);for(const route of ["home","manuals","maintenance","diagnostics","workshop","heating","refrigeration","touring","vehicle","compliance","emergency","seasonal","settings"])assert.match(html,new RegExp(`data-screen="${route}"`));assert.match(source,/DATA\.chapters\.forEach/);assert.match(source,/DATA\.pages\.forEach/);assert.match(css,/@media\(max-width:620px\).*configuration-evidence-editor/s);assert.match(css,/\.evidence-badge/);
+  assert.match(html,/Version 13\.8\.0/);for(const route of ["home","manuals","maintenance","diagnostics","workshop","heating","refrigeration","touring","vehicle","compliance","emergency","seasonal","settings"])assert.match(html,new RegExp(`data-screen="${route}"`));assert.match(source,/DATA\.chapters\.forEach/);assert.match(source,/DATA\.pages\.forEach/);assert.match(css,/@media\(max-width:620px\).*configuration-evidence-editor/s);assert.match(css,/\.evidence-badge/);
+});
+
+test("electrical digital twin reuses registry evidence and exports connections",()=>{
+  assert.match(source,/const ELECTRICAL_EVIDENCE_FIELDS=Object\.freeze/);for(const mapping of ['"calira-evs":"charger"','vb06:"mainFuseBox"','vb04:"auxFuseBox"','"leisure-battery":"leisureBattery"'])assert.match(source,new RegExp(mapping));assert.match(source,/function electricalComponentEvidence\(component\).*configurationEvidence\(registryField\)/);assert.match(source,/function electricalEvidenceData\(/);assert.match(source,/connections:DATA\.electricalRelations/);assert.match(source,/function exportElectricalEvidence\(/);assert.match(html,/id="exportElectricalEvidence"/);assert.match(css,/\.electrical-evidence-context/);
 });

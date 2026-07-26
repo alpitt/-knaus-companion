@@ -1,6 +1,6 @@
 {
-  "version": "13.7.0",
-  "releaseName": "Vehicle Identity and Evidence Framework",
+  "version": "13.8.0",
+  "releaseName": "Electrical Digital Twin Evidence",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -388,7 +388,10 @@
     "Central vehicle evidence status and confidence model",
     "Non-destructive schema-version-2 saved-state migration",
     "Evidence-aware vehicle configuration editing, search and assistant answers",
-    "Evidence-preserving backups, restores and existing JSON reports"
+    "Evidence-preserving backups, restores and existing JSON reports",
+    "Registry-backed evidence badges on electrical components",
+    "Electrical evidence confidence summaries and inspector context",
+    "Schema-version-2 electrical component and connection evidence export"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
