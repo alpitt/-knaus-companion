@@ -41,6 +41,7 @@ jobs:
           grep -q 'const EVIDENCE_STATUSES=' app/assets/js/app-v4.js
           grep -q 'function migrateEvidenceState(' app/assets/js/app-v4.js
           grep -q 'function normaliseEvidence(' app/assets/js/app-v4.js
+          grep -q 'function synchroniseProfileEvidence(' app/assets/js/app-v4.js
           grep -q 'function evidenceBadge(' app/assets/js/app-v4.js
           grep -q 'Evidence status<select' app/assets/js/app-v4.js
           grep -q 'function vehicleEvidenceAnswer(' app/assets/js/app-v4.js

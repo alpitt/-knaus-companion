@@ -167,6 +167,10 @@ function migrateEvidenceState(input={}){
   Object.entries(VEHICLE_EVIDENCE_BASELINE).forEach(([key,value])=>{if(Object.prototype.hasOwnProperty.call(migrated,key))return;const profileKey=key==="baseVehicle"?"baseVehicle":key,profileValue=incoming.vehicleProfile?.[profileKey];migrated[key]=profileValue!==undefined&&String(profileValue).trim()!==""?normaliseEvidence(profileValue):normaliseEvidence(value)});
   return {...DEFAULT_STATE,...incoming,schemaVersion:2,vehicleConfiguration:migrated};
 }
+function synchroniseProfileEvidence(configuration={},profile={},verifiedDate=new Date().toISOString().slice(0,10)){
+  const next={...configuration},mapping={registration:"registration",vin:"vin",make:"make",model:"model",year:"year",baseVehicle:"baseVehicle",maxMass:"mam",length:"length"};
+  Object.entries(mapping).forEach(([profileKey,configurationKey])=>{const existing=normaliseEvidence(next[configurationKey]);if(EVIDENCE_STATUSES[existing.status].priority<EVIDENCE_STATUSES["owner-confirmed"].priority)return;next[configurationKey]={...existing,value:profile[profileKey]??"",status:"owner-confirmed",source:existing.status==="owner-confirmed"&&existing.source?existing.source:"Owner vehicle profile edit",lastVerified:verifiedDate}});return next;
+}
 function loadState(){try{return migrateEvidenceState(JSON.parse(localStorage.getItem(STORE_KEY)||"{}"))}catch{return migrateEvidenceState({})}}
 function saveState(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 async function loadJSON(path,fallback=[]){try{const r=await fetch(path);if(!r.ok)throw new Error(path);return await r.json()}catch{return fallback}}
@@ -314,7 +318,7 @@ function searchDocs(q){
   return assistantIndex().map(d=>{const hay=(d.title+" "+d.text).toLowerCase();return {...d,score:terms.reduce((n,t)=>n+(hay.includes(t)?1:0),0)}})
     .filter(d=>d.score>0).sort((a,b)=>b.score-a.score||(EVIDENCE_STATUSES[a.evidence?.status]?.priority||99)-(EVIDENCE_STATUSES[b.evidence?.status]?.priority||99)).slice(0,30);
 }
-function vehicleEvidenceAnswer(item){const evidence=normaliseEvidence(item.evidence),value=String(evidence.value||"Unknown"),label=EVIDENCE_STATUSES[evidence.status].label.toLowerCase();if(evidence.status==="estimated")return `${item.field.label} is currently recorded as ${value}, but this is estimated${evidence.notes?` and ${evidence.notes.charAt(0).toLowerCase()+evidence.notes.slice(1)}`:" and should be confirmed from vehicle documentation"}.`;if(evidence.status==="unknown")return `${item.field.label} is currently unknown${evidence.notes?`. ${evidence.notes}`:"."}`;if(evidence.status==="manual-reference")return `${item.field.label} is listed as ${value} in a manufacturer manual reference; this does not confirm the equipment fitted to this vehicle.`;return `${item.field.label} is recorded as ${value}. Evidence: ${label}${evidence.source?` (${evidence.source})`:""}.`}
+function vehicleEvidenceAnswer(item){const evidence=normaliseEvidence(item.evidence),hasValue=String(evidence.value??"").trim()!=="",value=hasValue?String(evidence.value):"Unknown",label=EVIDENCE_STATUSES[evidence.status].label.toLowerCase();if(evidence.status==="estimated")return `${item.field.label} is currently recorded as ${value}, but this is estimated${evidence.notes?` and ${evidence.notes.charAt(0).toLowerCase()+evidence.notes.slice(1)}`:" and should be confirmed from vehicle documentation"}.`;if(evidence.status==="unknown")return hasValue?`${item.field.label} is recorded as ${value}, but its evidence status is unknown${evidence.notes?`. ${evidence.notes}`:"."}`:`${item.field.label} is currently unknown${evidence.notes?`. ${evidence.notes}`:"."}`;if(evidence.status==="manual-reference")return `${item.field.label} is listed as ${value} in a manufacturer manual reference; this does not confirm the equipment fitted to this vehicle.`;return `${item.field.label} is recorded as ${value}. Evidence: ${label}${evidence.source?` (${evidence.source})`:""}.`}
 function renderResults(target,items,empty="No matching results."){
   const root=$(target);
   if(!items.length){root.innerHTML=`<article class="panel"><p>${esc(empty)}</p></article>`;return}
@@ -1722,6 +1726,7 @@ function closeVehicleProfileEditor(){const dialog=$("#vehicleProfileDialog");if(
 function saveVehicleProfile(event){
   event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget));
   state.vehicleProfile={registration:values.registration.trim(),vin:values.vin.trim(),make:values.make.trim(),model:values.model.trim(),year:values.year?Number(values.year):null,baseVehicle:values.baseVehicle.trim(),maxMass:values.maxMass?Number(values.maxMass):null,length:values.length?Number(values.length):null};
+  state.vehicleConfiguration=synchroniseProfileEvidence(state.vehicleConfiguration,state.vehicleProfile);
   saveState();closeVehicleProfileEditor();renderVehicle();toast("Vehicle details saved");
 }
 function openVehicleDocumentEditor(id=null){

@@ -15,8 +15,8 @@ const modelSource=[
   extract("function vehicleEvidenceAnswer(","function renderResults("),
   extract("function parseBackupText(","async function restoreBackup(")
 ].join("\n");
-const context={};vm.runInNewContext(`${modelSource}\nthis.api={EVIDENCE_STATUSES,VEHICLE_EVIDENCE_BASELINE,DEFAULT_STATE,normaliseEvidence,evidenceValue,migrateEvidenceState,parseBackupText,vehicleEvidenceAnswer}`,context);
-const {EVIDENCE_STATUSES,normaliseEvidence,migrateEvidenceState,parseBackupText,vehicleEvidenceAnswer}=context.api;
+const context={};vm.runInNewContext(`${modelSource}\nthis.api={EVIDENCE_STATUSES,VEHICLE_EVIDENCE_BASELINE,DEFAULT_STATE,normaliseEvidence,evidenceValue,migrateEvidenceState,synchroniseProfileEvidence,parseBackupText,vehicleEvidenceAnswer}`,context);
+const {EVIDENCE_STATUSES,normaliseEvidence,migrateEvidenceState,synchroniseProfileEvidence,parseBackupText,vehicleEvidenceAnswer}=context.api;
 
 test("status values and confidence order are exact",()=>{
   assert.deepEqual(Object.keys(EVIDENCE_STATUSES),["owner-confirmed","photograph-confirmed","plate-confirmed","manual-reference","estimated","unknown"]);
@@ -55,7 +55,12 @@ test("schema v1 and v2 backups restore while invalid JSON is rejected",()=>{
 
 test("assistant distinguishes confirmed, estimated, unknown and manual evidence",()=>{
   const field={label:"Charger"},answer=status=>vehicleEvidenceAnswer({field,evidence:{value:"Example",status,source:"Evidence source",notes:"Confirm from plate"}});
-  assert.match(answer("photograph-confirmed"),/confirmed from photograph/);assert.match(answer("estimated"),/estimated/);assert.match(answer("unknown"),/currently unknown/);assert.match(answer("manual-reference"),/does not confirm the equipment fitted/);
+  assert.match(answer("photograph-confirmed"),/confirmed from photograph/);assert.match(answer("estimated"),/estimated/);assert.match(answer("unknown"),/recorded as Example, but its evidence status is unknown/);assert.match(vehicleEvidenceAnswer({field,evidence:{value:"",status:"unknown"}}),/currently unknown/);assert.match(answer("manual-reference"),/does not confirm the equipment fitted/);
+});
+
+test("profile edits update lower-confidence evidence but preserve plate evidence",()=>{
+  const configuration={make:{value:"Old make",status:"unknown"},model:{value:"Plate model",status:"plate-confirmed",source:"Build plate"}},profile={make:"New make",model:"Profile model",year:2009};
+  const next=synchroniseProfileEvidence(configuration,profile,"2026-07-26");assert.equal(next.make.value,"New make");assert.equal(next.make.status,"owner-confirmed");assert.equal(next.make.lastVerified,"2026-07-26");assert.equal(next.model.value,"Plate model");assert.equal(next.model.status,"plate-confirmed");assert.equal(next.year.value,2009);
 });
 
 test("production integrations retain compatibility controls",()=>{
