@@ -34,7 +34,10 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 12.2.0' app/index.html
+          grep -q 'Version 12.3.0' app/index.html
+          grep -q 'id="heatingRunForm"' app/index.html
+          grep -q 'id="heatingRunSummary"' app/index.html
+          grep -q 'id="heatingRunHistory"' app/index.html
           grep -q 'id="heatingReadinessScore"' app/index.html
           grep -q 'id="heatingReadinessBar"' app/index.html
           grep -q 'id="heatingReadinessChecklist"' app/index.html
@@ -189,7 +192,12 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="12.2.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="12.3.0"' app/assets/js/app-v4.js
+          grep -q 'heatingRuns:\[\]' app/assets/js/app-v4.js
+          grep -q 'function renderHeatingRuns()' app/assets/js/app-v4.js
+          grep -q 'function saveHeatingRun(event)' app/assets/js/app-v4.js
+          grep -q 'function deleteHeatingRun(id)' app/assets/js/app-v4.js
+          grep -q 'latestHeatingRun' app/assets/js/app-v4.js
           grep -q 'heatingReadiness:{}' app/assets/js/app-v4.js
           grep -q 'const HEATING_READINESS_ITEMS=' app/assets/js/app-v4.js
           grep -q 'function renderHeatingReadiness()' app/assets/js/app-v4.js
