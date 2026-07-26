@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 13.8.0</title>
+  <title>Knaus Companion 13.9.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=13.8.0-electrical-evidence">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=13.9.0-electrical-measurements">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 13.8.0</span>
+        <span>Version 13.9.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -386,6 +386,7 @@
           <div><div id="electricalFilters" class="chips" aria-label="Filter electrical diagram"></div><button id="exportElectricalEvidence" class="secondary-btn" type="button">Export electrical evidence</button></div>
         </div>
         <div id="electricalSummary" class="status-grid"></div>
+        <form id="electricalMeasurementForm" class="panel electrical-measurement-form"><div><span class="eyebrow">Measurement evidence</span><h2>Record electrical reading</h2></div><label>Date<input id="electricalMeasurementDate" name="date" type="date" required></label><label>Component<select id="electricalMeasurementComponent" name="componentId" required></select></label><label>Test point<input name="testPoint" maxlength="120" placeholder="Battery terminals or fuse output" required></label><label>Value<input name="value" inputmode="decimal" maxlength="40" placeholder="12.7" required></label><label>Unit<select name="unit"><option>V</option><option>A</option><option>mA</option><option>Ω</option><option>W</option><option>°C</option><option>Other</option></select></label><label>Conditions<input name="conditions" maxlength="160" placeholder="Rested, hook-up connected or engine running"></label><label class="electrical-measurement-notes">Notes<textarea name="notes" rows="2" maxlength="500" placeholder="Instrument, test method or observation"></textarea></label><button class="primary-btn" type="submit">Record measurement</button></form>
         <div class="electrical-layout">
           <section class="panel electrical-map-panel" aria-label="Electrical system map">
             <div class="electrical-legend" id="electricalLegend"></div>
@@ -1006,7 +1007,7 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=13.8.0-electrical-evidence"></script>
+  <script src="assets/js/app-v4.js?v=13.9.0-electrical-measurements"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

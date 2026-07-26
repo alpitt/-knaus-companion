@@ -29,6 +29,8 @@ The deployment workflow refuses to publish unless the package contains:
 
 ## Current release
 
+Version 13.9.0 adds Electrical Measurement Evidence. Record dated readings against the selected electrical component with test point, value, unit, operating conditions and notes; review or delete them in the inspector, search them offline, and include them in the electrical evidence export and application backup.
+
 Version 13.8.0 adds Electrical Digital Twin Evidence. The interactive electrical path now displays registry-backed evidence confidence for mapped fitted equipment, clearly marks unverified and planned references, and exports a schema-version-2 component and connection evidence pack.
 
 Version 13.7.0 adds the Vehicle Identity and Evidence Framework. Vehicle configuration values now carry explicit confidence, source, verification date and notes, with schema-version-2 migration, evidence-aware search and assistant answers, and compatible backups and reports.

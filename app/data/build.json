@@ -1,6 +1,6 @@
 {
-  "version": "13.8.0",
-  "releaseName": "Electrical Digital Twin Evidence",
+  "version": "13.9.0",
+  "releaseName": "Electrical Measurement Evidence",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -391,7 +391,10 @@
     "Evidence-preserving backups, restores and existing JSON reports",
     "Registry-backed evidence badges on electrical components",
     "Electrical evidence confidence summaries and inspector context",
-    "Schema-version-2 electrical component and connection evidence export"
+    "Schema-version-2 electrical component and connection evidence export",
+    "Dated electrical readings linked to digital-twin components",
+    "Test-point, value, unit, condition and observation capture",
+    "Electrical measurements in offline search, backups and evidence exports"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
