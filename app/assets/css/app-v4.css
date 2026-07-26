@@ -327,6 +327,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 .legend-dot.gas-supply{background:#d97706}.legend-dot.gas-appliance{background:#ea580c}.legend-dot.gas-exhaust{background:#64748b}.legend-dot.gas-safety{background:#dc2626}
 @media(max-width:600px){.heating-run-export-actions{grid-template-columns:1fr}}
 .heating-service-overdue{color:#dc2626}.heating-service-due{color:#c45f00}.heating-service-current{color:#15803d}
+.heating-service-actions{display:flex;gap:8px}.heating-service-history-block{margin-bottom:16px}.heating-service-history{display:grid;gap:8px}.heating-service-record{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;border-left:5px solid #15803d}.heating-service-record>div{display:grid;gap:4px}.heating-service-record small,.heating-service-record span{color:var(--muted)}.heating-service-record p{margin:2px 0}.heating-service-empty{text-align:center}.heating-service-empty p{margin:.35rem 0 0;color:var(--muted)}@media(max-width:600px){.heating-service-actions{display:grid}.heating-service-actions button{width:100%}.heating-service-record{grid-template-columns:1fr}.heating-service-record .danger-btn{width:100%}}
 
 /* v4.4 interactive vehicle map */
 .vehicle-map-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,.8fr);gap:16px;align-items:start}

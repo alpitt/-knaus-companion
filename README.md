@@ -21,6 +21,8 @@ Upload the file `Knaus_Companion_Ultimate_v1.0.zip` to the root of the `main` br
 
 ## Current release
 
+Version 12.8.0 adds Heating Service History. Record explicit service completions from the schedule, advance the next due date automatically, retain provider, reference and work notes, review or delete durable history entries, and carry the history into evidence exports and backups.
+
 Version 12.7.0 adds the Heating Service Schedule. Record the last service, recurring interval, provider, reference and notes; calculate the next due date; receive overdue and 30-day Operations Dashboard reminders; and retain the schedule in heating evidence exports and backups.
 
 Version 12.6.0 adds the Printable Heating Report. Produce a workshop-ready handoff containing the fitted configuration, pre-start readiness score and checklist, plus the complete dated operational test table with fault and observation evidence.

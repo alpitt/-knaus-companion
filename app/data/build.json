@@ -1,6 +1,6 @@
 {
-  "version": "12.7.0",
-  "releaseName": "Heating Service Schedule",
+  "version": "12.8.0",
+  "releaseName": "Heating Service History",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -346,7 +346,11 @@
     "Persistent heating service schedule",
     "Calculated recurring heating service due dates",
     "Overdue and due-soon heating service dashboard alerts",
-    "Heating service details in evidence exports and backups"
+    "Heating service details in evidence exports and backups",
+    "Durable heating service completion history",
+    "Automatic next-due advancement after service completion",
+    "Deletable provider, reference and work-note service records",
+    "Heating service history in evidence exports and backups"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
