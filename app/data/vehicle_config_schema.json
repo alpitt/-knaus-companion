@@ -30,6 +30,12 @@
           "value": "Sun Traveller"
         },
         {
+          "id": "exactModel",
+          "label": "Exact model",
+          "type": "text",
+          "value": ""
+        },
+        {
           "id": "year",
           "label": "Model year",
           "type": "number",
@@ -98,6 +104,12 @@
         {
           "id": "starterBattery",
           "label": "Starter battery",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "starterBatteryLocation",
+          "label": "Starter battery location",
           "type": "text",
           "value": ""
         },
@@ -261,6 +273,18 @@
         {
           "id": "fridge",
           "label": "Refrigerator model",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "fridgeManufacturer",
+          "label": "Refrigerator manufacturer",
+          "type": "text",
+          "value": ""
+        },
+        {
+          "id": "fridgeType",
+          "label": "Refrigerator type",
           "type": "text",
           "value": ""
         },
