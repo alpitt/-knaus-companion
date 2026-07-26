@@ -1,6 +1,6 @@
 {
-  "version": "12.2.0",
-  "releaseName": "Heating Readiness Checklist",
+  "version": "12.3.0",
+  "releaseName": "Heating Test Runs",
   "buildDate": "2026-07-25",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -325,7 +325,12 @@
     "Live heating readiness score and progress",
     "Power, fuel, airflow, flue, water and alarm checks",
     "Direct guidance from every readiness item",
-    "Heating readiness state included in backups"
+    "Heating readiness state included in backups",
+    "Dated heating operational test records",
+    "Mode, duration, result, fault-code and observation capture",
+    "Normal, monitor and action-required test outcomes",
+    "Heating test history retained in offline backups",
+    "Latest non-normal heating result shown on the Operations Dashboard"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
