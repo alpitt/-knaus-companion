@@ -34,7 +34,10 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 13.3.0' app/index.html
+          grep -q 'Version 13.4.0' app/index.html
+          grep -q 'id="refrigerationRunInsights"' app/index.html
+          grep -q 'id="refrigerationRunFilters"' app/index.html
+          grep -q 'id="refrigerationRunResultCount"' app/index.html
           grep -q 'id="refrigerationRunForm"' app/index.html
           grep -q 'id="refrigerationRunSummary"' app/index.html
           grep -q 'id="refrigerationRunHistory"' app/index.html
@@ -221,7 +224,10 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="13.3.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="13.4.0"' app/assets/js/app-v4.js
+          grep -q 'refrigerationRunFilter="all"' app/assets/js/app-v4.js
+          grep -q 'data-refrigeration-run-filter' app/assets/js/app-v4.js
+          grep -q 'Average temperature drop' app/assets/js/app-v4.js
           grep -Fq 'refrigerationRuns:[]' app/assets/js/app-v4.js
           grep -q 'function renderRefrigerationRuns()' app/assets/js/app-v4.js
           grep -q 'function saveRefrigerationRun(event)' app/assets/js/app-v4.js
