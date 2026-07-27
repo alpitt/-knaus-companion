@@ -31,12 +31,12 @@ test("manifest contains valid icons and screenshots",()=>{
 
 test("service worker offline shell is version-consistent and complete",()=>{
   const worker=read("app/service-worker.js"),match=worker.match(/const CORE=(\[[\s\S]*?\]);/);assert.ok(match,"Service worker CORE list missing");
-  const core=vm.runInNewContext(match[1]);assert.ok(core.includes("./index.html"));assert.ok(core.includes("./manifest.webmanifest"));assert.match(worker,/v15-0-0-release-candidate/);
+  const core=vm.runInNewContext(match[1]);assert.ok(core.includes("./index.html"));assert.ok(core.includes("./manifest.webmanifest"));assert.match(worker,/v15-1-0-owner-records/);
   for(const entry of core){const clean=entry.split("?")[0].replace(/^\.\//,"");if(!clean)continue;assert.ok(fs.existsSync(path.join(APP,clean)),`Offline shell asset missing: app/${clean}`)}
   assert.match(worker,/CACHE_PREFIX/);assert.match(worker,/REBUILD_CACHE/);assert.match(worker,/request\.url/);
 });
 
 test("release version, storage and fallback remain consistent",()=>{
   const html=read("app/index.html"),fallback=read("app/404.html"),source=read("app/assets/js/app-v4.js"),build=JSON.parse(read("app/data/build.json"));
-  assert.equal(html,fallback);assert.match(html,/Knaus Companion 15\.0\.0/);assert.match(source,/const APP_VERSION="15\.0\.0"/);assert.equal(build.version,"15.0.0");assert.match(source,/const STORE_KEY="knaus-ultimate-v1"/);assert.match(source,/DEFAULT_STATE=\{schemaVersion:2/);
+  assert.equal(html,fallback);assert.match(html,/Knaus Companion 15\.1\.0/);assert.match(source,/const APP_VERSION="15\.1\.0"/);assert.equal(build.version,"15.1.0");assert.match(source,/const STORE_KEY="knaus-ultimate-v1"/);assert.match(source,/DEFAULT_STATE=\{schemaVersion:2/);
 });

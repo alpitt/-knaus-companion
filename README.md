@@ -2,7 +2,7 @@
 
 GitHub Pages host for the preserved Knaus Companion Ultimate workshop application.
 
-The controlled validation and Engineering Canon governance plan for the next implementation programme is documented in [Companion 14 implementation programme](docs/COMPANION_14_IMPLEMENTATION.md). Controlled Canon batches must follow the [KB import guide](docs/KB_IMPORT_GUIDE.md). Digital Twin reference changes must follow the [Digital Twin guide](docs/DIGITAL_TWIN_GUIDE.md). Assistant rules and evidence changes must follow the [Local Reasoning guide](docs/LOCAL_REASONING_GUIDE.md). Release operators should use the [Release guide](docs/RELEASE_GUIDE.md), while contributors should use the [Developer guide](docs/DEVELOPER_GUIDE.md).
+The controlled validation and Engineering Canon governance plan for the next implementation programme is documented in [Companion 14 implementation programme](docs/COMPANION_14_IMPLEMENTATION.md). Controlled Canon batches must follow the [KB import guide](docs/KB_IMPORT_GUIDE.md). Digital Twin reference changes must follow the [Digital Twin guide](docs/DIGITAL_TWIN_GUIDE.md). Assistant rules and evidence changes must follow the [Local Reasoning guide](docs/LOCAL_REASONING_GUIDE.md). Owners can use the [Owner records guide](docs/OWNER_RECORDS_GUIDE.md), and contributors should follow the [Owner records developer guide](docs/OWNER_RECORDS_DEVELOPER_GUIDE.md). Release operators should use the [Release guide](docs/RELEASE_GUIDE.md), while contributors should use the [Developer guide](docs/DEVELOPER_GUIDE.md).
 
 ## Vehicle evidence statuses
 
@@ -30,6 +30,8 @@ The deployment workflow refuses to publish unless the package contains:
 `https://alpitt.github.io/-knaus-companion/`
 
 ## Current release
+
+Version 15.1.0 adds private local owner records, append-only revision history, evidence links, fault and maintenance lifecycles, modifications, measurements, a vehicle timeline, runtime Digital Twin owner overlays, assistant retrieval and backup/health integration.
 
 Version 15.0.0 Release Candidate integrates application-health reporting, improved offline search, safer backup restore, cache recovery, accessibility and print hardening, and automated release integrity checks. It preserves the existing storage key and schema-version-2 compatibility.
 

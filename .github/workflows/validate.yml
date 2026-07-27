@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records]
 
 permissions:
   contents: read
@@ -48,6 +48,11 @@ jobs:
           node --check app/assets/js/guided-diagnostics.js
           node --check scripts/build-reasoning-index.js
           node --check scripts/validate-reasoning.js
+          node --check app/assets/js/owner-records.js
+          node --check app/assets/js/record-history.js
+          node --check app/assets/js/evidence-links.js
+          node --check app/assets/js/digital-twin-owner-overlay.js
+          node --check scripts/validate-owner-records.js
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
@@ -59,6 +64,9 @@ jobs:
         run: |
           node scripts/build-reasoning-index.js
           node scripts/validate-reasoning.js
+
+      - name: Validate owner-record contracts and fixtures
+        run: node scripts/validate-owner-records.js
 
       - name: Run every repository test
         shell: bash

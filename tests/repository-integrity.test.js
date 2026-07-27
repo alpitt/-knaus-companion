@@ -65,6 +65,12 @@ test("required production files exist", () => {
     "app/assets/js/guided-diagnostics.js",
     "scripts/build-reasoning-index.js",
     "scripts/validate-reasoning.js",
+    "app/data/owner_records.schema.json",
+    "app/assets/js/owner-records.js",
+    "app/assets/js/record-history.js",
+    "app/assets/js/evidence-links.js",
+    "app/assets/js/digital-twin-owner-overlay.js",
+    "scripts/validate-owner-records.js",
   ];
   for (const relativePath of required) {
     assert.ok(fs.existsSync(path.join(ROOT, relativePath)), `Required production file is missing: ${relativePath}`);
@@ -210,4 +216,11 @@ test("storage key and saved-state schema remain compatible", () => {
   const defaultSchema = source.match(/const DEFAULT_STATE=\{schemaVersion:(\d+),/)?.[1];
   assert.equal(defaultSchema, "2", "DEFAULT_STATE schema version must remain 2");
   assert.match(source, /schemaVersion:2/, "Schema version 2 migration/export support is missing");
+});
+
+test("owner-record runtime, routes and offline shell are integrated", () => {
+  const html=read("app/index.html"),worker=read("app/service-worker.js"),source=read("app/assets/js/app-v4.js");
+  for(const route of ["records","timeline","health"])assert.match(html,new RegExp(`data-screen="${route}"`));
+  for(const asset of ["owner-records.js","record-history.js","evidence-links.js","digital-twin-owner-overlay.js","owner_records.schema.json"]){assert.match(worker,new RegExp(asset.replace(".","\\.")),`${asset} missing from offline shell`)}
+  assert.match(source,/ownerRecords:\[\]/);assert.match(source,/evidenceLinks:\[\]/);assert.match(source,/KnausOwnerRecords/);assert.match(source,/KnausDigitalTwinOwnerOverlay/);
 });

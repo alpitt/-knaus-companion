@@ -220,3 +220,13 @@ Sprint 4 builds a local evidence index from chapters, manual OCR, the empty-or-p
 Processing is entirely in-browser. No external request, model, API key or remote embedding service is used. Concise assistant history reuses the existing optional schema-version-2 `assistantHistory` collection and remains limited to 20 entries; no migration or backup change is required. The evidence index and engines are cached for offline use.
 
 Known limitations include lexical rather than semantic retrieval, incomplete static Canon content, and no autonomous repair decisions. Sprint 5 should add controlled evaluation fixtures and evidence-linking improvements, not cloud AI or predictive maintenance.
+
+## Sprint 6: owner records and vehicle history
+
+Sprint 6 adds a local-only owner-record architecture for observations, faults, maintenance, repairs, modifications, inspections, measurements, workshop jobs, part replacements, services, document notes and photograph notes. The additive collections remain in saved-state schema 2 under the unchanged `knaus-ultimate-v1` key; schema-1 and schema-2 backup migration remains intact.
+
+`owner-records.js` validates immutable read/write operations and stable IDs. `record-history.js` records append-only revisions for creation, updates, lifecycle changes, links, archive, restore, import and migration. `evidence-links.js` references evidence without copying files. Faults keep suspected and confirmed causes separate; maintenance recurrence uses only explicit saved intervals; measurements preserve entered units; modifications never rewrite repository Twin facts.
+
+The `#records` editor, `#timeline` view and print/export/import tools make vehicle history usable offline. `digital-twin-owner-overlay.js` combines local history with a cloned reference Twin at runtime. The Assistant receives private records at runtime only, preserves confidence, distinguishes archived history and never mutates records automatically. Backup previews and Application Health include owner-record, evidence, reference, history and storage quality metrics.
+
+Privacy is structural: there are no uploads, analytics, telemetry, API keys or external services, and no private owner data enters generated repository JSON. Known limitations are lexical search, a deliberately partial reference Twin, on-demand manual page caching and browser-storage capacity. Sprint 7 should focus on acceptance testing and careful UX refinements for record linking and lifecycle forms, without adding connectivity or automated diagnosis.

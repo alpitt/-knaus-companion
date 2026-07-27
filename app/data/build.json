@@ -1,6 +1,6 @@
 {
-  "version": "15.0.0",
-  "releaseName": "Companion 15 Release Candidate",
+  "version": "15.1.0",
+  "releaseName": "Owner Records and Vehicle History",
   "buildDate": "2026-07-27",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {

@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
   <link rel="icon" href="data:,">
-  <title>Knaus Companion 15.0.0</title>
+  <title>Knaus Companion 15.1.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=15.0.0-release-candidate">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=15.1.0-owner-records">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -17,7 +17,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 15.0.0</span>
+        <span>Version 15.1.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -553,6 +553,7 @@
         <div class="page-head"><span class="eyebrow">Release health</span><h1>Application health</h1><p>Repository, saved data, evidence, offline readiness and validation status in one place.</p></div>
         <div id="healthSummary" class="status-grid"></div>
         <div id="healthChecks" class="health-grid"></div>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Local owner evidence</span><h2>Owner-record quality</h2></div></div><div id="healthOwnerRecordStatus" class="panel health-check"></div><div id="healthOwnerRecords" class="status-grid"></div></section>
         <section class="panel health-actions"><div><span class="eyebrow">Offline recovery</span><h2>Application cache</h2><p id="healthCacheDetail">Checking cache…</p></div><button class="secondary-btn" id="healthRefresh">Refresh application</button><button class="secondary-btn" id="healthRebuildCache">Rebuild cache</button><button class="danger-btn" id="healthClearCache">Clear cache</button></section>
         <section class="panel"><span class="eyebrow">Backup readiness</span><h2>Local record summary</h2><div id="healthRecordCounts"></div><button class="primary-btn" data-route="settings">Open backup and restore</button></section>
       </section>
@@ -1058,18 +1059,18 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/kb-corpus.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/digital-twin.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/digital-twin-adapter.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/digital-twin-owner-overlay.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/reasoning-safety.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/record-history.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/evidence-links.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/owner-records.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/owner-record-ui.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/local-reasoning.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/guided-diagnostics.js?v=15.0.0-release-candidate"></script>
-  <script src="assets/js/app-v4.js?v=15.0.0-release-candidate"></script>
+  <script src="assets/js/kb-corpus.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/digital-twin.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/digital-twin-adapter.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/digital-twin-owner-overlay.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/reasoning-safety.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/record-history.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/evidence-links.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/owner-records.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/owner-record-ui.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/local-reasoning.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/guided-diagnostics.js?v=15.1.0-owner-records"></script>
+  <script src="assets/js/app-v4.js?v=15.1.0-owner-records"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
