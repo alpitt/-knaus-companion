@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 14.0.0</title>
+  <title>Knaus Companion 14.1.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=14.0.0-engineering-corpus">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=14.1.0-digital-twin">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 14.0.0</span>
+        <span>Version 14.1.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -153,6 +153,20 @@
           <label>Sort<select id="canonSort"><option value="edition">Edition and sequence</option><option value="title">Title</option><option value="updated">Recently updated</option></select></label>
         </div>
         <div id="canonResults" class="corpus-results"></div>
+      </section>
+
+      <section class="screen" data-screen="digital-twin">
+        <div class="page-head"><span class="eyebrow">Documented vehicle state</span><h1>Digital Twin</h1><p>This Digital Twin represents the currently documented state of the vehicle. Unknown or unverified details remain clearly identified.</p></div>
+        <div id="twinStatus" class="panel twin-status" role="status">Loading documented vehicle state…</div>
+        <div id="twinStats" class="status-grid"></div>
+        <section class="panel twin-search"><label>Search the Digital Twin<input id="twinSearch" type="search" placeholder="Component, identifier, system, evidence or relationship"></label><div id="twinSearchResults"></div></section>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Overview</span><h2>Vehicle identity</h2></div></div><div id="twinIdentity" class="twin-grid"></div></section>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Systems</span><h2>Documented coverage</h2></div></div><div id="twinSystems" class="twin-grid"></div></section>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Components</span><h2>Known equipment</h2></div><label>System<select id="twinComponentSystem"><option value="">All systems</option></select></label></div><div id="twinComponents" class="twin-grid"></div></section>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Relationships</span><h2>Documented connections</h2></div></div><div class="twin-filters"><label>Type<select id="twinRelationshipType"><option value="">All types</option></select></label><label>System<select id="twinRelationshipSystem"><option value="">All systems</option></select></label></div><div id="twinRelationships" class="twin-list"></div></section>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Evidence</span><h2>Sources and confidence</h2></div></div><div id="twinEvidence" class="twin-list"></div></section>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Data quality</span><h2>Known limits</h2></div></div><div id="twinQuality" class="twin-grid"></div></section>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Integrated areas</span><h2>Continue in Companion</h2></div></div><div id="twinLinks" class="module-grid"></div></section>
       </section>
 
       <section class="screen" data-screen="compliance">
@@ -1023,8 +1037,10 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/kb-corpus.js?v=14.0.0-engineering-corpus"></script>
-  <script src="assets/js/app-v4.js?v=14.0.0-engineering-corpus"></script>
+  <script src="assets/js/kb-corpus.js?v=14.1.0-digital-twin"></script>
+  <script src="assets/js/digital-twin.js?v=14.1.0-digital-twin"></script>
+  <script src="assets/js/digital-twin-adapter.js?v=14.1.0-digital-twin"></script>
+  <script src="assets/js/app-v4.js?v=14.1.0-digital-twin"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

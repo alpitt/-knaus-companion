@@ -1,6 +1,6 @@
 {
-  "version": "14.0.0",
-  "releaseName": "Engineering Corpus Foundation",
+  "version": "14.1.0",
+  "releaseName": "Digital Twin Foundation",
   "buildDate": "2026-07-27",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {

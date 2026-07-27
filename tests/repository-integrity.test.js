@@ -52,6 +52,11 @@ test("required production files exist", () => {
     "app/data/kb_content.schema.json",
     "app/data/kb_index.json",
     "scripts/build-kb-index.js",
+    "app/data/digital_twin.schema.json",
+    "app/data/digital_twin.json",
+    "app/assets/js/digital-twin.js",
+    "app/assets/js/digital-twin-adapter.js",
+    "scripts/validate-digital-twin.js",
   ];
   for (const relativePath of required) {
     assert.ok(fs.existsSync(path.join(ROOT, relativePath)), `Required production file is missing: ${relativePath}`);
@@ -72,6 +77,16 @@ test("Engineering Corpus manifest, index, files and routes agree", () => {
   assert.match(html, /data-screen="manuals"/);
   assert.match(html, /data-library="chapters"/);
   assert.match(html, /data-library="manual"/);
+});
+
+test("Digital Twin assets, validation and route are present", () => {
+  const validation = spawnSync(process.execPath, [path.join(ROOT, "scripts", "validate-digital-twin.js")], { encoding: "utf8" });
+  assert.equal(validation.status, 0, `Digital Twin validation failed:\n${validation.stderr || validation.stdout}`);
+  const twin = readJson("app/data/digital_twin.json");
+  for (const collection of ["documents", "photographs"]) for (const reference of twin[collection] || []) assert.ok(fs.existsSync(path.join(APP, reference.path)), `Missing Digital Twin static file app/${reference.path}`);
+  const html = read("app/index.html");
+  assert.match(html, /data-screen="digital-twin"/);
+  for (const route of ["home", "manuals", "canon", "vehicle", "electrical", "water", "gas", "heating", "refrigeration", "maintenance", "diagnostics", "workshop", "settings"]) assert.match(html, new RegExp(`data-screen="${route}"`));
 });
 
 test("production JavaScript passes Node syntax checking", () => {

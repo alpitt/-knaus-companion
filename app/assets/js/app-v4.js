@@ -1,5 +1,5 @@
 
-const APP_VERSION="14.0.0";
+const APP_VERSION="14.1.0";
 const STORE_KEY="knaus-ultimate-v1";
 const EVIDENCE_STATUSES=Object.freeze({"owner-confirmed":{label:"Owner confirmed",priority:2},"photograph-confirmed":{label:"Confirmed from photograph",priority:3},"plate-confirmed":{label:"Confirmed from vehicle plate",priority:1},"manual-reference":{label:"Manufacturer manual reference",priority:4},estimated:{label:"Estimated",priority:5},unknown:{label:"Unknown",priority:6}});
 const VEHICLE_EVIDENCE_BASELINE=Object.freeze({make:{value:"Knaus",status:"owner-confirmed",source:"Owner vehicle identification",notes:"Existing confirmed make"},model:{value:"Sun Traveller",status:"owner-confirmed",source:"Owner vehicle identification"},exactModel:{value:"Sun-Traveller 550 D",status:"estimated",source:"Knaus manual layout and vehicle evidence",notes:"Probable model; confirm from build plate or original vehicle documentation"},year:{value:2009,status:"owner-confirmed",source:"Vehicle registration details"},baseVehicle:{value:"Fiat Ducato X250",status:"estimated",source:"Vehicle age and observed cab generation",notes:"Confirm from vehicle identification documentation"},engine:{value:"2.3 Multijet 120",status:"estimated",source:"Owner information",notes:"Confirm from VIN, engine code or official vehicle documentation"},charger:{value:"Calira EVS 30/20-DS/U",status:"photograph-confirmed",source:"Installed equipment photograph"},mainFuseBox:{value:"Calira VB 06-1",status:"photograph-confirmed",source:"Installed equipment photograph"},leisureBattery:{value:"Exide EK960 AGM 96 Ah",status:"photograph-confirmed",source:"Battery label photograph"},starterBatteryLocation:{value:"Cab floor battery compartment",status:"photograph-confirmed",source:"Installed battery photograph"},heating:{value:"Truma Trumatic C 4002",status:"photograph-confirmed",source:"Installed appliance and control photographs"},fridgeManufacturer:{value:"Dometic",status:"photograph-confirmed",source:"Refrigerator photograph"},fridgeType:{value:"AES absorption refrigerator",status:"photograph-confirmed",source:"Refrigerator control photograph"},fridge:{value:"Unknown",status:"unknown",source:"",notes:"Confirm from refrigerator data plate"}});
@@ -78,6 +78,7 @@ const DATA={chapters:[],pages:[],diagnostics:[],maintenanceTasks:[],assistantPro
 let state=loadState();
 if((state.seasonalCustomTasks||[]).some(item=>item.mode==="winterise")){state.seasonalCustomTasks=state.seasonalCustomTasks.map(item=>item.mode==="winterise"?{...item,mode:"winter"}:item);saveState()}
 let libraryMode="chapters";
+let digitalTwinRuntimeView=null;
 let activeManualPage=1;
 let activeChapterNumber=null;
 let diagnosticFilter="all";
@@ -191,6 +192,7 @@ function setActiveRoute(id){
   if(id==="heating")renderHeating();
   if(id==="refrigeration"){renderRefrigeration();renderRefrigerationReadiness();renderRefrigerationRuns()}
   if(id==="canon")renderCanon();
+  if(id==="digital-twin")renderDigitalTwin();
   $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
@@ -198,7 +200,7 @@ function closeDrawer(){$("#drawer").classList.remove("open");$("#drawer").setAtt
 function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark"?"dark":"light"}
 
 const NAV=[
-  ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],["canon","Engineering Canon","⌘"],
+  ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],["canon","Engineering Canon","⌘"],["digital-twin","Digital Twin","◎"],
   ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["seasonal","Seasonal care","❄"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["heating","Heating system","♨"],["refrigeration","Refrigeration","❄"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
@@ -283,6 +285,7 @@ function renderHome(){
     moduleCard("vehicle","🚐","My motorhome","Systems, photos and upgrades"),
     moduleCard("manuals","📘","Manuals","Companion chapters and official pages"),
     moduleCard("canon","⌘","Engineering Canon","Governed engineering knowledge and provenance"),
+    moduleCard("digital-twin","◎","Digital Twin","Documented vehicle facts, evidence and relationships"),
     moduleCard("diagnostics","🧰","Diagnostics","Guided checks for common problems"),
     moduleCard("maintenance","🔧","Maintenance","Tasks, service history and reminders"),
     moduleCard("compliance","🛡","Compliance","Documents, scheduled care and readiness"),
@@ -296,6 +299,7 @@ function renderHome(){
 function assistantIndex(){
   const docs=[];
   (window.KnausCorpus?.filter()||[]).forEach(record=>docs.push({type:"engineering canon",title:`${record.id}. ${record.title}`,text:record.searchText||`${record.summary} ${record.purpose}`,raw:record,canonId:record.id}));
+  const twinApi=window.KnausDigitalTwin,twin=twinApi?.getTwin();[...(twinApi?.getSystems()||[]),...(twinApi?.getComponents()||[]),...(twinApi?.getRelationships()||[]),...(twinApi?.getEvidence()||[]),...(twin?.documents||[]),...(twin?.modifications||[])].forEach(entity=>docs.push({type:"digital twin",title:entity.name||entity.title||entity.id,text:JSON.stringify(entity),raw:entity,twinEntityId:entity.id}));
   DATA.chapters.forEach(c=>docs.push({type:"chapter",title:`Chapter ${c.n}. ${c.title}`,text:`${c.title} ${c.summary||""}`,chapterNumber:c.n,raw:c}));
   DATA.pages.forEach(p=>docs.push({type:"manual",title:`Page ${p.page}. ${p.title||"Official manual"}`,text:p.text||"",page:Number(p.page),raw:p}));
   DATA.diagnostics.forEach(d=>docs.push({type:"diagnostic",title:d.title||"Diagnostic",text:JSON.stringify(d)}));
@@ -359,6 +363,23 @@ function renderCanon(){
 async function openCanonDocument(id){
   try{const document=await window.KnausCorpus.getDocument(id),body=document.sections.map(section=>`<section class="corpus-section"><h3>${esc(section.heading)}</h3>${(section.content||[]).map(block=>block.format==="controlled-html"?sanitizeTrustedHtml(block.value||block.content):`<pre class="corpus-text">${esc(block.value||block.content)}</pre>`).join("")}</section>`).join(""),related=`<h3>Related references</h3><p>KB: ${esc((document.relatedKB||[]).map(item=>item.id||item).join(", ")||"None")}<br>Companion chapters: ${esc((document.relatedChapters||[]).join(", ")||"None")}<br>Manual pages: ${esc((document.relatedManualPages||[]).join(", ")||"None")}</p>`,metadata=`<dl><dt>Revision and status</dt><dd>${esc(document.revision)} • ${esc(document.status)}</dd><dt>Purpose</dt><dd>${esc(document.purpose)}</dd><dt>Applies to</dt><dd>${esc((document.appliesTo||[]).join(", "))}</dd><dt>Difficulty</dt><dd>${esc(document.difficulty)}</dd><dt>Evidence</dt><dd>${esc(JSON.stringify(document.evidence))}</dd><dt>Provenance</dt><dd>${esc(JSON.stringify(document.provenance))}</dd><dt>Revision history</dt><dd>${esc(JSON.stringify(document.revisionHistory||[]))}</dd></dl>`;showDialog(`${document.id} • ${document.status}`,document.title,`${metadata}${body}${related}`,false)}catch(error){toast("Engineering Canon record could not be opened");console.error(error)}
 }
+function twinEntityName(id){const twin=digitalTwinRuntimeView;if(!twin)return id;const entity=[...(twin.identity||[]),...(twin.systems||[]),...(twin.components||[]),...(twin.evidence||[])].find(item=>item.id===id);return entity?.name||entity?.title||id}
+function renderDigitalTwin(){
+  const api=window.KnausDigitalTwin,status=api?.getStatus()||{status:"error",message:"Digital Twin runtime is unavailable."};$("#twinStatus").innerHTML=`<strong>${status.status==="ready"?"Documented state loaded":status.status==="loading"?"Loading":"Digital Twin unavailable"}</strong><p>${esc(status.message)}</p>`;
+  if(status.status!=="ready"){$("#twinStats").innerHTML="";$("#twinIdentity").innerHTML='<article class="panel"><p>The malformed or missing reference has not been replaced with an empty Twin.</p></article>';return}
+  digitalTwinRuntimeView=window.KnausDigitalTwinAdapter.buildRuntimeView(api.getTwin(),state);const twin=digitalTwinRuntimeView,stats=api.getStatistics(),report=window.KnausDigitalTwinAdapter.getMappingReport();
+  $("#twinStats").innerHTML=[[stats.systems,"Systems"],[stats.components,"Components"],[stats.relationships,"Relationships"],[stats.evidence,"Evidence records"],[stats.confirmedFacts,"Confirmed facts"],[stats.unknownFacts,"Unknown facts"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  $("#twinIdentity").innerHTML=twin.identity.map(fact=>`<article class="panel twin-card"><small>${esc(fact.id)}</small><strong>${esc(fact.name)}</strong><span>${esc(fact.runtimeValue??fact.value)}</span><span class="twin-confidence">${esc(fact.runtimeEvidence?.confidence||fact.confidence)}</span>${fact.notes?`<p>${esc(fact.notes)}</p>`:""}</article>`).join("");
+  $("#twinSystems").innerHTML=twin.systems.map(system=>`<article class="panel twin-card"><small>${esc(system.id)}</small><strong>${esc(system.name)}</strong><span>${esc(system.status)} • ${esc(system.confidence)}</span><button class="secondary-btn" data-route="${esc((system.route||"#digital-twin").slice(1))}">Open related area</button></article>`).join("");
+  const systems=twin.systems,systemOptions=systems.map(system=>`<option value="${esc(system.id)}">${esc(system.name)}</option>`).join(""),componentSystem=$("#twinComponentSystem"),selectedComponent=componentSystem?.value||"";if(componentSystem)componentSystem.innerHTML=`<option value="">All systems</option>${systemOptions}`;if(componentSystem)componentSystem.value=selectedComponent;
+  const components=twin.components.filter(component=>!selectedComponent||component.systemId===selectedComponent);$("#twinComponents").innerHTML=components.map(component=>{const related=api.getRelatedEntities(component.id);return`<article class="panel twin-card" data-twin-anchor="${esc(component.id)}"><small>${esc(component.id)}</small><strong>${esc(component.name)}</strong><span>${esc(twinEntityName(component.systemId))} • ${esc(component.status)}</span><span class="twin-confidence">${esc(component.runtimeEvidence?.confidence||component.confidence)} • ${(component.evidenceRefs||[]).length} evidence</span><p>${related.length} related entities</p>${component.route?`<button class="secondary-btn" data-route="${esc(component.route.slice(1))}">Open related area</button>`:""}</article>`}).join("")||'<article class="panel"><p>No components match this system.</p></article>';
+  const typeSelect=$("#twinRelationshipType"),systemSelect=$("#twinRelationshipSystem"),selectedType=typeSelect?.value||"",selectedSystem=systemSelect?.value||"",types=[...new Set(twin.relationships.map(item=>item.type))].sort();if(typeSelect){typeSelect.innerHTML=`<option value="">All types</option>${types.map(type=>`<option>${esc(type)}</option>`).join("")}`;typeSelect.value=selectedType}if(systemSelect){systemSelect.innerHTML=`<option value="">All systems</option>${systemOptions}`;systemSelect.value=selectedSystem}const relationships=api.getRelationships({type:selectedType,systemId:selectedSystem});$("#twinRelationships").innerHTML=relationships.map(rel=>`<article class="panel twin-relation"><strong>${esc(twinEntityName(rel.sourceId))}</strong><span>${esc(rel.type)} →</span><strong>${esc(twinEntityName(rel.targetId))}</strong><small>${esc(rel.status)} • ${(rel.evidenceRefs||[]).length} evidence</small><p>${esc(rel.notes)}</p></article>`).join("")||'<article class="panel"><p>No relationships match these filters.</p></article>';
+  $("#twinEvidence").innerHTML=twin.evidence.map(item=>`<article class="panel twin-evidence"><strong>${esc(item.classification)}</strong><span>${esc(item.source)}</span><small>${esc(item.date||"Date not recorded")} • ${esc(item.confidence)} • ${(item.linkedEntityIds||[]).length} linked entities</small><p>${esc(item.description||"")}</p></article>`).join("");
+  const missingEvidence=[...twin.identity,...twin.systems,...twin.components,...twin.relationships].filter(item=>!(item.evidenceRefs||[]).length).length,broken=[...twin.relationships.flatMap(rel=>[rel.sourceId,rel.targetId]),...twin.evidence.flatMap(item=>item.linkedEntityIds||[])].filter(id=>!api.validateReference(id)).length;$("#twinQuality").innerHTML=[[stats.confirmedFacts,"Confirmed facts"],[stats.inferredFacts,"Inferred evidence"],[stats.estimatedFacts,"Estimated evidence"],[stats.unknownFacts,"Unknown facts"],[missingEvidence,"Missing evidence"],[broken,"Broken references"],[report.unmappedFields.length,"Unmapped legacy fields"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  const links=[["vehicle","Vehicle profile"],["electrical","Electrical explorer"],["fuses","Fuse finder"],["water","Water explorer"],["gas","Gas explorer"],["heating","Heating"],["refrigeration","Refrigeration"],["maintenance","Maintenance"],["diagnostics","Faults"],["vehicle","Photographs & documents"],["workshop","Workshop"],["canon","Engineering Canon"],["manuals","Chapters & manual"]];$("#twinLinks").innerHTML=links.map(([route,label])=>moduleCard(route,"→",label,"Open the existing Companion area")).join("");renderTwinSearch();
+}
+function renderTwinSearch(){const query=$("#twinSearch")?.value||"",results=query?window.KnausDigitalTwin.search(query):[];$("#twinSearchResults").innerHTML=query?(results.length?results.map(result=>`<button class="result-item" data-twin-entity="${esc(result.entity.id)}"><span class="result-type">Digital Twin • ${esc(result.type)}</span><strong>${esc(result.entity.name||result.entity.title||result.entity.id)}</strong><small>${esc(result.entity.id)}</small></button>`).join(""):'<p>No Digital Twin matches found.</p>'):""}
+function focusTwinEntity(id){navigate("digital-twin");setTimeout(()=>{renderDigitalTwin();const target=document.querySelector(`[data-twin-anchor="${CSS.escape(id)}"]`);target?.scrollIntoView({behavior:"smooth",block:"center"});target?.classList.add("twin-highlight")},80)}
 function renderMaintenance(){
   const logs=state.logs||[];
   const tasks=DATA.maintenanceTasks||[];
@@ -1260,6 +1281,7 @@ function addDiagnosticToFaultLog(){
 }
 function openDetail(item){
   if(!item)return;
+  if(item.type==="digital twin"||item.twinEntityId){focusTwinEntity(item.twinEntityId||item.raw?.id);return}
   if(item.type==="engineering canon"||item.canonId){openCanonDocument(item.canonId||item.raw?.id);return}
   if(item.type==="chapter"||item.chapterNumber){openChapter(item.chapterNumber||item.raw?.n);return}
   if(item.type==="manual"||item.page){openManualPage(item.page||item.raw?.page);return}
@@ -2157,10 +2179,12 @@ async function init(){
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
   await window.KnausCorpus?.initialise();
+  await window.KnausDigitalTwin?.initialise();
   applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderSeasonal();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderHeating();renderRefrigeration();renderRefrigerationReadiness();renderRefrigerationRuns();renderWorkshop();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   $("#fuseSearch")?.addEventListener("input",renderFuses);
   ["canonSearch","canonEdition","canonStatusFilter","canonTag","canonSort"].forEach(id=>$("#"+id)?.addEventListener(id==="canonSearch"?"input":"change",renderCanon));
+  $("#twinSearch")?.addEventListener("input",renderTwinSearch);["twinComponentSystem","twinRelationshipType","twinRelationshipSystem"].forEach(id=>$("#"+id)?.addEventListener("change",renderDigitalTwin));
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
 }
 document.addEventListener("click",e=>{
@@ -2168,6 +2192,7 @@ document.addEventListener("click",e=>{
   const prompt=e.target.closest("[data-prompt]");if(prompt){$("#assistantInput").value=prompt.dataset.prompt;askAssistant()}
   const tab=e.target.closest("[data-library]");if(tab){libraryMode=tab.dataset.library;$$(".tab").forEach(x=>x.classList.toggle("active",x===tab));renderLibrary()}
   const canon=e.target.closest("[data-canon-id]");if(canon)openCanonDocument(canon.dataset.canonId);
+  const twinEntity=e.target.closest("[data-twin-entity]");if(twinEntity)focusTwinEntity(twinEntity.dataset.twinEntity);
   const touring=e.target.closest("[data-touring]");if(touring)openTouringSection(touring.dataset.touring);
   const touringStage=e.target.closest("[data-touring-stage]");if(touringStage){activeTouringStage=touringStage.dataset.touringStage;renderTouring()}
   const touringCheck=e.target.closest("[data-touring-check]");if(touringCheck){const key=`${activeTouringStage}:${touringCheck.dataset.touringCheck}`;state.touringProgress={...(state.touringProgress||{}),[key]:!state.touringProgress?.[key]};saveState();renderTouring()}
