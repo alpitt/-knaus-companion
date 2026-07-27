@@ -150,7 +150,7 @@
         "contentPath": {
           "type": "string",
           "minLength": 1,
-          "pattern": "^app/data/kb-content/[A-Za-z0-9._/-]+\\.json$"
+          "pattern": "^app/corpus/(first-edition/KB-(00[1-9]|0[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|250)|second-edition/KB2-(00[1-9]|01[0-9]|02[0-5]))\\.json$"
         },
         "createdAt": {
           "type": "string",

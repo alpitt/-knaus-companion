@@ -1,0 +1,459 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alpitt.github.io/-knaus-companion/data/kb_content.schema.json",
+  "title": "Knaus Companion Engineering Canon content document",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "edition",
+    "sequence",
+    "title",
+    "revision",
+    "status",
+    "summary",
+    "purpose",
+    "difficulty",
+    "appliesTo",
+    "sections",
+    "relatedKB",
+    "relatedChapters",
+    "relatedManualPages",
+    "tags",
+    "evidence",
+    "provenance",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "#/$defs/kbIdentifier"
+    },
+    "edition": {
+      "enum": ["first", "second"]
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 250
+    },
+    "title": {
+      "$ref": "#/$defs/nonEmptyText"
+    },
+    "revision": {
+      "$ref": "#/$defs/nonEmptyText"
+    },
+    "status": {
+      "$ref": "#/$defs/status"
+    },
+    "summary": {
+      "$ref": "#/$defs/nonEmptyText"
+    },
+    "purpose": {
+      "$ref": "#/$defs/nonEmptyText"
+    },
+    "difficulty": {
+      "enum": ["introductory", "intermediate", "advanced", "specialist"]
+    },
+    "appliesTo": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyText"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/section"
+      }
+    },
+    "relatedKB": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/relatedKb"
+      }
+    },
+    "relatedChapters": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 44
+      }
+    },
+    "relatedManualPages": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 286
+      }
+    },
+    "tags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80,
+        "pattern": "^[^<>]*$"
+      }
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidence"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "revisionHistory": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/revisionHistoryEntry"
+      }
+    },
+    "supersededBy": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/kbIdentifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "edition": {
+            "const": "first"
+          }
+        },
+        "required": ["edition"]
+      },
+      "then": {
+        "properties": {
+          "id": {
+            "pattern": "^KB-(00[1-9]|0[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|250)$"
+          },
+          "sequence": {
+            "maximum": 250
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "edition": {
+            "const": "second"
+          }
+        },
+        "required": ["edition"]
+      },
+      "then": {
+        "properties": {
+          "id": {
+            "pattern": "^KB2-(00[1-9]|01[0-9]|02[0-5])$"
+          },
+          "sequence": {
+            "maximum": 25
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "kbIdentifier": {
+      "type": "string",
+      "pattern": "^(KB-(00[1-9]|0[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|250)|KB2-(00[1-9]|01[0-9]|02[0-5]))$"
+    },
+    "status": {
+      "enum": ["draft", "verified", "approved", "deprecated", "superseded"]
+    },
+    "safeText": {
+      "type": "string",
+      "maxLength": 100000,
+      "pattern": "^[^\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]*$"
+    },
+    "nonEmptyText": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/safeText"
+        },
+        {
+          "minLength": 1
+        }
+      ]
+    },
+    "contentBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "value"],
+      "properties": {
+        "format": {
+          "enum": ["plain-text", "controlled-html", "code", "text-diagram"]
+        },
+        "language": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[A-Za-z0-9_+.#-]*$"
+        },
+        "value": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/safeText"
+            },
+            {
+              "not": {
+                "anyOf": [
+                  {
+                    "pattern": "<[sS][cC][rR][iI][pP][tT]\\b"
+                  },
+                  {
+                    "pattern": "<[iI][fF][rR][aA][mM][eE]\\b"
+                  },
+                  {
+                    "pattern": "<[oO][bB][jJ][eE][cC][tT]\\b"
+                  },
+                  {
+                    "pattern": "<[eE][mM][bB][eE][dD]\\b"
+                  },
+                  {
+                    "pattern": "\\s[oO][nN][A-Za-z]+\\s*="
+                  },
+                  {
+                    "pattern": "[jJ][aA][vV][aA][sS][cC][rR][iI][pP][tT]\\s*:"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caption", "columns", "rows"],
+      "properties": {
+        "caption": {
+          "$ref": "#/$defs/safeText"
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyText"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/safeText"
+            }
+          }
+        }
+      }
+    },
+    "diagram": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "format", "content"],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "format": {
+          "enum": ["plain-text", "code", "text-diagram"]
+        },
+        "content": {
+          "$ref": "#/$defs/nonEmptyText"
+        }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "source"],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "source": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 286
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "heading", "level", "content", "tables", "diagrams", "warnings", "notes", "references"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "heading": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contentBlock"
+          }
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/table"
+          }
+        },
+        "diagrams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagram"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyText"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyText"
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    },
+    "relatedKb": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/kbIdentifier"
+        },
+        "external": {
+          "type": "boolean",
+          "default": false
+        },
+        "pending": {
+          "type": "boolean",
+          "default": false
+        },
+        "notes": {
+          "$ref": "#/$defs/safeText"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "confidence", "source"],
+      "properties": {
+        "classification": {
+          "enum": ["owner-confirmed", "photograph-confirmed", "plate-confirmed", "manual-reference", "estimated", "unknown"]
+        },
+        "confidence": {
+          "enum": ["high", "medium", "low", "unknown"]
+        },
+        "source": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "notes": {
+          "$ref": "#/$defs/safeText"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "method", "verifiedBy", "verifiedAt", "checksum"],
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "method": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "verifiedBy": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "verifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "checksum": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "notes": {
+          "$ref": "#/$defs/safeText"
+        }
+      }
+    },
+    "revisionHistoryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "status", "changedAt", "changedBy", "summary", "checksum"],
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "changedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "changedBy": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "checksum": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}
