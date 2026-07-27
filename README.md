@@ -2,6 +2,8 @@
 
 GitHub Pages host for the preserved Knaus Companion Ultimate workshop application.
 
+The controlled validation and Engineering Canon governance plan for the next implementation programme is documented in [Companion 14 implementation programme](docs/COMPANION_14_IMPLEMENTATION.md).
+
 ## Vehicle evidence statuses
 
 Vehicle-specific configuration uses six evidence states. **Confirmed from vehicle plate** has the highest confidence, followed by **Owner confirmed**, **Confirmed from photograph**, **Manufacturer manual reference**, **Estimated**, and **Unknown**. This priority helps compare confidence only; it never silently replaces one recorded value with another. A manual reference describes manufacturer information and does not by itself confirm what is fitted to this vehicle.

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-27T00:00:00Z",
+  "basis": "Static reference audit of app/index.html, app/assets/js/app-v4.js and app/service-worker.js at production version 13.12.0.",
+  "files": [
+    {
+      "filename": "electrical_diagnostics.json",
+      "currentStatus": "possible-import-source",
+      "suspectedPurpose": "Earlier electrical-specific diagnostic procedures.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Compare with smart_diagnostics.json and future Engineering Canon sources before deciding whether to integrate or retain as legacy.",
+      "notes": "The repository does not prove whether this content is authoritative, superseded or duplicated. Do not delete without content review."
+    },
+    {
+      "filename": "electrical_symptoms.json",
+      "currentStatus": "possible-import-source",
+      "suspectedPurpose": "Earlier electrical symptom index or diagnostic lookup data.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Review alongside electrical_diagnostics.json and the active guided diagnostics dataset.",
+      "notes": "No active production reference was found during Sprint 1."
+    },
+    {
+      "filename": "gas_diagnostics.json",
+      "currentStatus": "possible-import-source",
+      "suspectedPurpose": "Earlier LPG-specific diagnostic procedures.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Subject to safety and provenance review before any reuse; compare with smart_diagnostics.json.",
+      "notes": "Gas guidance must not be imported without verified safety provenance."
+    },
+    {
+      "filename": "gas_symptoms.json",
+      "currentStatus": "possible-import-source",
+      "suspectedPurpose": "Earlier LPG symptom index or diagnostic lookup data.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Retain pending safety, duplication and provenance review.",
+      "notes": "No active production reference was found during Sprint 1."
+    },
+    {
+      "filename": "integrity.json",
+      "currentStatus": "legacy",
+      "suspectedPurpose": "Earlier packaged-content integrity or baseline-count metadata.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Compare with the new executable repository integrity tests and retain until its historical role is documented.",
+      "notes": "The filename suggests integrity metadata, but its current authority is not established."
+    },
+    {
+      "filename": "manual_page_files.json",
+      "currentStatus": "awaiting-review",
+      "suspectedPurpose": "Generated inventory mapping official manual page numbers to image files.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Compare with manual_pages.json and repository-integrity.test.js before deciding whether it remains useful as generated metadata.",
+      "notes": "The active viewer constructs page-image paths directly and does not load this file."
+    },
+    {
+      "filename": "parts.json",
+      "currentStatus": "possible-import-source",
+      "suspectedPurpose": "Earlier parts catalogue or workshop parts reference.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Compare with parts_inventory.json and chapter 42 before integration or archival.",
+      "notes": "Potential overlap exists, but equivalence has not been proven."
+    },
+    {
+      "filename": "travel_log.json",
+      "currentStatus": "legacy",
+      "suspectedPurpose": "Earlier touring-journal seed or schema data.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Retain while confirming whether any migration or historical fixture depends on it.",
+      "notes": "The active trip journal stores records in browser state instead."
+    },
+    {
+      "filename": "trip_planner.json",
+      "currentStatus": "legacy",
+      "suspectedPurpose": "Earlier touring-planner configuration or template data.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Review against touring_operations.json and current trip-journal behavior.",
+      "notes": "No active production reference was found during Sprint 1."
+    },
+    {
+      "filename": "troubleshooting.json",
+      "currentStatus": "possible-import-source",
+      "suspectedPurpose": "Earlier general troubleshooting records predating guided smart diagnostics.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Compare record-by-record with smart_diagnostics.json and future Canon material before reuse.",
+      "notes": "It may contain duplicated or superseded guidance; authority is unknown."
+    },
+    {
+      "filename": "vehicle.json",
+      "currentStatus": "awaiting-review",
+      "suspectedPurpose": "Earlier static vehicle identity or configuration baseline.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Compare with vehicle_config_schema.json and evidence-aware default state before any integration.",
+      "notes": "Values must not override owner records or higher-confidence evidence."
+    },
+    {
+      "filename": "water_diagnostics.json",
+      "currentStatus": "possible-import-source",
+      "suspectedPurpose": "Earlier water-system diagnostic procedures.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Compare with smart_diagnostics.json and future Canon sources before integration.",
+      "notes": "No active production reference was found during Sprint 1."
+    },
+    {
+      "filename": "water_symptoms.json",
+      "currentStatus": "possible-import-source",
+      "suspectedPurpose": "Earlier water-system symptom index or diagnostic lookup data.",
+      "referencedByProduction": false,
+      "recommendedDisposition": "Review alongside water_diagnostics.json and active guided diagnostics.",
+      "notes": "The repository does not establish whether this dataset is complete or current."
+    }
+  ]
+}
