@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
   <link rel="icon" href="data:,">
-  <title>Knaus Companion 14.1.0</title>
+  <title>Knaus Companion 14.2.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=14.1.0-digital-twin">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=14.2.0-local-reasoning">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -17,7 +17,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 14.1.0</span>
+        <span>Version 14.2.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -82,14 +82,20 @@
         <div class="page-head">
           <span class="eyebrow">Offline assistant</span>
           <h1>Ask about your motorhome</h1>
-          <p>Searches installed manuals, companion chapters, diagnostics and your saved records.</p>
+          <p>Companion’s assistant reasons from the manuals, vehicle data, diagnostics and evidence available on this device. It does not guess when evidence is missing.</p>
         </div>
+        <div class="panel assistant-privacy"><strong>Private and local</strong><p>No external AI call is made, no API key is required, and no vehicle data is uploaded.</p></div>
+        <div id="reasoningStatus" class="panel" role="status">Loading local evidence…</div>
         <div class="assistant-box">
           <textarea id="assistantInput" placeholder="Example: Where is the boiler drain valve?"></textarea>
           <button class="primary-btn" id="assistantAsk">Ask</button>
+          <button class="secondary-btn" id="assistantClear">Clear</button>
         </div>
         <div class="chips" id="assistantPrompts"></div>
         <div id="assistantResults"></div>
+        <div id="assistantSources" class="assistant-sources"></div>
+        <details id="assistantTrace"><summary>Reasoning trace</summary><div id="assistantTraceBody"></div></details>
+        <section class="section-block"><div class="section-heading"><div><span class="eyebrow">Guided diagnostics</span><h2>One documented check at a time</h2></div><button class="secondary-btn" id="guidedReset">Reset</button></div><div class="panel guided-start"><label>Category<select id="guidedCategory"><option>electrical power issue</option><option>fuse or circuit issue</option><option>water system issue</option><option>gas system issue</option><option>heating issue</option><option>refrigeration issue</option><option>battery charging issue</option><option>unknown warning or symptom</option></select></label><button class="primary-btn" id="guidedStart">Start guided diagnosis</button></div><div id="guidedSession"></div></section>
       </section>
 
       <section class="screen" data-screen="search">
@@ -1038,10 +1044,13 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/kb-corpus.js?v=14.1.0-digital-twin"></script>
-  <script src="assets/js/digital-twin.js?v=14.1.0-digital-twin"></script>
-  <script src="assets/js/digital-twin-adapter.js?v=14.1.0-digital-twin"></script>
-  <script src="assets/js/app-v4.js?v=14.1.0-digital-twin"></script>
+  <script src="assets/js/kb-corpus.js?v=14.2.0-local-reasoning"></script>
+  <script src="assets/js/digital-twin.js?v=14.2.0-local-reasoning"></script>
+  <script src="assets/js/digital-twin-adapter.js?v=14.2.0-local-reasoning"></script>
+  <script src="assets/js/reasoning-safety.js?v=14.2.0-local-reasoning"></script>
+  <script src="assets/js/local-reasoning.js?v=14.2.0-local-reasoning"></script>
+  <script src="assets/js/guided-diagnostics.js?v=14.2.0-local-reasoning"></script>
+  <script src="assets/js/app-v4.js?v=14.2.0-local-reasoning"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

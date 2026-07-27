@@ -1,5 +1,5 @@
 
-const APP_VERSION="14.1.0";
+const APP_VERSION="14.2.0";
 const STORE_KEY="knaus-ultimate-v1";
 const EVIDENCE_STATUSES=Object.freeze({"owner-confirmed":{label:"Owner confirmed",priority:2},"photograph-confirmed":{label:"Confirmed from photograph",priority:3},"plate-confirmed":{label:"Confirmed from vehicle plate",priority:1},"manual-reference":{label:"Manufacturer manual reference",priority:4},estimated:{label:"Estimated",priority:5},unknown:{label:"Unknown",priority:6}});
 const VEHICLE_EVIDENCE_BASELINE=Object.freeze({make:{value:"Knaus",status:"owner-confirmed",source:"Owner vehicle identification",notes:"Existing confirmed make"},model:{value:"Sun Traveller",status:"owner-confirmed",source:"Owner vehicle identification"},exactModel:{value:"Sun-Traveller 550 D",status:"estimated",source:"Knaus manual layout and vehicle evidence",notes:"Probable model; confirm from build plate or original vehicle documentation"},year:{value:2009,status:"owner-confirmed",source:"Vehicle registration details"},baseVehicle:{value:"Fiat Ducato X250",status:"estimated",source:"Vehicle age and observed cab generation",notes:"Confirm from vehicle identification documentation"},engine:{value:"2.3 Multijet 120",status:"estimated",source:"Owner information",notes:"Confirm from VIN, engine code or official vehicle documentation"},charger:{value:"Calira EVS 30/20-DS/U",status:"photograph-confirmed",source:"Installed equipment photograph"},mainFuseBox:{value:"Calira VB 06-1",status:"photograph-confirmed",source:"Installed equipment photograph"},leisureBattery:{value:"Exide EK960 AGM 96 Ah",status:"photograph-confirmed",source:"Battery label photograph"},starterBatteryLocation:{value:"Cab floor battery compartment",status:"photograph-confirmed",source:"Installed battery photograph"},heating:{value:"Truma Trumatic C 4002",status:"photograph-confirmed",source:"Installed appliance and control photographs"},fridgeManufacturer:{value:"Dometic",status:"photograph-confirmed",source:"Refrigerator photograph"},fridgeType:{value:"AES absorption refrigerator",status:"photograph-confirmed",source:"Refrigerator control photograph"},fridge:{value:"Unknown",status:"unknown",source:"",notes:"Confirm from refrigerator data plate"}});
@@ -335,16 +335,20 @@ function renderResults(target,items,empty="No matching results."){
   root.querySelectorAll("[data-result]").forEach((el,i)=>{el.onclick=()=>openDetail(items[i]);el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openDetail(items[i])}}});
 }
 function renderAssistant(){
-  const prompts=DATA.assistantPrompts.length?DATA.assistantPrompts:[
-    {prompt:"Where is the boiler drain valve?"},{prompt:"What maintenance is due?"},{prompt:"Show open faults"},{prompt:"What should I check before leaving?"}
-  ];
+  const prompts=[{prompt:"Which fuse protects the heating circuit?"},{prompt:"Explain the electrical system"},{prompt:"What maintenance is due?"},{prompt:"Find manual page 97"},{prompt:"What does 12.2 V at the leisure battery mean?"},{prompt:"I smell LPG"}];
   $("#assistantPrompts").innerHTML=prompts.slice(0,8).map(p=>`<button class="chip" data-prompt="${esc(p.prompt)}">${esc(p.prompt)}</button>`).join("");
+  const status=window.KnausReasoning?.getStatus();$("#reasoningStatus").innerHTML=`<strong>${status?.status==="ready"?"Local reasoning ready":"Assistant unavailable"}</strong><p>${esc(status?.message||"Local evidence is not loaded.")}</p>`;
 }
 function askAssistant(){
   const q=$("#assistantInput").value.trim();if(!q)return;
-  const results=searchDocs(q);renderResults("#assistantResults",results,"No strong local match was found.");
-  state.assistantHistory.unshift({question:q,at:new Date().toISOString()});state.assistantHistory=state.assistantHistory.slice(0,20);saveState();
+  let answer;try{answer=window.KnausReasoning.ask(q)}catch(error){$("#assistantResults").innerHTML=`<article class="panel"><p>${esc(error.message)}</p></article>`;return}
+  const warning=answer.warnings.length?`<div class="assistant-warning"><strong>Safety warning</strong>${answer.warnings.map(x=>`<p>${esc(x)}</p>`).join("")}</div>`:"";$("#assistantResults").innerHTML=`<article class="panel assistant-answer"><span class="meta">${esc(answer.intent)} • ${esc(answer.confidence)} • ${esc(answer.safetyClass)}</span><h2>Answer</h2><p>${esc(answer.answer)}</p>${warning}${answer.unknowns.length?`<h3>Unknowns</h3><ul>${answer.unknowns.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}${answer.nextChecks.length?`<h3>Next checks</h3><ul>${answer.nextChecks.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}${answer.followUpQuestion?`<p><strong>Follow-up:</strong> ${esc(answer.followUpQuestion)}</p>`:""}</article>`;
+  $("#assistantSources").innerHTML=answer.sources.length?`<div class="section-heading"><div><span class="eyebrow">Traceable evidence</span><h2>Sources</h2></div></div>${answer.sources.map(s=>`<article class="panel assistant-source"><span class="meta">${esc(s.sourceType)} • score ${s.score} • ${esc(s.confidence)}</span><strong>${esc(s.title)}</strong><button class="secondary-btn" ${s.manualPage?`data-manual-nav="${s.manualPage}"`:s.chapterId?`data-chapter-nav="${s.chapterId}"`:`data-route="${esc(String(s.route||"#search").slice(1))}"`}>Open source</button></article>`).join("")}`:"";
+  const trace=window.KnausReasoning.getLastTrace();$("#assistantTraceBody").innerHTML=`<pre>${esc(JSON.stringify(trace,null,2))}</pre>`;
+  state.assistantHistory.unshift({question:q,answer:answer.answer.slice(0,300),sources:answer.sources.slice(0,5).map(s=>({sourceType:s.sourceType,sourceId:s.sourceId,title:s.title,route:s.route})),at:answer.generatedAt});state.assistantHistory=state.assistantHistory.slice(0,20);saveState();
 }
+function reasoningRuntimeRecords(){const make=(id,sourceType,title,value,route)=>({id,sourceType,sourceId:id,title,summary:title,text:JSON.stringify(value),keywords:[],systems:[],componentIds:[],manualPages:[],chapterIds:[],kbIds:[],evidenceRefs:[],confidence:"high",safetyClass:"informational",route,sectionAnchor:"",sourceFile:"saved-state",searchableText:`${title} ${JSON.stringify(value)}`.toLowerCase(),checksum:"runtime"});return[...(state.faults||[]).map((x,i)=>make(`runtime:fault:${x.id||i}`,"fault-record",x.title||"Fault record",x,"#diagnostics")),...(state.electricalMeasurements||[]).map((x,i)=>make(`runtime:measurement:${x.id||i}`,"measurement",`${x.testPoint||"Electrical"} measurement`,x,"#electrical")),...(state.logs||[]).map((x,i)=>make(`runtime:maintenance:${x.id||i}`,"owner-record",x.title||"Service record",x,"#maintenance"))]}
+function renderGuidedSession(){const session=window.KnausGuidedDiagnostics.getSession(),root=$("#guidedSession");if(!session){root.innerHTML='<article class="panel"><p>Choose a category to begin. Guided results are session-only and do not modify fault records.</p></article>';return}const step=window.KnausGuidedDiagnostics.getNextStep();root.innerHTML=`<article class="panel guided-session"><span class="meta">${esc(session.category)} • ${esc(session.status)}</span>${step?`<h3>${esc(step.question)}</h3><p><strong>Why:</strong> ${esc(step.why)}</p><textarea id="guidedAnswer" placeholder="Record what you observe"></textarea><button class="primary-btn" id="guidedNext">Continue</button>`:`<h3>${esc(session.result?.summary||"Session stopped")}</h3>${(session.result?.warnings||[]).map(x=>`<p class="assistant-warning">${esc(x)}</p>`).join("")}${(session.result?.possibleCauses||[]).length?`<ul>${session.result.possibleCauses.map(x=>`<li>${esc(x.label)} — possibility, not a confirmed diagnosis</li>`).join("")}</ul>`:""}`}<details><summary>Previous answers</summary>${session.history.map(x=>`<p><strong>${esc(x.question)}</strong><br>${esc(x.answer)}</p>`).join("")}</details></article>`}
 function renderLibrary(){
   const list=libraryMode==="chapters"
     ?DATA.chapters.map(c=>({type:"chapter",title:`Chapter ${c.n}. ${c.title}`,text:c.summary||"",chapterNumber:Number(c.n),raw:c}))
@@ -2180,7 +2184,8 @@ async function init(){
   ]);
   await window.KnausCorpus?.initialise();
   await window.KnausDigitalTwin?.initialise();
-  applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderSeasonal();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderHeating();renderRefrigeration();renderRefrigerationReadiness();renderRefrigerationRuns();renderWorkshop();renderSettings();
+  await window.KnausReasoning?.initialise({runtimeRecords:reasoningRuntimeRecords()});
+  applyTheme();renderNav();renderHome();renderAssistant();renderGuidedSession();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderSeasonal();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderHeating();renderRefrigeration();renderRefrigerationReadiness();renderRefrigerationRuns();renderWorkshop();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   $("#fuseSearch")?.addEventListener("input",renderFuses);
   ["canonSearch","canonEdition","canonStatusFilter","canonTag","canonSort"].forEach(id=>$("#"+id)?.addEventListener(id==="canonSearch"?"input":"change",renderCanon));
@@ -2193,6 +2198,7 @@ document.addEventListener("click",e=>{
   const tab=e.target.closest("[data-library]");if(tab){libraryMode=tab.dataset.library;$$(".tab").forEach(x=>x.classList.toggle("active",x===tab));renderLibrary()}
   const canon=e.target.closest("[data-canon-id]");if(canon)openCanonDocument(canon.dataset.canonId);
   const twinEntity=e.target.closest("[data-twin-entity]");if(twinEntity)focusTwinEntity(twinEntity.dataset.twinEntity);
+  if(e.target.closest("#guidedNext")){window.KnausGuidedDiagnostics.answerStep($("#guidedAnswer").value);renderGuidedSession()}
   const touring=e.target.closest("[data-touring]");if(touring)openTouringSection(touring.dataset.touring);
   const touringStage=e.target.closest("[data-touring-stage]");if(touringStage){activeTouringStage=touringStage.dataset.touringStage;renderTouring()}
   const touringCheck=e.target.closest("[data-touring-check]");if(touringCheck){const key=`${activeTouringStage}:${touringCheck.dataset.touringCheck}`;state.touringProgress={...(state.touringProgress||{}),[key]:!state.touringProgress?.[key]};saveState();renderTouring()}
@@ -2367,6 +2373,8 @@ window.addEventListener("hashchange",()=>setActiveRoute(NAV.some(x=>x[0]===route
 $("#menuButton").onclick=openDrawer;$("#closeDrawer").onclick=closeDrawer;$("#scrim").onclick=closeDrawer;
 $("#themeButton").onclick=()=>{state.theme=state.theme==="dark"?"light":"dark";saveState();applyTheme()};
 $("#assistantAsk").onclick=askAssistant;$("#assistantInput").addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Enter")askAssistant()});
+$("#assistantClear").onclick=()=>{$("#assistantInput").value="";$("#assistantResults").innerHTML="";$("#assistantSources").innerHTML="";$("#assistantTraceBody").innerHTML=""};
+$("#guidedStart").onclick=()=>{window.KnausGuidedDiagnostics.start($("#guidedCategory").value);renderGuidedSession()};$("#guidedReset").onclick=()=>{window.KnausGuidedDiagnostics.reset();renderGuidedSession()};
 $("#runSearch").onclick=()=>renderResults("#searchResults",searchDocs($("#globalSearch").value));
 $("#globalSearch").addEventListener("keydown",e=>{if(e.key==="Enter")$("#runSearch").click()});
 $("#addServiceRecord").onclick=()=>openServiceRecord();

@@ -1,6 +1,6 @@
 {
-  "version": "14.1.0",
-  "releaseName": "Digital Twin Foundation",
+  "version": "14.2.0",
+  "releaseName": "Local Evidence-Aware Reasoning",
   "buildDate": "2026-07-27",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
