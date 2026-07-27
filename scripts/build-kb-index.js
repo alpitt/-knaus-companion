@@ -79,7 +79,8 @@ function buildIndex(manifest, readFile = fs.readFileSync) {
     const raw = readFile(path.join(ROOT, ...record.contentPath.split("/")));
     const document = JSON.parse(raw.toString("utf8"));
     const sectionHeadings = document.sections.map(section => section.heading);
-    const text = [record.id, document.title, document.summary, document.purpose, ...document.tags, ...sectionHeadings].join(" ");
+    const sectionText = document.sections.flatMap(section => [section.heading, ...section.content.map(block => block.value || block.content || ""), ...section.warnings, ...section.notes]);
+    const text = [record.id, document.title, document.summary, document.purpose, ...document.tags, ...sectionText].join(" ");
     return { id: record.id, edition: record.edition, sequence: record.sequence, title: document.title, revision: record.revision, status: record.status, summary: document.summary, purpose: document.purpose, tags: unique(document.tags), sectionHeadings, searchText: text.toLowerCase(), relatedChapterCount: document.relatedChapters.length, relatedManualPageCount: document.relatedManualPages.length, contentPath: record.contentPath, evidenceClassification: record.evidenceClassification, confidenceLevel: record.confidenceLevel, updatedAt: record.updatedAt };
   }).sort((a, b) => a.edition.localeCompare(b.edition) || a.sequence - b.sequence || a.id.localeCompare(b.id));
   return { schemaVersion: 1, generatedAt: manifest.generatedAt, expectedRecordCount: 275, availableRecordCount: records.length, firstEditionCount: records.filter(r => r.edition === "first-edition").length, secondEditionCount: records.filter(r => r.edition === "second-edition").length, records };
