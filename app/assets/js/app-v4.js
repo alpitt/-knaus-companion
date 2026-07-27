@@ -1,5 +1,5 @@
 
-const APP_VERSION="14.2.0";
+const APP_VERSION="15.0.0";
 const STORE_KEY="knaus-ultimate-v1";
 const EVIDENCE_STATUSES=Object.freeze({"owner-confirmed":{label:"Owner confirmed",priority:2},"photograph-confirmed":{label:"Confirmed from photograph",priority:3},"plate-confirmed":{label:"Confirmed from vehicle plate",priority:1},"manual-reference":{label:"Manufacturer manual reference",priority:4},estimated:{label:"Estimated",priority:5},unknown:{label:"Unknown",priority:6}});
 const VEHICLE_EVIDENCE_BASELINE=Object.freeze({make:{value:"Knaus",status:"owner-confirmed",source:"Owner vehicle identification",notes:"Existing confirmed make"},model:{value:"Sun Traveller",status:"owner-confirmed",source:"Owner vehicle identification"},exactModel:{value:"Sun-Traveller 550 D",status:"estimated",source:"Knaus manual layout and vehicle evidence",notes:"Probable model; confirm from build plate or original vehicle documentation"},year:{value:2009,status:"owner-confirmed",source:"Vehicle registration details"},baseVehicle:{value:"Fiat Ducato X250",status:"estimated",source:"Vehicle age and observed cab generation",notes:"Confirm from vehicle identification documentation"},engine:{value:"2.3 Multijet 120",status:"estimated",source:"Owner information",notes:"Confirm from VIN, engine code or official vehicle documentation"},charger:{value:"Calira EVS 30/20-DS/U",status:"photograph-confirmed",source:"Installed equipment photograph"},mainFuseBox:{value:"Calira VB 06-1",status:"photograph-confirmed",source:"Installed equipment photograph"},leisureBattery:{value:"Exide EK960 AGM 96 Ah",status:"photograph-confirmed",source:"Battery label photograph"},starterBatteryLocation:{value:"Cab floor battery compartment",status:"photograph-confirmed",source:"Installed battery photograph"},heating:{value:"Truma Trumatic C 4002",status:"photograph-confirmed",source:"Installed appliance and control photographs"},fridgeManufacturer:{value:"Dometic",status:"photograph-confirmed",source:"Refrigerator photograph"},fridgeType:{value:"AES absorption refrigerator",status:"photograph-confirmed",source:"Refrigerator control photograph"},fridge:{value:"Unknown",status:"unknown",source:"",notes:"Confirm from refrigerator data plate"}});
@@ -180,6 +180,7 @@ function toast(msg){const el=document.createElement("div");el.className="toast";
 function route(){return (location.hash.slice(1)||"home").split("/")[0]}
 function navigate(id){location.hash=id}
 function setActiveRoute(id){
+  performance.mark?.(`route-${id}-start`);
   if(id!=="workshop"&&workshopWakeLock)releaseWorkshopWakeLock();
   $$(".screen").forEach(s=>s.classList.toggle("active",s.dataset.screen===id));
   $$("[data-route]").forEach(b=>b.classList.toggle("active",b.dataset.route===id));
@@ -193,7 +194,9 @@ function setActiveRoute(id){
   if(id==="refrigeration"){renderRefrigeration();renderRefrigerationReadiness();renderRefrigerationRuns()}
   if(id==="canon")renderCanon();
   if(id==="digital-twin")renderDigitalTwin();
-  $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
+  if(id==="health")renderHealth();
+  renderBreadcrumb(id);
+  $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();performance.mark?.(`route-${id}-end`);
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
 function closeDrawer(){$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#scrim").hidden=true;$("#menuButton").setAttribute("aria-expanded","false")}
@@ -201,7 +204,7 @@ function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark
 
 const NAV=[
   ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],["canon","Engineering Canon","⌘"],["digital-twin","Digital Twin","◎"],
-  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["seasonal","Seasonal care","❄"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["heating","Heating system","♨"],["refrigeration","Refrigeration","❄"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
+  ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["seasonal","Seasonal care","❄"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["heating","Heating system","♨"],["refrigeration","Refrigeration","❄"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["health","Application health","●"],["settings","Settings","⋯"]
 ];
 function renderNav(){
   $("#drawerNav").innerHTML=NAV.map(([id,label,icon])=>`<button data-route="${id}"><span>${icon}</span> ${label}</button>`).join("");
@@ -241,6 +244,9 @@ function dashboardAlerts(){
   (DATA.partsInventory||[]).forEach(part=>{const stock=partStock(part);if(stock.quantity<stock.target)alerts.push({priority:2,kind:"warning",icon:"📦",title:`${part.name} low`,detail:`${stock.quantity} onboard; target ${stock.target}`,route:"vehicle"})});
   return alerts.sort((a,b)=>a.priority-b.priority||a.title.localeCompare(b.title));
 }
+function renderBreadcrumb(routeId){const screen=document.querySelector(`[data-screen="${CSS.escape(routeId)}"]`),head=screen?.querySelector(".page-head");if(!head)return;let crumb=head.querySelector(".breadcrumbs");if(!crumb){crumb=document.createElement("nav");crumb.className="breadcrumbs";crumb.setAttribute("aria-label","Breadcrumb");head.prepend(crumb)}const label=NAV.find(item=>item[0]===routeId)?.[1]||routeId;crumb.innerHTML=routeId==="home"?'<span aria-current="page">Home</span>':`<button data-route="home">Home</button><span aria-hidden="true">›</span><span aria-current="page">${esc(label)}</span>`}
+function applicationRecordCounts(){return{service:(state.logs||[]).length,faults:(state.faults||[]).length,measurements:(state.electricalMeasurements||[]).length,trips:(state.trips||[]).length,documents:(state.vehicleDocuments||[]).length,photos:Object.keys(state.vehiclePhotoNotes||{}).length,assistant:(state.assistantHistory||[]).length}}
+async function renderHealth(){const twin=window.KnausDigitalTwin?.getStatistics()||{},canon=window.KnausCorpus?.getStatistics()||{},reasoning=window.KnausReasoning?.getStatistics()||{},counts=applicationRecordCounts(),config=configurationSections().flatMap(x=>x.fields||[]).map(configurationEvidence),unknown=config.filter(x=>x.status==="unknown").length,confirmed=config.filter(x=>["plate-confirmed","owner-confirmed","photograph-confirmed"].includes(x.status)).length,broken=(window.KnausDigitalTwin?.getTwin()?.relationships||[]).flatMap(x=>[x.sourceId,x.targetId]).filter(id=>!window.KnausDigitalTwin.validateReference(id)).length,cacheKeys="caches" in window?await caches.keys():[];$("#healthSummary").innerHTML=[[APP_VERSION,"Repository version"],[state.schemaVersion||2,"Storage schema"],[reasoning.records||0,"Search evidence"],[counts.service+counts.faults+counts.measurements,"Technical records"],[confirmed,"Confirmed values"],[unknown,"Unknown values"]].map(([v,l])=>`<article class="stat-card"><strong>${esc(v)}</strong><span>${esc(l)}</span></article>`).join("");const checks=[{label:"Digital Twin",detail:`${twin.components||0} components • ${broken} broken references`,level:broken?"red":twin.components?"green":"amber"},{label:"Engineering Canon",detail:`${canon.available||0}/${canon.expected||275} records available`,level:canon.available?"green":"amber"},{label:"Evidence registry",detail:`${confirmed} confirmed • ${unknown} unknown`,level:unknown?"amber":"green"},{label:"Repository validation",detail:"Static integrity checks installed",level:"green"},{label:"Backup",detail:`Schema ${state.schemaVersion||2} • ${Object.values(counts).reduce((a,b)=>a+b,0)} local records`,level:"green"},{label:"Offline",detail:navigator.onLine?"Network available":"Currently offline",level:cacheKeys.length?"green":"amber"},{label:"Cache",detail:cacheKeys.length?`${cacheKeys.length} application cache${cacheKeys.length===1?"":"s"}`:"No application cache detected",level:cacheKeys.length?"green":"red"}];$("#healthChecks").innerHTML=checks.map(x=>`<article class="panel health-check health-${x.level}"><span class="health-light" aria-label="${x.level==="green"?"Ready":x.level==="amber"?"Needs review":"Action required"}"></span><div><strong>${esc(x.label)}</strong><p>${esc(x.detail)}</p></div></article>`).join("");$("#healthCacheDetail").textContent=cacheKeys.length?`Active cache: ${cacheKeys.join(", ")}`:"No offline cache is currently available. Rebuild while online.";$("#healthRecordCounts").innerHTML=`<dl>${Object.entries(counts).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>`}
 function renderDashboard(){
   const alerts=dashboardAlerts();
   $("#operationsAlerts").innerHTML=alerts.length?alerts.slice(0,8).map(alert=>`<button class="dashboard-alert ${alert.kind}" data-route="${alert.route}"${alert.seasonalMode?` data-seasonal-alert-mode="${alert.seasonalMode}"`:""}><span aria-hidden="true">${alert.icon}</span><span><strong>${esc(alert.title)}</strong><small>${esc(alert.detail)}</small></span><b aria-hidden="true">→</b></button>`).join(""):'<div class="dashboard-clear"><span aria-hidden="true">✓</span><div><strong>No active alerts</strong><p>Maintenance, documents, faults and packing allowances are clear.</p></div></div>';
@@ -293,6 +299,7 @@ function renderHome(){
     moduleCard("seasonal","❄","Seasonal care","Storage, winterisation and reactivation"),
     moduleCard("workshop","🛠️","Workshop mode","Safe sequence and hands-on shortcuts"),
     moduleCard("touring","🗺️","Touring","Departure checks, campsites and packing"),
+    moduleCard("health","●","Application health","Check offline readiness, local data and release status"),
     moduleCard("settings","💾","Backup","Export, restore and recovery")
   ].join("");
 }
@@ -2172,6 +2179,14 @@ async function clearCache(){
   if("caches" in window){const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)))}
   toast("Cache cleared. Reloading…");setTimeout(()=>location.reload(),600);
 }
+async function rebuildCache(){
+  if(!navigator.onLine){toast("Connect to the internet before rebuilding the offline cache.");return}
+  try{
+    if("caches" in window){const keys=await caches.keys();await Promise.all(keys.map(key=>caches.delete(key)))}
+    const registration=await navigator.serviceWorker?.getRegistration();await registration?.update();
+    toast("Offline cache cleared for rebuild. Reloading…");setTimeout(()=>location.reload(),700);
+  }catch{toast("The offline cache could not be rebuilt. Your saved records were not changed.")}
+}
 async function init(){
   [
     DATA.chapters,DATA.pages,DATA.diagnostics,DATA.maintenanceTasks,DATA.assistantPrompts,DATA.build,
@@ -2383,6 +2398,9 @@ $("#saveMaintenanceMileage").onclick=()=>{const value=Number($("#maintenanceMile
 $("#exportBackup").onclick=exportBackup;
 $("#importBackup").onchange=async e=>{try{if(e.target.files[0])await restoreBackup(e.target.files[0])}catch(err){toast(err.message)}finally{e.target.value=""}};
 $("#clearCache").onclick=clearCache;
+$("#healthRefresh").onclick=()=>location.reload();
+$("#healthRebuildCache").onclick=rebuildCache;
+$("#healthClearCache").onclick=clearCache;
 $("#workshopWakeLock").addEventListener("change",e=>e.target.checked?requestWorkshopWakeLock():releaseWorkshopWakeLock());
 $("#resetWorkshopSteps").onclick=()=>{state.workshopSteps={};saveState();renderWorkshop();toast("Workshop sequence reset")};
 $("#workshopSessionForm").addEventListener("submit",saveWorkshopSession);
