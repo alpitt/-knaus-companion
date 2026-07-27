@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin]
 
 permissions:
   contents: read
@@ -40,9 +40,15 @@ jobs:
             echo "::error file=scripts/build-kb-index.js::Engineering Corpus index generator syntax validation failed."
             exit 1
           }
+          node --check app/assets/js/digital-twin.js
+          node --check app/assets/js/digital-twin-adapter.js
+          node --check scripts/validate-digital-twin.js
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
+
+      - name: Validate Digital Twin reference data
+        run: node scripts/validate-digital-twin.js
 
       - name: Run every repository test
         shell: bash

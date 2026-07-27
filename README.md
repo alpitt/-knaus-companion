@@ -2,7 +2,7 @@
 
 GitHub Pages host for the preserved Knaus Companion Ultimate workshop application.
 
-The controlled validation and Engineering Canon governance plan for the next implementation programme is documented in [Companion 14 implementation programme](docs/COMPANION_14_IMPLEMENTATION.md). Controlled Canon batches must follow the [KB import guide](docs/KB_IMPORT_GUIDE.md).
+The controlled validation and Engineering Canon governance plan for the next implementation programme is documented in [Companion 14 implementation programme](docs/COMPANION_14_IMPLEMENTATION.md). Controlled Canon batches must follow the [KB import guide](docs/KB_IMPORT_GUIDE.md). Digital Twin reference changes must follow the [Digital Twin guide](docs/DIGITAL_TWIN_GUIDE.md).
 
 ## Vehicle evidence statuses
 
@@ -30,6 +30,8 @@ The deployment workflow refuses to publish unless the package contains:
 `https://alpitt.github.io/-knaus-companion/`
 
 ## Current release
+
+Version 14.1.0 adds the read-only Digital Twin foundation: repository-supported vehicle identity, systems, components, relationships, evidence, legacy-state mapping, data-quality reporting and offline search. Unknown details remain explicit.
 
 Version 14.0.0 adds the Engineering Corpus foundation: governed schemas, deterministic indexing, an offline-aware runtime, and an Engineering Canon library route ready for canonical source documents. No KB handbook content is included in this release.
 

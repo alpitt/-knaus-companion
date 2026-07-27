@@ -196,3 +196,15 @@ node scripts/build-kb-index.js
 node --test tests/*.test.js
 git status --short --branch
 ```
+
+## Sprint 3: Digital Twin foundation
+
+Sprint 3 adds a read-only integration layer for the currently documented vehicle state. `app/data/digital_twin.schema.json` defines identity facts, systems, components, typed relationships, evidence, static references and optional operational collections. `app/data/digital_twin.json` contains only facts already represented by repository data; it deliberately identifies incomplete systems and the exact model as unknown.
+
+Stable colon-delimited identifiers separate entity families such as `system:electrical`, `component:calira-evs`, `relationship:evs-vb06` and `evidence:vehicle-reference`. Facts retain scalar values and link to evidence by identifier, avoiding unnecessary scalar wrappers. Evidence records distinguish provenance classification from confidence. Inferred or estimated evidence cannot become confirmed merely through display or adapter mapping.
+
+`digital-twin.js` validates and loads the static reference, provides lookup, filtering, traversal, search and statistics, and exposes a deliberate read-only API. `digital-twin-adapter.js` clones the reference Twin and maps existing schema-version-2 vehicle configuration into a runtime view. It never changes local storage, backup structure or source state and reports unmapped fields, missing targets and evidence/confidence distributions.
+
+The `#digital-twin` route shows overview, identity, system coverage, components, relationships, evidence, data quality and existing-feature links. Global search identifies matching results as Digital Twin entries. The service worker precaches only the schema, reference document and two runtime scripts; user-generated records remain solely in the existing application state.
+
+Known limitations: the Twin is deliberately partial and read-only, does not yet write user observations back to the model, does not claim precise water/gas/heating/refrigeration/safety equipment, and provides no telemetry, AI or external synchronization. Sprint 4 should add a controlled evidence-linking workflow for existing user records without changing storage schema or reference facts.
