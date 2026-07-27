@@ -1,0 +1,67 @@
+name: Validate Companion repository
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [companion-14-sprint-1-validation]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Syntax, tests and content integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 24 LTS
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Validate production JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking app/assets/js/app-v4.js"
+          node --check app/assets/js/app-v4.js || {
+            echo "::error file=app/assets/js/app-v4.js::Production JavaScript syntax validation failed."
+            exit 1
+          }
+
+      - name: Run every repository test
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          test_files=(tests/*.test.js)
+          if [ "${#test_files[@]}" -eq 0 ]; then
+            echo "::error::No tests/*.test.js files were found."
+            exit 1
+          fi
+          for test_file in "${test_files[@]}"; do
+            echo "::group::${test_file}"
+            if ! node --test "${test_file}"; then
+              echo "::error file=${test_file}::Test file failed. Review the preceding Node test output."
+              exit 1
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Confirm repository integrity suite ran
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f tests/repository-integrity.test.js || {
+            echo "::error file=tests/repository-integrity.test.js::Repository integrity test is missing."
+            exit 1
+          }
+          test -f tests/kb-manifest.test.js || {
+            echo "::error file=tests/kb-manifest.test.js::Engineering Canon manifest test is missing."
+            exit 1
+          }
+          echo "Repository integrity and Engineering Canon validation completed without deployment."
