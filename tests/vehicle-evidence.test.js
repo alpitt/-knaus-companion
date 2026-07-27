@@ -65,7 +65,7 @@ test("profile edits update lower-confidence evidence but preserve plate evidence
 
 test("production integrations retain compatibility controls",()=>{
   assert.match(source,/const STORE_KEY="knaus-ultimate-v1"/);assert.match(source,/schemaVersion:2/);assert.match(source,/state:\{\.\.\.state,schemaVersion:2\}/);assert.match(source,/const safetyCopy=state/);assert.match(source,/function vehicleEvidenceAnswer\(/);assert.match(source,/function evidenceBadge\(/);
-  assert.match(html,/Version 13\.10\.0/);for(const route of ["home","manuals","maintenance","diagnostics","workshop","heating","refrigeration","touring","vehicle","compliance","emergency","seasonal","settings"])assert.match(html,new RegExp(`data-screen="${route}"`));assert.match(source,/DATA\.chapters\.forEach/);assert.match(source,/DATA\.pages\.forEach/);assert.match(css,/@media\(max-width:620px\).*configuration-evidence-editor/s);assert.match(css,/\.evidence-badge/);
+  assert.match(html,/Version 13\.11\.0/);for(const route of ["home","manuals","maintenance","diagnostics","workshop","heating","refrigeration","touring","vehicle","compliance","emergency","seasonal","settings"])assert.match(html,new RegExp(`data-screen="${route}"`));assert.match(source,/DATA\.chapters\.forEach/);assert.match(source,/DATA\.pages\.forEach/);assert.match(css,/@media\(max-width:620px\).*configuration-evidence-editor/s);assert.match(css,/\.evidence-badge/);
 });
 
 test("electrical digital twin reuses registry evidence and exports connections",()=>{
@@ -76,4 +76,5 @@ test("electrical measurements persist through state, search and evidence export"
   assert.match(source,/electricalMeasurements:\[\]/);assert.match(source,/function saveElectricalMeasurement\(/);assert.match(source,/function deleteElectricalMeasurement\(/);assert.match(source,/measurements:\[\.\.\.\(state\.electricalMeasurements\|\|\[\]\)\]/);assert.match(source,/type:"electrical measurement"/);assert.match(html,/id="electricalMeasurementForm"/);assert.match(html,/id="electricalMeasurementComponent"/);assert.match(css,/\.electrical-measurement-form/);
   assert.match(css,/\.electrical-measurement-form>div\{grid-column:1\/-1/);assert.match(css,/\.electrical-measurement-notes\{grid-column:1\/6/);assert.match(css,/@media\(max-width:1100px\).*electrical-measurement-form>button\{grid-column:1\/-1\}/s);
   assert.match(source,/function electricalMeasurementKind\(/);assert.match(source,/function renderElectricalMeasurementInsights\(/);assert.match(html,/id="electricalMeasurementInsights"/);assert.match(html,/id="electricalMeasurementFilters"/);assert.match(css,/\.electrical-measurement-history/);
+  assert.match(source,/function filteredElectricalMeasurements\(/);assert.match(source,/function exportElectricalMeasurementsCsv\(/);assert.match(source,/knaus-electrical-measurements-/);assert.match(html,/id="exportElectricalMeasurements"/);
 });

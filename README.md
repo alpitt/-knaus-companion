@@ -29,6 +29,8 @@ The deployment workflow refuses to publish unless the package contains:
 
 ## Current release
 
+Version 13.11.0 adds Electrical Measurement CSV Export. Download the currently visible voltage, current, temperature, other or complete measurement history with component, test-point, operating-condition and notes fields for workshop analysis.
+
 Version 13.10.0 adds Electrical Measurement Insights. Review total readings, measured components, recent activity and the latest reading, then filter the complete offline measurement history by voltage, current, temperature or other evidence types.
 
 Version 13.9.1 refines the Electrical Measurement Evidence layout. The heading, six reading controls, notes and submit action now stay within the panel at desktop widths and reflow cleanly on tablet and mobile.
