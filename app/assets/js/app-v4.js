@@ -1,5 +1,5 @@
 
-const APP_VERSION="13.12.0";
+const APP_VERSION="14.0.0";
 const STORE_KEY="knaus-ultimate-v1";
 const EVIDENCE_STATUSES=Object.freeze({"owner-confirmed":{label:"Owner confirmed",priority:2},"photograph-confirmed":{label:"Confirmed from photograph",priority:3},"plate-confirmed":{label:"Confirmed from vehicle plate",priority:1},"manual-reference":{label:"Manufacturer manual reference",priority:4},estimated:{label:"Estimated",priority:5},unknown:{label:"Unknown",priority:6}});
 const VEHICLE_EVIDENCE_BASELINE=Object.freeze({make:{value:"Knaus",status:"owner-confirmed",source:"Owner vehicle identification",notes:"Existing confirmed make"},model:{value:"Sun Traveller",status:"owner-confirmed",source:"Owner vehicle identification"},exactModel:{value:"Sun-Traveller 550 D",status:"estimated",source:"Knaus manual layout and vehicle evidence",notes:"Probable model; confirm from build plate or original vehicle documentation"},year:{value:2009,status:"owner-confirmed",source:"Vehicle registration details"},baseVehicle:{value:"Fiat Ducato X250",status:"estimated",source:"Vehicle age and observed cab generation",notes:"Confirm from vehicle identification documentation"},engine:{value:"2.3 Multijet 120",status:"estimated",source:"Owner information",notes:"Confirm from VIN, engine code or official vehicle documentation"},charger:{value:"Calira EVS 30/20-DS/U",status:"photograph-confirmed",source:"Installed equipment photograph"},mainFuseBox:{value:"Calira VB 06-1",status:"photograph-confirmed",source:"Installed equipment photograph"},leisureBattery:{value:"Exide EK960 AGM 96 Ah",status:"photograph-confirmed",source:"Battery label photograph"},starterBatteryLocation:{value:"Cab floor battery compartment",status:"photograph-confirmed",source:"Installed battery photograph"},heating:{value:"Truma Trumatic C 4002",status:"photograph-confirmed",source:"Installed appliance and control photographs"},fridgeManufacturer:{value:"Dometic",status:"photograph-confirmed",source:"Refrigerator photograph"},fridgeType:{value:"AES absorption refrigerator",status:"photograph-confirmed",source:"Refrigerator control photograph"},fridge:{value:"Unknown",status:"unknown",source:"",notes:"Confirm from refrigerator data plate"}});
@@ -190,6 +190,7 @@ function setActiveRoute(id){
   if(id==="seasonal")renderSeasonal();
   if(id==="heating")renderHeating();
   if(id==="refrigeration"){renderRefrigeration();renderRefrigerationReadiness();renderRefrigerationRuns()}
+  if(id==="canon")renderCanon();
   $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
@@ -197,7 +198,7 @@ function closeDrawer(){$("#drawer").classList.remove("open");$("#drawer").setAtt
 function applyTheme(){document.documentElement.dataset.theme=state.theme==="dark"?"dark":"light"}
 
 const NAV=[
-  ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],
+  ["home","Home","⌂"],["assistant","Assistant","✦"],["search","Search","⌕"],["manuals","Manuals & chapters","▤"],["canon","Engineering Canon","⌘"],
   ["maintenance","Service & maintenance","⚙"],["compliance","Compliance centre","🛡"],["emergency","Emergency centre","☎"],["seasonal","Seasonal care","❄"],["diagnostics","Diagnostics","✓"],["electrical","Electrical system","⚡"],["fuses","Fuse finder","▥"],["water","Water system","💧"],["gas","Gas system","🔥"],["heating","Heating system","♨"],["refrigeration","Refrigeration","❄"],["workshop","Workshop mode","🛠"],["touring","Touring","➜"],["vehicle","My motorhome","▣"],["settings","Settings","⋯"]
 ];
 function renderNav(){
@@ -281,6 +282,7 @@ function renderHome(){
     moduleCard("refrigeration","❄","Refrigeration","Trace energy, cooling and exterior ventilation"),
     moduleCard("vehicle","🚐","My motorhome","Systems, photos and upgrades"),
     moduleCard("manuals","📘","Manuals","Companion chapters and official pages"),
+    moduleCard("canon","⌘","Engineering Canon","Governed engineering knowledge and provenance"),
     moduleCard("diagnostics","🧰","Diagnostics","Guided checks for common problems"),
     moduleCard("maintenance","🔧","Maintenance","Tasks, service history and reminders"),
     moduleCard("compliance","🛡","Compliance","Documents, scheduled care and readiness"),
@@ -293,6 +295,7 @@ function renderHome(){
 }
 function assistantIndex(){
   const docs=[];
+  (window.KnausCorpus?.filter()||[]).forEach(record=>docs.push({type:"engineering canon",title:`${record.id}. ${record.title}`,text:record.searchText||`${record.summary} ${record.purpose}`,raw:record,canonId:record.id}));
   DATA.chapters.forEach(c=>docs.push({type:"chapter",title:`Chapter ${c.n}. ${c.title}`,text:`${c.title} ${c.summary||""}`,chapterNumber:c.n,raw:c}));
   DATA.pages.forEach(p=>docs.push({type:"manual",title:`Page ${p.page}. ${p.title||"Official manual"}`,text:p.text||"",page:Number(p.page),raw:p}));
   DATA.diagnostics.forEach(d=>docs.push({type:"diagnostic",title:d.title||"Diagnostic",text:JSON.stringify(d)}));
@@ -343,6 +346,17 @@ function renderLibrary(){
     ?DATA.chapters.map(c=>({type:"chapter",title:`Chapter ${c.n}. ${c.title}`,text:c.summary||"",chapterNumber:Number(c.n),raw:c}))
     :DATA.pages.map(p=>({type:"manual",title:`Page ${p.page}. ${p.title||"Official manual"}`,text:String(p.text||"").replace(/\s+/g," ").trim(),page:Number(p.page),raw:p}));
   renderResults("#libraryList",list);
+}
+function renderCanon(){
+  const api=window.KnausCorpus,status=api?.getStatus()||{status:"error",message:"Engineering Canon runtime is unavailable."},stats=api?.getStatistics()||{available:0,expected:275,firstEdition:0,secondEdition:0};
+  $("#canonStatus").innerHTML=`<strong>${status.status==="error"?"Canon unavailable":status.status==="empty"?"Canon ready for import":"Engineering Canon"}</strong><p>${esc(status.message)}</p>`;
+  $("#canonStats").innerHTML=[[stats.available,"Available"],[stats.expected,"Expected"],[stats.firstEdition,"First Edition"],[stats.secondEdition,"Second Edition"]].map(([v,l])=>`<article class="stat-card"><strong>${v}</strong><span>${l}</span></article>`).join("");
+  if(!api||status.status==="error"){$("#canonResults").innerHTML='<article class="panel"><h2>Content could not be loaded</h2><p>Reload the application or verify the installed corpus index.</p></article>';return}
+  const query=$("#canonSearch")?.value||"",options={edition:$("#canonEdition")?.value||"",status:$("#canonStatusFilter")?.value||"",sort:$("#canonSort")?.value||"edition"},records=query?api.search(query,options):api.filter(options);
+  $("#canonResults").innerHTML=records.length?records.map(record=>`<button class="panel corpus-card" data-canon-id="${esc(record.id)}"><span class="meta">${esc(record.id)} • ${esc(record.edition.replace("-"," "))} • ${esc(record.status)}</span><strong>${esc(record.title)}</strong><span>${esc(record.summary||record.purpose||"")}</span></button>`).join(""):'<article class="panel corpus-empty"><h2>No Engineering Canon records available</h2><p>Canonical source content has not yet been imported. The governed index expects 275 records.</p></article>';
+}
+async function openCanonDocument(id){
+  try{const document=await window.KnausCorpus.getDocument(id),body=document.sections.map(section=>`<section class="corpus-section"><h3>${esc(section.heading)}</h3>${(section.content||[]).map(block=>block.format==="controlled-html"?sanitizeTrustedHtml(block.content):`<pre class="corpus-text">${esc(block.content)}</pre>`).join("")}</section>`).join("");showDialog(`${document.id} • ${document.status}`,document.title,`<p>${esc(document.summary)}</p>${body}`,false)}catch(error){toast("Engineering Canon record could not be opened");console.error(error)}
 }
 function renderMaintenance(){
   const logs=state.logs||[];
@@ -1245,6 +1259,7 @@ function addDiagnosticToFaultLog(){
 }
 function openDetail(item){
   if(!item)return;
+  if(item.type==="engineering canon"||item.canonId){openCanonDocument(item.canonId||item.raw?.id);return}
   if(item.type==="chapter"||item.chapterNumber){openChapter(item.chapterNumber||item.raw?.n);return}
   if(item.type==="manual"||item.page){openManualPage(item.page||item.raw?.page);return}
   $("#detailDialog").classList.remove("reader-dialog");
@@ -2140,15 +2155,18 @@ async function init(){
     loadJSON("data/electrical_components.json"),loadJSON("data/electrical_relations.json"),loadJSON("data/fuses.json"),loadJSON("data/water_components.json"),loadJSON("data/water_relations.json"),loadJSON("data/gas_components.json"),loadJSON("data/gas_relations.json"),loadJSON("data/vehicle_explorer.json"),loadJSON("data/vehicle_config_schema.json",{}),loadJSON("data/parts_inventory.json"),
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
+  await window.KnausCorpus?.initialise();
   applyTheme();renderNav();renderHome();renderAssistant();renderLibrary();renderMaintenance();renderCompliance();renderEmergency();renderSeasonal();renderDiagnostics();renderTouring();renderVehicle();renderElectrical();renderFuses();renderWater();renderGas();renderHeating();renderRefrigeration();renderRefrigerationReadiness();renderRefrigerationRuns();renderWorkshop();renderSettings();
   $("#diagnosticSearch")?.addEventListener("input",renderDiagnostics);
   $("#fuseSearch")?.addEventListener("input",renderFuses);
+  ["canonSearch","canonEdition","canonStatusFilter","canonSort"].forEach(id=>$("#"+id)?.addEventListener(id==="canonSearch"?"input":"change",renderCanon));
   setActiveRoute(NAV.some(x=>x[0]===route())?route():"home");
 }
 document.addEventListener("click",e=>{
   const routeButton=e.target.closest("[data-route]");if(routeButton){e.preventDefault();if(routeButton.dataset.seasonalAlertMode)activeSeasonalMode=routeButton.dataset.seasonalAlertMode;navigate(routeButton.dataset.route)}
   const prompt=e.target.closest("[data-prompt]");if(prompt){$("#assistantInput").value=prompt.dataset.prompt;askAssistant()}
   const tab=e.target.closest("[data-library]");if(tab){libraryMode=tab.dataset.library;$$(".tab").forEach(x=>x.classList.toggle("active",x===tab));renderLibrary()}
+  const canon=e.target.closest("[data-canon-id]");if(canon)openCanonDocument(canon.dataset.canonId);
   const touring=e.target.closest("[data-touring]");if(touring)openTouringSection(touring.dataset.touring);
   const touringStage=e.target.closest("[data-touring-stage]");if(touringStage){activeTouringStage=touringStage.dataset.touringStage;renderTouring()}
   const touringCheck=e.target.closest("[data-touring-check]");if(touringCheck){const key=`${activeTouringStage}:${touringCheck.dataset.touringCheck}`;state.touringProgress={...(state.touringProgress||{}),[key]:!state.touringProgress?.[key]};saveState();renderTouring()}

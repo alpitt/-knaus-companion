@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
-  <title>Knaus Companion 13.12.0</title>
+  <title>Knaus Companion 14.0.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=13.12.0-electrical-report">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=14.0.0-engineering-corpus">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -16,7 +16,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 13.12.0</span>
+        <span>Version 14.0.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -113,6 +113,7 @@
         <div class="tab-row">
           <button class="tab active" data-library="chapters">Companion chapters</button>
           <button class="tab" data-library="manual">Official manual</button>
+          <button class="tab" data-route="canon">Engineering Canon</button>
         </div>
         <div id="libraryList"></div>
       </section>
@@ -138,6 +139,19 @@
           <div class="section-heading"><div><span class="eyebrow">Service records</span><h2>Completed work</h2></div></div>
           <div id="serviceHistory" class="service-history"></div>
         </section>
+      </section>
+
+      <section class="screen" data-screen="canon">
+        <div class="page-head"><span class="eyebrow">Engineering reference</span><h1>Engineering Canon</h1><p>Governed technical knowledge for the Knaus Companion.</p></div>
+        <div id="canonStatus" class="panel corpus-status" role="status"></div>
+        <div class="status-grid" id="canonStats"></div>
+        <div class="panel corpus-controls">
+          <label>Search<input id="canonSearch" type="search" placeholder="ID, title, purpose or tag"></label>
+          <label>Edition<select id="canonEdition"><option value="">All editions</option><option value="first-edition">First Edition</option><option value="second-edition">Second Edition</option></select></label>
+          <label>Status<select id="canonStatusFilter"><option value="">All statuses</option><option>draft</option><option>verified</option><option>approved</option><option>deprecated</option><option>superseded</option></select></label>
+          <label>Sort<select id="canonSort"><option value="edition">Edition and sequence</option><option value="title">Title</option><option value="updated">Recently updated</option></select></label>
+        </div>
+        <div id="canonResults" class="corpus-results"></div>
       </section>
 
       <section class="screen" data-screen="compliance">
@@ -1008,7 +1022,8 @@
     <div class="toast-host" id="toastHost" aria-live="polite"></div>
   </div>
 
-  <script src="assets/js/app-v4.js?v=13.12.0-electrical-report"></script>
+  <script src="assets/js/kb-corpus.js?v=14.0.0-engineering-corpus"></script>
+  <script src="assets/js/app-v4.js?v=14.0.0-engineering-corpus"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;

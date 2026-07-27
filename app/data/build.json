@@ -1,7 +1,7 @@
 {
-  "version": "13.12.0",
-  "releaseName": "Electrical System Report",
-  "buildDate": "2026-07-26",
+  "version": "14.0.0",
+  "releaseName": "Engineering Corpus Foundation",
+  "buildDate": "2026-07-27",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
     "companionChapters": 44,
