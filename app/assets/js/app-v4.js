@@ -196,7 +196,7 @@ function setActiveRoute(id){
   if(id==="digital-twin")renderDigitalTwin();
   if(id==="health")renderHealth();
   renderBreadcrumb(id);
-  $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();performance.mark?.(`route-${id}-end`);
+  $("#content").focus({preventScroll:true});scrollTo(0,0);closeDrawer();performance.mark?.(`route-${id}-end`);try{performance.measure?.(`route-${id}`,`route-${id}-start`,`route-${id}-end`)}catch{}
 }
 function openDrawer(){$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").hidden=false;$("#menuButton").setAttribute("aria-expanded","true")}
 function closeDrawer(){$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#scrim").hidden=true;$("#menuButton").setAttribute("aria-expanded","false")}
