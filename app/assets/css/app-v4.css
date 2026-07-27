@@ -730,3 +730,7 @@ main{width:min(1180px,100%);margin:0 auto;padding:22px 16px 100px}
 /* v13.11 electrical measurement CSV */
 .electrical-measurement-review-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.electrical-measurement-review-actions .electrical-measurement-filters{flex:1}.electrical-measurement-review-actions>button{flex:0 0 auto;white-space:nowrap}
 @media(max-width:700px){.electrical-measurement-review-actions{align-items:stretch;flex-direction:column}.electrical-measurement-review-actions>button{width:100%}}
+
+/* v13.12 electrical system report */
+.electrical-report-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.electrical-report-actions button{white-space:nowrap}
+@media(max-width:700px){.electrical-report-actions{display:grid;width:100%}.electrical-report-actions button{width:100%}}

@@ -1,6 +1,6 @@
 {
-  "version": "13.11.0",
-  "releaseName": "Electrical Measurement CSV Export",
+  "version": "13.12.0",
+  "releaseName": "Electrical System Report",
   "buildDate": "2026-07-26",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
@@ -399,7 +399,8 @@
     "Desktop, tablet and mobile measurement control reflow",
     "Electrical measurement activity insights",
     "Voltage, current, temperature and other reading filters",
-    "Filter-aware electrical measurement CSV export"
+    "Filter-aware electrical measurement CSV export",
+    "Print-ready electrical system evidence report"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
