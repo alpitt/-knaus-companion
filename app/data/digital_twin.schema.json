@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alpitt.github.io/-knaus-companion/data/digital_twin.schema.json",
+  "title": "Knaus Companion Digital Twin",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "twinId", "vehicleId", "title", "lifecycleState", "createdAt", "updatedAt", "identity", "systems", "components", "relationships", "evidence"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "twinId": { "$ref": "#/$defs/id" },
+    "vehicleId": { "$ref": "#/$defs/id" },
+    "title": { "$ref": "#/$defs/nonEmpty" },
+    "description": { "type": "string" },
+    "lifecycleState": { "enum": ["draft", "active", "maintenance", "inactive", "archived"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "identity": { "type": "array", "items": { "$ref": "#/$defs/fact" } },
+    "systems": { "type": "array", "items": { "$ref": "#/$defs/system" } },
+    "components": { "type": "array", "items": { "$ref": "#/$defs/component" } },
+    "relationships": { "type": "array", "items": { "$ref": "#/$defs/relationship" } },
+    "modifications": { "type": "array", "items": { "$ref": "#/$defs/entity" }, "default": [] },
+    "measurements": { "type": "array", "items": { "$ref": "#/$defs/entity" }, "default": [] },
+    "maintenance": { "type": "array", "items": { "$ref": "#/$defs/reference" }, "default": [] },
+    "faults": { "type": "array", "items": { "$ref": "#/$defs/reference" }, "default": [] },
+    "evidence": { "type": "array", "items": { "$ref": "#/$defs/evidence" } },
+    "documents": { "type": "array", "items": { "$ref": "#/$defs/staticReference" }, "default": [] },
+    "photographs": { "type": "array", "items": { "$ref": "#/$defs/staticReference" }, "default": [] },
+    "metadata": { "type": "object", "additionalProperties": true, "default": {} }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?::[a-z0-9][a-z0-9-]*)+$" },
+    "nonEmpty": { "type": "string", "minLength": 1 },
+    "confidence": { "enum": ["confirmed", "high", "medium", "low", "unknown"] },
+    "classification": { "enum": ["manufacturer", "official-manual", "owner-observation", "measurement", "photograph", "service-record", "invoice", "inspection", "inferred", "estimated", "unknown"] },
+    "fact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "name", "value", "confidence", "evidenceRefs"],
+      "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "$ref": "#/$defs/nonEmpty" }, "value": {}, "confidence": { "$ref": "#/$defs/confidence" }, "evidenceRefs": { "type": "array", "items": { "$ref": "#/$defs/id" } }, "notes": { "type": "string" } }
+    },
+    "system": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "name", "status", "confidence", "evidenceRefs"],
+      "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "$ref": "#/$defs/nonEmpty" }, "status": { "enum": ["documented", "partial", "unknown", "not-applicable"] }, "confidence": { "$ref": "#/$defs/confidence" }, "evidenceRefs": { "type": "array", "items": { "$ref": "#/$defs/id" } }, "description": { "type": "string" }, "route": { "type": "string", "pattern": "^#[a-z0-9-]+$" } }
+    },
+    "component": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "name", "systemId", "status", "confidence", "evidenceRefs"],
+      "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "$ref": "#/$defs/nonEmpty" }, "systemId": { "$ref": "#/$defs/id" }, "status": { "enum": ["installed", "owned", "documented", "planned", "unknown", "removed"] }, "confidence": { "$ref": "#/$defs/confidence" }, "evidenceRefs": { "type": "array", "items": { "$ref": "#/$defs/id" } }, "reference": { "type": "string" }, "notes": { "type": "string" }, "route": { "type": "string", "pattern": "^#[a-z0-9-]+$" } }
+    },
+    "relationship": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "sourceId", "targetId", "type", "direction", "status", "evidenceRefs", "notes"],
+      "properties": { "id": { "$ref": "#/$defs/id" }, "sourceId": { "$ref": "#/$defs/id" }, "targetId": { "$ref": "#/$defs/id" }, "type": { "enum": ["contains", "installed-in", "powered-by", "protected-by", "connected-to", "feeds", "drains-to", "supplied-by", "controlled-by", "monitored-by", "documented-by", "photographed-by", "maintained-by", "replaced-by", "modified-by", "related-to"] }, "direction": { "enum": ["directed", "bidirectional"] }, "status": { "enum": ["documented", "observed", "inferred", "unknown"] }, "evidenceRefs": { "type": "array", "items": { "$ref": "#/$defs/id" } }, "notes": { "type": "string" }, "allowSelfReference": { "const": true } }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "classification", "source", "confidence", "linkedEntityIds"],
+      "properties": { "id": { "$ref": "#/$defs/id" }, "classification": { "$ref": "#/$defs/classification" }, "source": { "$ref": "#/$defs/nonEmpty" }, "description": { "type": "string" }, "date": { "type": "string", "format": "date" }, "confidence": { "$ref": "#/$defs/confidence" }, "linkedEntityIds": { "type": "array", "items": { "$ref": "#/$defs/id" } }, "provenance": { "type": "string" } }
+    },
+    "entity": { "type": "object", "required": ["id", "title", "evidenceRefs"], "properties": { "id": { "$ref": "#/$defs/id" }, "title": { "$ref": "#/$defs/nonEmpty" }, "systemId": { "$ref": "#/$defs/id" }, "evidenceRefs": { "type": "array", "items": { "$ref": "#/$defs/id" } }, "notes": { "type": "string" } }, "additionalProperties": true },
+    "reference": { "type": "object", "required": ["id", "sourceCollection"], "properties": { "id": { "$ref": "#/$defs/id" }, "sourceCollection": { "$ref": "#/$defs/nonEmpty" }, "sourceId": { "type": "string" } }, "additionalProperties": false },
+    "staticReference": { "type": "object", "required": ["id", "path"], "properties": { "id": { "$ref": "#/$defs/id" }, "path": { "type": "string", "pattern": "^(?!.*\\.\\.).+$" }, "title": { "type": "string" } }, "additionalProperties": false }
+  }
+}

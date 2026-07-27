@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "twinId": "twin:knaus-companion",
+  "vehicleId": "vehicle:knaus-sun-traveller-2009",
+  "title": "2009 Knaus Sun Traveller Digital Twin",
+  "description": "A read-only integration view of repository-supported vehicle facts. Unknown and unverified details remain explicit.",
+  "lifecycleState": "active",
+  "createdAt": "2026-07-27T00:00:00Z",
+  "updatedAt": "2026-07-27T00:00:00Z",
+  "identity": [
+    { "id": "fact:make", "name": "Make", "value": "Knaus", "confidence": "confirmed", "evidenceRefs": ["evidence:vehicle-reference"] },
+    { "id": "fact:model-range", "name": "Model range", "value": "Sun Traveller", "confidence": "confirmed", "evidenceRefs": ["evidence:vehicle-reference"] },
+    { "id": "fact:model-year", "name": "Model year", "value": 2009, "confidence": "confirmed", "evidenceRefs": ["evidence:vehicle-reference"] },
+    { "id": "fact:base-vehicle", "name": "Base vehicle", "value": "Fiat Ducato X250", "confidence": "high", "evidenceRefs": ["evidence:vehicle-reference"] },
+    { "id": "fact:transmission", "name": "Transmission", "value": "Manual", "confidence": "high", "evidenceRefs": ["evidence:vehicle-reference"] },
+    { "id": "fact:drive", "name": "Drive", "value": "Front-wheel drive", "confidence": "high", "evidenceRefs": ["evidence:vehicle-reference"] },
+    { "id": "fact:exact-model", "name": "Exact model", "value": "Unknown", "confidence": "unknown", "evidenceRefs": ["evidence:unknown-fields"], "notes": "Confirm from the vehicle build plate or original documentation." }
+  ],
+  "systems": [
+    { "id": "system:vehicle", "name": "Base vehicle", "status": "partial", "confidence": "high", "evidenceRefs": ["evidence:vehicle-reference"], "route": "#vehicle" },
+    { "id": "system:habitation", "name": "Habitation body", "status": "partial", "confidence": "medium", "evidenceRefs": ["evidence:vehicle-reference"], "route": "#vehicle" },
+    { "id": "system:electrical", "name": "Electrical", "status": "partial", "confidence": "high", "evidenceRefs": ["evidence:vehicle-reference", "evidence:electrical-reference"], "route": "#electrical" },
+    { "id": "system:water", "name": "Water", "status": "unknown", "confidence": "unknown", "evidenceRefs": ["evidence:unknown-fields"], "route": "#water" },
+    { "id": "system:gas", "name": "Gas", "status": "unknown", "confidence": "unknown", "evidenceRefs": ["evidence:unknown-fields"], "route": "#gas" },
+    { "id": "system:heating", "name": "Heating", "status": "unknown", "confidence": "unknown", "evidenceRefs": ["evidence:unknown-fields"], "route": "#heating" },
+    { "id": "system:refrigeration", "name": "Refrigeration", "status": "unknown", "confidence": "unknown", "evidenceRefs": ["evidence:unknown-fields"], "route": "#refrigeration" },
+    { "id": "system:communications", "name": "Communications and entertainment", "status": "partial", "confidence": "medium", "evidenceRefs": ["evidence:vehicle-reference"], "route": "#vehicle" },
+    { "id": "system:safety", "name": "Safety equipment", "status": "unknown", "confidence": "unknown", "evidenceRefs": ["evidence:unknown-fields"], "route": "#emergency" },
+    { "id": "system:accessories", "name": "Installed accessories", "status": "partial", "confidence": "medium", "evidenceRefs": ["evidence:vehicle-reference"], "route": "#vehicle" }
+  ],
+  "components": [
+    { "id": "component:calira-evs", "name": "Calira EVS 30/20-DS/IU", "systemId": "system:electrical", "status": "installed", "confidence": "confirmed", "evidenceRefs": ["evidence:vehicle-photograph"], "reference": "app/data/electrical_components.json#calira-evs", "route": "#electrical" },
+    { "id": "component:calira-vb06", "name": "Calira VB06-1", "systemId": "system:electrical", "status": "installed", "confidence": "confirmed", "evidenceRefs": ["evidence:vehicle-photograph"], "reference": "app/data/electrical_components.json#vb06", "route": "#fuses" },
+    { "id": "component:calira-vb04", "name": "Calira VB04", "systemId": "system:electrical", "status": "installed", "confidence": "high", "evidenceRefs": ["evidence:vehicle-reference"], "reference": "app/data/electrical_components.json#vb04", "route": "#fuses" },
+    { "id": "component:anker-solix-c1000", "name": "Anker Solix C1000 Gen 2", "systemId": "system:accessories", "status": "owned", "confidence": "high", "evidenceRefs": ["evidence:vehicle-reference"], "reference": "app/data/electrical_components.json#anker", "route": "#electrical" },
+    { "id": "component:auto-vox-sl5", "name": "AUTO-VOX SL5", "systemId": "system:accessories", "status": "installed", "confidence": "high", "evidenceRefs": ["evidence:vehicle-reference"], "route": "#vehicle" },
+    { "id": "component:alden-satellite", "name": "Alden automatic satellite dish", "systemId": "system:communications", "status": "installed", "confidence": "medium", "evidenceRefs": ["evidence:vehicle-reference"], "notes": "Repository record states that the controller requires confirmation.", "route": "#vehicle" }
+  ],
+  "relationships": [
+    { "id": "relationship:evs-vb06", "sourceId": "component:calira-evs", "targetId": "component:calira-vb06", "type": "connected-to", "direction": "directed", "status": "documented", "evidenceRefs": ["evidence:electrical-reference"], "notes": "Power distribution path documented in electrical_relations.json." },
+    { "id": "relationship:vb04-vehicle", "sourceId": "component:calira-vb04", "targetId": "system:vehicle", "type": "installed-in", "direction": "directed", "status": "observed", "evidenceRefs": ["evidence:vehicle-reference"], "notes": "Repository record states that the unit is under the passenger seat." },
+    { "id": "relationship:camera-vehicle", "sourceId": "component:auto-vox-sl5", "targetId": "system:vehicle", "type": "installed-in", "direction": "directed", "status": "observed", "evidenceRefs": ["evidence:vehicle-reference"], "notes": "Installed status is recorded; exact mounting location is not represented." }
+    ,{ "id": "relationship:anker-accessories", "sourceId": "component:anker-solix-c1000", "targetId": "system:accessories", "type": "related-to", "direction": "directed", "status": "observed", "evidenceRefs": ["evidence:vehicle-reference"], "notes": "Owned portable power equipment; a fixed installation is not asserted." }
+    ,{ "id": "relationship:alden-communications", "sourceId": "component:alden-satellite", "targetId": "system:communications", "type": "installed-in", "direction": "directed", "status": "observed", "evidenceRefs": ["evidence:vehicle-reference"], "notes": "Installed equipment record; controller details remain unconfirmed." }
+  ],
+  "modifications": [], "measurements": [],
+  "maintenance": [{ "id": "reference:maintenance", "sourceCollection": "app state maintenance records" }],
+  "faults": [{ "id": "reference:faults", "sourceCollection": "app state fault records" }],
+  "evidence": [
+    { "id": "evidence:vehicle-reference", "classification": "owner-observation", "source": "app/data/vehicle.json", "description": "Preserved vehicle identity and equipment reference data.", "confidence": "high", "linkedEntityIds": ["vehicle:knaus-sun-traveller-2009", "system:vehicle", "system:habitation", "system:electrical", "system:communications", "system:accessories", "component:calira-vb04", "component:anker-solix-c1000", "component:auto-vox-sl5", "component:alden-satellite"], "provenance": "Existing repository data; no new claim added." },
+    { "id": "evidence:vehicle-photograph", "classification": "photograph", "source": "app/data/vehicle.json confirmed equipment entries", "description": "Repository entries explicitly marked as confirmed by vehicle photograph.", "confidence": "confirmed", "linkedEntityIds": ["component:calira-evs", "component:calira-vb06"], "provenance": "Existing repository status wording; individual photograph mapping is not asserted." },
+    { "id": "evidence:electrical-reference", "classification": "inspection", "source": "app/data/electrical_relations.json", "description": "Existing documented electrical relationship reference.", "confidence": "medium", "linkedEntityIds": ["system:electrical", "component:calira-evs", "component:calira-vb06", "relationship:evs-vb06"], "provenance": "Repository relationship dataset." },
+    { "id": "evidence:unknown-fields", "classification": "unknown", "source": "Digital Twin completeness review", "description": "Placeholder evidence classification marking values that remain undocumented, not an asserted vehicle fact.", "confidence": "unknown", "linkedEntityIds": ["fact:exact-model", "system:water", "system:gas", "system:heating", "system:refrigeration", "system:safety"], "provenance": "Absence recorded explicitly." }
+  ],
+  "documents": [{ "id": "document:manufacturer-manual", "path": "docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf", "title": "Original Knaus manufacturer manual" }],
+  "photographs": [
+    { "id": "photograph:vehicle-01", "path": "assets/photos/vehicle_photo_01.jpg" }, { "id": "photograph:vehicle-02", "path": "assets/photos/vehicle_photo_02.jpg" }, { "id": "photograph:vehicle-03", "path": "assets/photos/vehicle_photo_03.jpg" }, { "id": "photograph:vehicle-04", "path": "assets/photos/vehicle_photo_04.jpg" }, { "id": "photograph:vehicle-05", "path": "assets/photos/vehicle_photo_05.jpg" }, { "id": "photograph:vehicle-06", "path": "assets/photos/vehicle_photo_06.jpg" }
+  ],
+  "metadata": { "readOnly": true, "completionClaim": "partial", "referenceDataOnly": true }
+}
