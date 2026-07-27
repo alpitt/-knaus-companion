@@ -171,3 +171,28 @@ Before committing, confirm protected production files and the Pages deployment w
 git diff --exit-code main -- .github/workflows/deploy-pages.yml app/index.html app/404.html app/assets/js/app-v4.js app/assets/css/app-v4.css app/service-worker.js
 git status --short --branch
 ```
+
+## Sprint 2: Engineering Corpus architecture
+
+Sprint 2 introduces the content contract and application surface without importing canonical handbook text. First Edition documents belong at `app/corpus/first-edition/KB-001.json` through `KB-250.json`; Second Edition documents belong at `app/corpus/second-edition/KB2-001.json` through `KB2-025.json`.
+
+The manifest is the governed inventory: it records identity, revision, approval state, provenance, checksum and canonical content path. The generated index is a deterministic, derived search asset containing only presentation and search metadata. It must never be edited as the source of truth. Each content file must satisfy `app/data/kb_content.schema.json`; executable markup and unsafe paths are rejected.
+
+`scripts/build-kb-index.js` validates manifest/content identity, edition paths, SHA-256 checksums, uniqueness and cross-references before replacing the index. Search uses the generated static index. The browser runtime fetches individual content only when opened; the service worker precaches the manifest, index and loader, then runtime-caches opened documents through the existing fetch strategy. It does not precache 275 future files.
+
+### First real import prerequisites
+
+Obtain authoritative source text and review authority before import. Convert only traceable source material, capture provenance and confidence, calculate the checksum from the final JSON bytes, add the manifest record, generate the index, run every test, and visually review the result. Conflicts create a reviewed revision; they never silently replace approved records or existing Companion chapters. Follow `docs/KB_IMPORT_GUIDE.md` for the controlled sequence.
+
+No canonical Engineering Canon content was imported or fabricated in Sprint 2. The empty manifest is deliberate.
+
+### Sprint 2 validation on Windows PowerShell
+
+```powershell
+node --check app/assets/js/app-v4.js
+node --check app/assets/js/kb-corpus.js
+node --check scripts/build-kb-index.js
+node scripts/build-kb-index.js
+node --test tests/*.test.js
+git status --short --branch
+```

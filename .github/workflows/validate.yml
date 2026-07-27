@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus]
 
 permissions:
   contents: read
@@ -32,6 +32,17 @@ jobs:
             echo "::error file=app/assets/js/app-v4.js::Production JavaScript syntax validation failed."
             exit 1
           }
+          node --check app/assets/js/kb-corpus.js || {
+            echo "::error file=app/assets/js/kb-corpus.js::Engineering Corpus runtime syntax validation failed."
+            exit 1
+          }
+          node --check scripts/build-kb-index.js || {
+            echo "::error file=scripts/build-kb-index.js::Engineering Corpus index generator syntax validation failed."
+            exit 1
+          }
+
+      - name: Rebuild deterministic Engineering Canon index
+        run: node scripts/build-kb-index.js
 
       - name: Run every repository test
         shell: bash
@@ -62,6 +73,10 @@ jobs:
           }
           test -f tests/kb-manifest.test.js || {
             echo "::error file=tests/kb-manifest.test.js::Engineering Canon manifest test is missing."
+            exit 1
+          }
+          test -f tests/kb-corpus.test.js || {
+            echo "::error file=tests/kb-corpus.test.js::Engineering Corpus test suite is missing."
             exit 1
           }
           echo "Repository integrity and Engineering Canon validation completed without deployment."

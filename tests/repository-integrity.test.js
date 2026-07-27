@@ -48,10 +48,30 @@ test("required production files exist", () => {
     "app/manifest.webmanifest",
     "app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf",
     ".github/workflows/deploy-pages.yml",
+    "app/assets/js/kb-corpus.js",
+    "app/data/kb_content.schema.json",
+    "app/data/kb_index.json",
+    "scripts/build-kb-index.js",
   ];
   for (const relativePath of required) {
     assert.ok(fs.existsSync(path.join(ROOT, relativePath)), `Required production file is missing: ${relativePath}`);
   }
+});
+
+test("Engineering Corpus manifest, index, files and routes agree", () => {
+  const manifest = readJson("app/data/kb_manifest.json");
+  const index = readJson("app/data/kb_index.json");
+  assert.equal(index.expectedRecordCount, 275);
+  assert.equal(index.availableRecordCount, index.records.length);
+  assert.deepEqual(index.records.map(record => record.id), manifest.records.map(record => record.id));
+  for (const record of index.records) assert.ok(fs.existsSync(path.join(ROOT, record.contentPath)), `Missing indexed content ${record.contentPath}`);
+  const actual = ["first-edition", "second-edition"].flatMap(edition => fs.readdirSync(path.join(APP, "corpus", edition)).filter(name => name.endsWith(".json")).map(name => `app/corpus/${edition}/${name}`));
+  assert.deepEqual(actual.sort(), manifest.records.map(record => record.contentPath).sort(), "Unexpected KB JSON files exist outside the manifest");
+  const html = read("app/index.html");
+  assert.match(html, /data-screen="canon"/);
+  assert.match(html, /data-screen="manuals"/);
+  assert.match(html, /data-library="chapters"/);
+  assert.match(html, /data-library="manual"/);
 });
 
 test("production JavaScript passes Node syntax checking", () => {

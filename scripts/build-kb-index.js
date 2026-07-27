@@ -35,7 +35,7 @@ function validateDocument(document, record, ids) {
   const unsafe = /<(script|iframe|object|embed)\b|\bon\w+\s*=|javascript\s*:/i;
   asArray(document.sections).forEach((section, index) => {
     if (!section || typeof section !== "object" || !section.id || !section.heading || !Array.isArray(section.content)) fail(errors, `${record.id}: invalid section ${index + 1}`);
-    asArray(section?.content).forEach(block => { if (typeof block?.content === "string" && unsafe.test(block.content)) fail(errors, `${record.id}: unsafe content in section ${section.id || index + 1}`); });
+    asArray(section?.content).forEach(block => { const value=block?.value??block?.content;if (typeof value === "string" && unsafe.test(value)) fail(errors, `${record.id}: unsafe content in section ${section.id || index + 1}`); });
   });
   return errors;
 }
