@@ -1,14 +1,16 @@
-const CACHE='knaus-companion-v14-2-0-local-reasoning';
-const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css?v=14.2.0-local-reasoning','./assets/js/kb-corpus.js?v=14.2.0-local-reasoning','./assets/js/digital-twin.js?v=14.2.0-local-reasoning','./assets/js/digital-twin-adapter.js?v=14.2.0-local-reasoning','./assets/js/reasoning-safety.js?v=14.2.0-local-reasoning','./assets/js/local-reasoning.js?v=14.2.0-local-reasoning','./assets/js/guided-diagnostics.js?v=14.2.0-local-reasoning','./assets/js/app-v4.js?v=14.2.0-local-reasoning','./data/build.json','./data/kb_manifest.json','./data/kb_index.json','./data/digital_twin.json','./data/digital_twin.schema.json','./data/reasoning.json','./data/reasoning_index.json','./data/vehicle_config_schema.json','./data/touring_operations.json','./data/packing_templates.json','./data/maintenance_tasks.json','./data/parts_inventory.json','./assets/photos/vehicle_photo_01.jpg','./assets/photos/vehicle_photo_02.jpg','./assets/photos/vehicle_photo_03.jpg','./assets/photos/vehicle_photo_04.jpg','./assets/photos/vehicle_photo_05.jpg','./assets/photos/vehicle_photo_06.jpg'];
-self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting()});
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET')return;
-  const isPage=e.request.mode==='navigate';
-  if(isPage){
-    e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put('./index.html',c));return r}).catch(()=>caches.match('./index.html')));
+const CACHE_PREFIX='knaus-companion-';
+const CACHE=`${CACHE_PREFIX}v15-0-0-release-candidate`;
+const CORE=['./','./index.html','./manifest.webmanifest','./assets/css/app-v4.css?v=15.0.0-release-candidate','./assets/js/kb-corpus.js?v=15.0.0-release-candidate','./assets/js/digital-twin.js?v=15.0.0-release-candidate','./assets/js/digital-twin-adapter.js?v=15.0.0-release-candidate','./assets/js/reasoning-safety.js?v=15.0.0-release-candidate','./assets/js/local-reasoning.js?v=15.0.0-release-candidate','./assets/js/guided-diagnostics.js?v=15.0.0-release-candidate','./assets/js/app-v4.js?v=15.0.0-release-candidate','./data/build.json','./data/kb_manifest.json','./data/kb_index.json','./data/digital_twin.json','./data/digital_twin.schema.json','./data/reasoning.json','./data/reasoning_index.json','./data/vehicle_config_schema.json','./data/touring_operations.json','./data/packing_templates.json','./data/maintenance_tasks.json','./data/parts_inventory.json','./assets/photos/vehicle_photo_01.jpg','./assets/photos/vehicle_photo_02.jpg','./assets/photos/vehicle_photo_03.jpg','./assets/photos/vehicle_photo_04.jpg','./assets/photos/vehicle_photo_05.jpg','./assets/photos/vehicle_photo_06.jpg'];
+async function rebuildCache(){await caches.delete(CACHE);const cache=await caches.open(CACHE);await cache.addAll(CORE)}
+self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting();if(event.data?.type==='REBUILD_CACHE')event.waitUntil(rebuildCache())});
+self.addEventListener('install',event=>event.waitUntil(rebuildCache().then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith(CACHE_PREFIX)&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{
+  if(event.request.method!=='GET')return;
+  const url=new URL(event.request.url);if(url.origin!==self.location.origin)return;
+  if(event.request.mode==='navigate'){
+    event.respondWith(fetch(event.request).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put('./index.html',copy))}return response}).catch(()=>caches.match('./index.html')));
     return;
   }
-  e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c))}return r})));
+  event.respondWith(caches.match(event.request).then(hit=>hit||fetch(event.request).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy))}return response}).catch(()=>caches.match('./index.html'))));
 });

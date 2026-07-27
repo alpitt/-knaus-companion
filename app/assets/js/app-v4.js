@@ -2164,6 +2164,7 @@ async function releaseWorkshopWakeLock(){
 function renderSettings(){
   const b=DATA.build||{};
   $("#buildInfo").innerHTML=`<p><strong>Version:</strong> ${esc(b.version||APP_VERSION)}</p><p><strong>Release:</strong> ${esc(b.releaseName||"Rebuilt application shell")}</p><p><strong>Build date:</strong> ${esc(b.buildDate||"2026-07-18")}</p><p><strong>Local records:</strong> ${(state.logs||[]).length}</p>`;
+  const counts=applicationRecordCounts(),total=Object.values(counts).reduce((sum,count)=>sum+count,0);$("#backupSummary").textContent=`Schema ${state.schemaVersion||2} • ${total} local records • includes vehicle evidence and settings.`;
 }
 function exportBackup(){
   const payload={app:"Knaus Companion",version:APP_VERSION,schemaVersion:2,exportedAt:new Date().toISOString(),state:{...state,schemaVersion:2}};
@@ -2173,10 +2174,13 @@ function exportBackup(){
 function parseBackupText(text){
   let payload;try{payload=JSON.parse(text)}catch{throw new Error("Backup could not be read. Choose a valid Knaus Companion JSON backup.")}
   const incoming=payload?.state||payload;if(!incoming||typeof incoming!=="object"||Array.isArray(incoming))throw new Error("Backup structure is invalid. No data was changed.");
+  const version=Number(incoming.schemaVersion||payload?.schemaVersion||1);if(!Number.isInteger(version)||version<1||version>2)throw new Error("This backup uses an unsupported data version. No data was changed.");
   return migrateEvidenceState(incoming);
 }
 async function restoreBackup(file){
   const safetyCopy=state;let restored;try{restored=parseBackupText(await file.text())}catch(error){state=safetyCopy;throw error}
+  const counts={service:(restored.logs||[]).length,faults:(restored.faults||[]).length,trips:(restored.trips||[]).length,measurements:(restored.electricalMeasurements||[]).length};
+  if(!confirm(`Restore this schema ${restored.schemaVersion} backup?\n\n${Object.entries(counts).map(([name,count])=>`${name}: ${count}`).join("\n")}\n\nCurrent local data will be replaced.`)){toast("Restore cancelled. No data was changed.");return}
   try{if(!restored.vehicleConfiguration||restored.schemaVersion!==2)throw new Error("migration");state=restored;saveState()}catch{state=safetyCopy;throw new Error("Backup restore failed. Your current data was left unchanged.")}
   toast("Backup restored");setTimeout(()=>location.reload(),600);
 }
@@ -2189,7 +2193,7 @@ async function rebuildCache(){
   if(!navigator.onLine){toast("Connect to the internet before rebuilding the offline cache.");return}
   try{
     if("caches" in window){const keys=await caches.keys();await Promise.all(keys.map(key=>caches.delete(key)))}
-    const registration=await navigator.serviceWorker?.getRegistration();await registration?.update();
+    const registration=await navigator.serviceWorker?.getRegistration();registration?.active?.postMessage({type:"REBUILD_CACHE"});await registration?.update();
     toast("Offline cache cleared for rebuild. Reloading…");setTimeout(()=>location.reload(),700);
   }catch{toast("The offline cache could not be rebuilt. Your saved records were not changed.")}
 }
