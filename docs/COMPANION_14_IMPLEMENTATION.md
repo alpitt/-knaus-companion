@@ -208,3 +208,15 @@ Stable colon-delimited identifiers separate entity families such as `system:elec
 The `#digital-twin` route shows overview, identity, system coverage, components, relationships, evidence, data quality and existing-feature links. Global search identifies matching results as Digital Twin entries. The service worker precaches only the schema, reference document and two runtime scripts; user-generated records remain solely in the existing application state.
 
 Known limitations: the Twin is deliberately partial and read-only, does not yet write user observations back to the model, does not claim precise water/gas/heating/refrigeration/safety equipment, and provides no telemetry, AI or external synchronization. Sprint 4 should add a controlled evidence-linking workflow for existing user records without changing storage schema or reference facts.
+
+## Sprint 4: deterministic local reasoning
+
+Sprint 4 builds a local evidence index from chapters, manual OCR, the empty-or-populated Canon index, Digital Twin, diagnostics, maintenance, component relationships and vehicle configuration definitions. The generated index is stable, checksum-protected and contains normalized source text rather than invented repair instructions.
+
+`local-reasoning.js` normalizes queries, detects supported intents, extracts identifiers, systems, measurements and symptoms, retrieves evidence, applies explainable ranking weights and builds a fixed answer contract. Every answer includes confidence, safety class, unknowns, next checks, sources and a trace. Confidence cannot exceed selected evidence.
+
+`reasoning-safety.js` performs deterministic emergency, gas, fire, electrical, vehicle-safety and water/electrical checks before presentation. `guided-diagnostics.js` asks one documented question at a time, records session history, reports ranked possibilities rather than diagnoses, and stops on safety or insufficient evidence.
+
+Processing is entirely in-browser. No external request, model, API key or remote embedding service is used. Concise assistant history reuses the existing optional schema-version-2 `assistantHistory` collection and remains limited to 20 entries; no migration or backup change is required. The evidence index and engines are cached for offline use.
+
+Known limitations include lexical rather than semantic retrieval, incomplete static Canon content, and no autonomous repair decisions. Sprint 5 should add controlled evaluation fixtures and evidence-linking improvements, not cloud AI or predictive maintenance.

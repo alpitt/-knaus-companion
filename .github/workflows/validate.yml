@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning]
 
 permissions:
   contents: read
@@ -43,12 +43,22 @@ jobs:
           node --check app/assets/js/digital-twin.js
           node --check app/assets/js/digital-twin-adapter.js
           node --check scripts/validate-digital-twin.js
+          node --check app/assets/js/local-reasoning.js
+          node --check app/assets/js/reasoning-safety.js
+          node --check app/assets/js/guided-diagnostics.js
+          node --check scripts/build-reasoning-index.js
+          node --check scripts/validate-reasoning.js
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
 
       - name: Validate Digital Twin reference data
         run: node scripts/validate-digital-twin.js
+
+      - name: Build and validate local reasoning evidence
+        run: |
+          node scripts/build-reasoning-index.js
+          node scripts/validate-reasoning.js
 
       - name: Run every repository test
         shell: bash

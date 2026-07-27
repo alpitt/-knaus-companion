@@ -57,6 +57,14 @@ test("required production files exist", () => {
     "app/assets/js/digital-twin.js",
     "app/assets/js/digital-twin-adapter.js",
     "scripts/validate-digital-twin.js",
+    "app/data/reasoning.schema.json",
+    "app/data/reasoning.json",
+    "app/data/reasoning_index.json",
+    "app/assets/js/local-reasoning.js",
+    "app/assets/js/reasoning-safety.js",
+    "app/assets/js/guided-diagnostics.js",
+    "scripts/build-reasoning-index.js",
+    "scripts/validate-reasoning.js",
   ];
   for (const relativePath of required) {
     assert.ok(fs.existsSync(path.join(ROOT, relativePath)), `Required production file is missing: ${relativePath}`);
@@ -87,6 +95,15 @@ test("Digital Twin assets, validation and route are present", () => {
   const html = read("app/index.html");
   assert.match(html, /data-screen="digital-twin"/);
   for (const route of ["home", "manuals", "canon", "vehicle", "electrical", "water", "gas", "heating", "refrigeration", "maintenance", "diagnostics", "workshop", "settings"]) assert.match(html, new RegExp(`data-screen="${route}"`));
+});
+
+test("local reasoning assets, assistant route and offline entries are present", () => {
+  const validation = spawnSync(process.execPath, [path.join(ROOT, "scripts", "validate-reasoning.js")], { encoding: "utf8" });
+  assert.equal(validation.status, 0, `Reasoning validation failed:\n${validation.stderr || validation.stdout}`);
+  const html = read("app/index.html"), worker = read("app/service-worker.js");
+  assert.match(html, /data-screen="assistant"/);
+  for (const asset of ["reasoning-safety.js", "local-reasoning.js", "guided-diagnostics.js"]) { assert.match(html, new RegExp(asset.replace(".", "\\."))); assert.match(worker, new RegExp(asset.replace(".", "\\."))); }
+  for (const data of ["reasoning.json", "reasoning_index.json"]) assert.match(worker, new RegExp(data.replace(".", "\\.")));
 });
 
 test("production JavaScript passes Node syntax checking", () => {

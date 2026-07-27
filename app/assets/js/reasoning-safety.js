@@ -1,5 +1,5 @@
 (function(global){"use strict";const RULES=[
-{id:"lpg-leak",re:/\b(lpg|gas)\b.*\b(smell|leak)|\bsmell of gas\b/i,class:"emergency",warning:"Suspected LPG leak: avoid flames and electrical switches, close the cylinder valve only if safely accessible, ventilate, leave the vehicle and obtain professional assistance.",escalate:true},
+{id:"lpg-leak",re:/\b(lpg|gas)\b.*\b(smell|leak)|\b(smell|leak)\b.*\b(lpg|gas)\b/i,class:"emergency",warning:"Suspected LPG leak: avoid flames and electrical switches, close the cylinder valve only if safely accessible, ventilate, leave the vehicle and obtain professional assistance.",escalate:true},
 {id:"carbon-monoxide",re:/carbon monoxide|\bco alarm\b/i,class:"emergency",warning:"Leave the vehicle, move into fresh air and obtain emergency or professional assistance. Do not re-enter until declared safe.",escalate:true},
 {id:"fire-smoke",re:/\bfire\b|\bsmoke\b/i,class:"emergency",warning:"Move people to safety and contact emergency assistance. Do not attempt invasive diagnosis.",escalate:true},
 {id:"thermal-event",re:/battery.*(hot|swollen|thermal|smoke|fire)/i,class:"emergency",warning:"Keep clear of the battery, avoid touching or charging it, move to safety and obtain emergency or professional assistance.",escalate:true},

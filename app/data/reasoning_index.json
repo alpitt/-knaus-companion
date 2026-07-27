@@ -11863,13 +11863,13 @@
       "chapterIds": [],
       "kbIds": [],
       "evidenceRefs": [],
-      "confidence": "unknown",
+      "confidence": "insufficient-evidence",
       "safetyClass": "gas-risk",
       "route": "#digital-twin",
       "sectionAnchor": "",
       "sourceFile": "app/data/digital_twin.json",
       "searchableText": "evidence:unknown-fields evidence:unknown-fields placeholder evidence classification marking values that remain undocumented, not an asserted vehicle fact. {\"id\":\"evidence:unknown-fields\",\"classification\":\"unknown\",\"source\":\"digital twin completeness review\",\"description\":\"placeholder evidence classification marking values that remain undocumented, not an asserted vehicle fact.\",\"confidence\":\"unknown\",\"linkedentityids\":[\"fact:exact-model\",\"system:water\",\"system:gas\",\"system:heating\",\"system:refrigeration\",\"system:safety\"],\"provenance\":\"absence recorded explicitly.\"} evidence unknown",
-      "checksum": "sha256:b701e86c008ae6f855d8430a1721fa1836b49befd6b4b82d4677a98d6ec89f2b"
+      "checksum": "sha256:71047cd4536a330f1de479f817c82f45e6c4fbc8f5e1d35f2c7cf05af9ea7b56"
     },
     {
       "id": "twin:evidence:vehicle-photograph",
@@ -11991,13 +11991,13 @@
       "evidenceRefs": [
         "evidence:unknown-fields"
       ],
-      "confidence": "unknown",
+      "confidence": "insufficient-evidence",
       "safetyClass": "informational",
       "route": "#digital-twin",
       "sectionAnchor": "",
       "sourceFile": "app/data/digital_twin.json",
       "searchableText": "fact:exact-model exact model confirm from the vehicle build plate or original documentation. {\"id\":\"fact:exact-model\",\"name\":\"exact model\",\"value\":\"unknown\",\"confidence\":\"unknown\",\"evidencerefs\":[\"evidence:unknown-fields\"],\"notes\":\"confirm from the vehicle build plate or original documentation.\"} fact",
-      "checksum": "sha256:acabcc47f2de61ff1cccb1fdf633bb201b8f1654f5160ef1a54271b143e2414c"
+      "checksum": "sha256:29723f0a7eaca16173072921d39300564f4dca431e59944c7eadc2a16a19e2d4"
     },
     {
       "id": "twin:fact:make",
@@ -12343,13 +12343,13 @@
       "evidenceRefs": [
         "evidence:unknown-fields"
       ],
-      "confidence": "unknown",
+      "confidence": "insufficient-evidence",
       "safetyClass": "gas-risk",
       "route": "#digital-twin",
       "sectionAnchor": "",
       "sourceFile": "app/data/digital_twin.json",
       "searchableText": "system:gas gas unknown {\"id\":\"system:gas\",\"name\":\"gas\",\"status\":\"unknown\",\"confidence\":\"unknown\",\"evidencerefs\":[\"evidence:unknown-fields\"],\"route\":\"#gas\"} system system:gas",
-      "checksum": "sha256:9275ecd67dcf562a88d480cd6e66bf551338ff9d0bff9ad8042d2633cceb04f6"
+      "checksum": "sha256:e4a25add904b2f6e187318396f970c4a590d3f7d56689262eba15217a31a6801"
     },
     {
       "id": "twin:system:habitation",
@@ -12399,13 +12399,13 @@
       "evidenceRefs": [
         "evidence:unknown-fields"
       ],
-      "confidence": "unknown",
+      "confidence": "insufficient-evidence",
       "safetyClass": "informational",
       "route": "#digital-twin",
       "sectionAnchor": "",
       "sourceFile": "app/data/digital_twin.json",
       "searchableText": "system:heating heating unknown {\"id\":\"system:heating\",\"name\":\"heating\",\"status\":\"unknown\",\"confidence\":\"unknown\",\"evidencerefs\":[\"evidence:unknown-fields\"],\"route\":\"#heating\"} system system:heating",
-      "checksum": "sha256:d3858a55440f9b2309134accfafebfda503ae782729505c2af4d1061d91160db"
+      "checksum": "sha256:a8821d6ea097e8e461cde79f2ff3da50b923c991aa70f48fe95874665f8c36cb"
     },
     {
       "id": "twin:system:refrigeration",
@@ -12427,13 +12427,13 @@
       "evidenceRefs": [
         "evidence:unknown-fields"
       ],
-      "confidence": "unknown",
+      "confidence": "insufficient-evidence",
       "safetyClass": "informational",
       "route": "#digital-twin",
       "sectionAnchor": "",
       "sourceFile": "app/data/digital_twin.json",
       "searchableText": "system:refrigeration refrigeration unknown {\"id\":\"system:refrigeration\",\"name\":\"refrigeration\",\"status\":\"unknown\",\"confidence\":\"unknown\",\"evidencerefs\":[\"evidence:unknown-fields\"],\"route\":\"#refrigeration\"} system system:refrigeration",
-      "checksum": "sha256:619862f2af4db34af26f61f80ab8be40da91c5cde9bfcb7117e20851f9e23fb3"
+      "checksum": "sha256:11b2a8fe589616f6025a3d48c4a24e304ef35783da94bee2ee5a772380470e26"
     },
     {
       "id": "twin:system:safety",
@@ -12455,13 +12455,13 @@
       "evidenceRefs": [
         "evidence:unknown-fields"
       ],
-      "confidence": "unknown",
+      "confidence": "insufficient-evidence",
       "safetyClass": "informational",
       "route": "#digital-twin",
       "sectionAnchor": "",
       "sourceFile": "app/data/digital_twin.json",
       "searchableText": "system:safety safety equipment unknown {\"id\":\"system:safety\",\"name\":\"safety equipment\",\"status\":\"unknown\",\"confidence\":\"unknown\",\"evidencerefs\":[\"evidence:unknown-fields\"],\"route\":\"#emergency\"} system system:safety",
-      "checksum": "sha256:57ec3e7f798953e56b4fbf2951b8d3cfea1b93c118ecf9989cc14d326cd213fc"
+      "checksum": "sha256:0dc013535e90b25cdb43a5afa44b7caf8624a43608faf53f1be2c7cbc3cd9d61"
     },
     {
       "id": "twin:system:vehicle",
@@ -12511,13 +12511,13 @@
       "evidenceRefs": [
         "evidence:unknown-fields"
       ],
-      "confidence": "unknown",
+      "confidence": "insufficient-evidence",
       "safetyClass": "water-damage-risk",
       "route": "#digital-twin",
       "sectionAnchor": "",
       "sourceFile": "app/data/digital_twin.json",
       "searchableText": "system:water water unknown {\"id\":\"system:water\",\"name\":\"water\",\"status\":\"unknown\",\"confidence\":\"unknown\",\"evidencerefs\":[\"evidence:unknown-fields\"],\"route\":\"#water\"} system system:water",
-      "checksum": "sha256:aa492db28c79494f63a506763ee738169a7115b10495977e1b6807e50f9a214f"
+      "checksum": "sha256:a424cf847e85a915c1e7a0032a8c91facb76e0962f79c15369adf87e35f75e96"
     },
     {
       "id": "vehicle-config:documents:dampDue",
