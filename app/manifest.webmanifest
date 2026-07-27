@@ -5,5 +5,13 @@
   "display": "standalone",
   "background_color": "#f3f7f8",
   "theme_color": "#16384b",
-  "icons": []
+  "description": "Offline motorhome reference, evidence and maintenance companion",
+  "icons": [
+    {"src":"assets/icons/icon-192.svg","sizes":"192x192","type":"image/svg+xml","purpose":"any"},
+    {"src":"assets/icons/icon-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}
+  ],
+  "screenshots": [
+    {"src":"assets/photos/vehicle_photo_03.jpg","sizes":"1536x1152","type":"image/jpeg","form_factor":"wide","label":"Knaus Companion vehicle record"},
+    {"src":"assets/photos/vehicle_photo_02.jpg","sizes":"1152x1536","type":"image/jpeg","form_factor":"narrow","label":"Knaus Companion mobile vehicle record"}
+  ]
 }

@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate]
 
 permissions:
   contents: read

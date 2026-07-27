@@ -65,7 +65,7 @@ test("profile edits update lower-confidence evidence but preserve plate evidence
 
 test("production integrations retain compatibility controls",()=>{
   assert.match(source,/const STORE_KEY="knaus-ultimate-v1"/);assert.match(source,/schemaVersion:2/);assert.match(source,/state:\{\.\.\.state,schemaVersion:2\}/);assert.match(source,/const safetyCopy=state/);assert.match(source,/function vehicleEvidenceAnswer\(/);assert.match(source,/function evidenceBadge\(/);
-  assert.match(html,/Version 14\.2\.0/);for(const route of ["home","manuals","maintenance","diagnostics","workshop","heating","refrigeration","touring","vehicle","compliance","emergency","seasonal","settings"])assert.match(html,new RegExp(`data-screen="${route}"`));assert.match(source,/DATA\.chapters\.forEach/);assert.match(source,/DATA\.pages\.forEach/);assert.match(css,/@media\(max-width:620px\).*configuration-evidence-editor/s);assert.match(css,/\.evidence-badge/);
+  assert.match(html,/Version 15\.0\.0/);for(const route of ["home","manuals","maintenance","diagnostics","workshop","heating","refrigeration","touring","vehicle","compliance","emergency","seasonal","health","settings"])assert.match(html,new RegExp(`data-screen="${route}"`));assert.match(source,/DATA\.chapters\.forEach/);assert.match(source,/DATA\.pages\.forEach/);assert.match(css,/@media\(max-width:620px\).*configuration-evidence-editor/s);assert.match(css,/\.evidence-badge/);
 });
 
 test("electrical digital twin reuses registry evidence and exports connections",()=>{
