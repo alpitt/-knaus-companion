@@ -35,6 +35,8 @@ Version 15.1.0 adds private local owner records, append-only revision history, e
 
 Version 15.2.0 adds the local-only Evidence Library with validated metadata, IndexedDB file storage and SHA-256 duplicate detection. See the [Evidence Library guide](docs/EVIDENCE_LIBRARY_GUIDE.md) and [developer guide](docs/EVIDENCE_LIBRARY_DEVELOPER_GUIDE.md).
 
+Version 15.3.0 adds the deterministic, offline [Systems Explorer](docs/SYSTEM_EXPLORER_GUIDE.md) backed by a validated [system graph](docs/SYSTEM_GRAPH_GUIDE.md). Only documented Digital Twin relationships are shown; missing engineering connections remain unknown.
+
 Version 15.0.0 Release Candidate integrates application-health reporting, improved offline search, safer backup restore, cache recovery, accessibility and print hardening, and automated release integrity checks. It preserves the existing storage key and schema-version-2 compatibility.
 
 Version 14.2.0 adds deterministic local evidence-aware reasoning, source-ranked answers, safety escalation, traceability and guided diagnostics. It makes no external AI calls and requires no API key.

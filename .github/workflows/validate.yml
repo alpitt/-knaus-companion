@@ -58,6 +58,9 @@ jobs:
           node --check app/assets/js/evidence-library.js
           node --check app/assets/js/evidence-library-ui.js
           node --check scripts/validate-evidence-library.js
+          node --check app/assets/js/system-graph.js
+          node --check app/assets/js/system-explorer.js
+          node --check scripts/validate-system-graph.js
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
@@ -75,6 +78,9 @@ jobs:
 
       - name: Validate Evidence Library contracts and fixtures
         run: node scripts/validate-evidence-library.js
+
+      - name: Validate Interactive Systems graph
+        run: node scripts/validate-system-graph.js
 
       - name: Run every repository test
         shell: bash
