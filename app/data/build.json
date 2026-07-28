@@ -1,6 +1,6 @@
 {
-  "version": "16.1.0",
-  "releaseName": "Trip Readiness, Departure Checks and Journey Operations",
+  "version": "17.0.0",
+  "releaseName": "Maintenance Intelligence, Service Planning and Component Lifecycle Management",
   "buildDate": "2026-07-28",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
