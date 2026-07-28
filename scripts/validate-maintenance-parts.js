@@ -1,0 +1,1 @@
+"use strict";const fs=require("node:fs"),p=require("node:path"),root=p.resolve(__dirname,"..");function main(){JSON.parse(fs.readFileSync(p.join(root,"app/data/maintenance_part.schema.json"),"utf8"));console.log("Maintenance parts validation passed.")}if(require.main===module)main();module.exports={main};

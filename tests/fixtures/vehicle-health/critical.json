@@ -1,0 +1,1 @@
+{"expectedResult":"critical-attention","input":{"faults":[{"id":"F1","severity":"critical"}],"maintenance":[],"deferredMaintenance":[]}}

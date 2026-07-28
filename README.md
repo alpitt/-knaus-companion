@@ -35,9 +35,11 @@ The deployment workflow refuses to publish unless the package contains:
 
 ## Current release
 
-Version 16.1.0 adds local Trip Readiness, explicit journey lifecycle records, evidence baselines, conservative readiness assessments, generic checklists, entered-value planning calculations and incident tracking. It never treats checklist completion as proof of roadworthiness or legal compliance.
+Version 17.0.0 adds deterministic Maintenance Intelligence: explicit intervals and due states, recurrence previews, forecasts, campaigns, deferrals, lifecycle records, parts, consumables, warranties and transparent vehicle-health reporting. It never fabricates schedules or presents forecasts as failure predictions.
 
 Trip documentation: [owner guide](docs/TRIP_READINESS_GUIDE.md), [developer guide](docs/TRIP_READINESS_DEVELOPER_GUIDE.md), and [checklist guide](docs/TRIP_CHECKLISTS_GUIDE.md).
+
+Maintenance documentation: [owner guide](docs/MAINTENANCE_INTELLIGENCE_GUIDE.md), [developer guide](docs/MAINTENANCE_DEVELOPER_GUIDE.md), [vehicle health](docs/VEHICLE_HEALTH_GUIDE.md), [campaigns](docs/MAINTENANCE_CAMPAIGNS_GUIDE.md), and [parts, consumables and warranties](docs/PARTS_CONSUMABLES_WARRANTIES_GUIDE.md).
 
 Version 15.4.0 adds deterministic, local-only modification planning with relevant baseline snapshots, graph-based impact review, safety blockers, evidence and measurement requirements, readiness assessment, reversible checklists, proposed graph overlays and explicit Owner Record conversion. It never treats a plan as automatically safe or approved.
 

@@ -257,7 +257,7 @@ test("change planning route, modules and offline shell are integrated",()=>{
   assert.match(html,/data-screen="change-plans"/);
   assert.match(source,/changePlans:\[\]/);
   for(const asset of ["change-plans.js","change-baseline.js","change-impact.js","change-readiness.js","change-calculations.js","change-graph-overlay.js","change_plan.schema.json"]){assert.match(html+worker,new RegExp(asset.replace(".","\\.")),`${asset} is not integrated`) }
-  assert.match(worker,/v16-1-0-trip-readiness/);
+  assert.match(worker,/v17-0-0-maintenance-intelligence/);
 });
 
 test("workshop jobs inspections execution mode and offline shell are integrated",()=>{
@@ -265,7 +265,15 @@ test("workshop jobs inspections execution mode and offline shell are integrated"
   for(const route of["workshop-jobs","workshop-job","inspections"])assert.match(html,new RegExp(`data-screen="${route}"`));
   assert.match(source,/workshopJobs:\[\],inspections:\[\]/);
   for(const asset of["workshop_job.schema.json","inspection.schema.json","inspection_templates.json","workshop-jobs.js","workshop-lifecycle.js","workshop-readiness.js","workshop-checklists.js","workshop-defects.js","workshop-commissioning.js","inspections.js","workshop-owner-overlay.js"]){assert.match(html+worker,new RegExp(asset.replace(".","\\.")),`${asset} is not integrated`)}
-  assert.match(worker,/v16-1-0-trip-readiness/);
+  assert.match(worker,/v17-0-0-maintenance-intelligence/);
+});
+
+test("maintenance intelligence schemas runtimes routes and offline assets are integrated",()=>{
+  const required=["app/data/maintenance_plan.schema.json","app/data/maintenance_interval.schema.json","app/data/maintenance_forecast.schema.json","app/data/maintenance_campaign.schema.json","app/data/maintenance_part.schema.json","app/data/maintenance_consumable.schema.json","app/data/vehicle_health_rules.json","app/assets/js/maintenance-engine.js","app/assets/js/maintenance-lifecycle.js","app/assets/js/maintenance-due.js","app/assets/js/maintenance-recurring.js","app/assets/js/maintenance-forecast.js","app/assets/js/maintenance-campaigns.js","app/assets/js/maintenance-deferral.js","app/assets/js/maintenance-readiness.js","app/assets/js/maintenance-dependencies.js","app/assets/js/maintenance-completion.js","app/assets/js/maintenance-parts.js","app/assets/js/maintenance-consumables.js","app/assets/js/maintenance-warranty.js","app/assets/js/component-maintenance.js","app/assets/js/vehicle-health.js","app/assets/js/maintenance-owner-overlay.js"];
+  for(const file of required)assert.ok(fs.existsSync(path.join(ROOT,file)),`${file} is missing`);
+  const html=read("app/index.html"),worker=read("app/service-worker.js");
+  for(const route of["maintenance-intelligence","maintenance-dashboard","maintenance-calendar"])assert.match(html,new RegExp(`data-screen="${route}"`));
+  for(const file of required.filter(x=>x.startsWith("app/assets/js/")).map(x=>x.split("/").pop()))assert.match(worker,new RegExp(file.replace(".","\\.")));
 });
 
 test("owner-record runtime, routes and offline shell are integrated", () => {

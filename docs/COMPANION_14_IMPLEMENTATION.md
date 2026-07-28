@@ -258,3 +258,11 @@ Version 16.1.0 adds managed trip records alongside the preserved legacy touring 
 Readiness is deterministic and conservative across 24 categories. Baselines retain source IDs and summary provenance without copying binary evidence or mutating the Digital Twin/System Graph. Checklists, planning calculations and incident conversions require explicit owner action; missing values remain unknown and no roadworthiness, legal, payload, capacity or consumption claim is inferred.
 
 Recommended Sprint 12: complete hands-on mobile acceptance of the trip editor and travel modes, then expand repository-backed checklist provenance and print/export usability without adding online travel services.
+
+# Sprint 12 — Maintenance Intelligence
+
+Version 17.0.0 adds schema-version-2 structured maintenance plans without replacing existing static tasks, service logs or Owner Records. Explicit interval and lifecycle engines keep saved workflow state separate from derived due state. Missing date, odometer, trip or usage data remains not assessable.
+
+Recurrence creates previews only; forecasting is labelled as scheduling rather than failure prediction. Campaigns, deferrals, completion records, parts, consumables and warranties retain source history. Component and owner overlays remain derived and leave the Digital Twin and System Graph unchanged. Vehicle Health uses visible application-defined weights and cannot state roadworthiness.
+
+Recommended Sprint 13: perform comprehensive browser/mobile acceptance and deepen explicit import previews, report layouts and repository-sourced interval provenance without adding telemetry, machine learning or online services.

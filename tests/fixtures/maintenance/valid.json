@@ -1,0 +1,1 @@
+{"expectedValid":true,"item":{"id":"MP-VALIDITEM01","title":"Owner-defined review","category":"owner-defined","maintenanceType":"owner-defined","status":"draft","priority":"normal","safetyClass":"informational","confidence":"unknown","sourceType":"owner-defined","interval":{"id":"i","intervalType":"none","enabled":false,"sourceType":"owner-defined","confidence":"unknown"}}}
