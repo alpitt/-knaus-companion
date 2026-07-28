@@ -22,4 +22,3 @@ Link Evidence Library identifiers and Owner Record measurements rather than dupl
 - **Needs evidence/measurements:** define what will prove the baseline and result.
 - **Incomplete baseline:** correct missing system/component references or explicitly record the unknown.
 - **Restore rejected:** the imported plan structure or references are invalid; current data remains unchanged.
-
