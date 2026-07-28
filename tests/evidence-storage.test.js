@@ -1,0 +1,3 @@
+const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/evidence-storage.js");
+test("stable database contract and unavailable IndexedDB handling",async()=>{assert.equal(api.DB_NAME,"knaus-companion-evidence");assert.equal(api.DB_VERSION,1);api._reset();await assert.rejects(api.initialise(),/IndexedDB is unavailable/)});
+test("SHA-256 checksum is deterministic",async()=>{const file={arrayBuffer:async()=>new TextEncoder().encode("evidence").buffer};assert.equal(await api.calculateChecksum(file),"ee8250fb76e094b34b471f13a73dbbe51d1ae142e9df59d7c0d31ec20f0a0a8e")});

@@ -1,6 +1,6 @@
 {
-  "version": "15.1.0",
-  "releaseName": "Owner Records and Vehicle History",
+  "version": "15.2.0",
+  "releaseName": "Evidence Library",
   "buildDate": "2026-07-27",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {

@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer]
 
 permissions:
   contents: read
@@ -53,6 +53,11 @@ jobs:
           node --check app/assets/js/evidence-links.js
           node --check app/assets/js/digital-twin-owner-overlay.js
           node --check scripts/validate-owner-records.js
+          node --check app/assets/js/evidence-file-validation.js
+          node --check app/assets/js/evidence-storage.js
+          node --check app/assets/js/evidence-library.js
+          node --check app/assets/js/evidence-library-ui.js
+          node --check scripts/validate-evidence-library.js
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
@@ -67,6 +72,9 @@ jobs:
 
       - name: Validate owner-record contracts and fixtures
         run: node scripts/validate-owner-records.js
+
+      - name: Validate Evidence Library contracts and fixtures
+        run: node scripts/validate-evidence-library.js
 
       - name: Run every repository test
         shell: bash

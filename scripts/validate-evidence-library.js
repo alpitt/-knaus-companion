@@ -1,0 +1,11 @@
+"use strict";
+const fs=require("node:fs"),path=require("node:path"),assert=require("node:assert/strict"),root=path.resolve(__dirname,"..");
+const schema=JSON.parse(fs.readFileSync(path.join(root,"app/data/evidence_library.schema.json"),"utf8"));
+const runtime=require(path.join(root,"app/assets/js/evidence-library.js"));
+const files=require(path.join(root,"app/assets/js/evidence-file-validation.js"));
+assert.equal(schema.$schema,"https://json-schema.org/draft/2020-12/schema");
+for(const [key,values] of [["type",runtime.TYPES],["status",runtime.STATUSES],["provenance",runtime.PROVENANCE],["confidence",runtime.CONFIDENCE],["storageMode",runtime.STORAGE_MODES]])for(const value of values)assert(schema.properties[key].enum.includes(value));
+assert.deepEqual([files.LIMITS.image,files.LIMITS.pdf,files.LIMITS.text],[20*1048576,50*1048576,5*1048576]);
+const dir=path.join(root,"tests/fixtures/evidence-library"),fixtureFiles=fs.readdirSync(dir).filter(x=>x.endsWith(".json"));for(const file of fixtureFiles)JSON.parse(fs.readFileSync(path.join(dir,file),"utf8"));
+const valid=["valid-photograph.json","valid-pdf.json","metadata-only.json","missing-file.json"].map(x=>JSON.parse(fs.readFileSync(path.join(dir,x),"utf8")));for(const record of valid)assert.equal(runtime.validate(record).valid,true,`${record.id} must validate`);
+console.log(`Evidence Library contract valid: ${valid.length} valid fixtures; ${fixtureFiles.length} total safety fixtures.`);

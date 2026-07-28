@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alpitt.github.io/-knaus-companion/data/evidence_library.schema.json",
+  "title": "Knaus Companion Evidence Library",
+  "type": "object",
+  "required": ["id", "type", "title", "status", "storageMode", "createdAt", "updatedAt", "provenance", "confidence", "revisionHistory", "archiveState"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^EVD-[A-Z0-9]{8,}$"},
+    "type": {"enum": ["photograph", "document", "receipt", "invoice", "workshop-report", "inspection-report", "service-record", "measurement-proof", "warranty-document", "insurance-document", "registration-document", "manual-extract", "diagram", "screenshot", "other"]},
+    "title": {"type": "string", "minLength": 1, "maxLength": 180},
+    "description": {"type": "string"},
+    "status": {"enum": ["draft", "active", "reviewed", "verified", "superseded", "archived", "missing-file", "invalid", "pending-review"]},
+    "mimeType": {"type": "string"}, "originalFileName": {"type": "string"}, "fileExtension": {"type": "string"}, "fileSize": {"type": "number", "minimum": 0},
+    "checksum": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "storageMode": {"enum": ["indexeddb", "metadata-only", "external-reference", "unavailable"]}, "storageKey": {"type": "string"}, "objectUrlState": {"type": "string"},
+    "createdAt": {"type": "string", "format": "date-time"}, "updatedAt": {"type": "string", "format": "date-time"}, "capturedAt": {"type": "string", "format": "date-time"}, "documentDate": {"type": "string", "format": "date"}, "importedAt": {"type": "string", "format": "date-time"},
+    "source": {"type": "string"}, "provenance": {"enum": ["owner-captured", "owner-imported", "supplier", "workshop", "manufacturer", "official-manual", "insurer", "authority", "previous-owner", "generated-report", "unknown"]}, "confidence": {"enum": ["confirmed", "high", "medium", "low", "unknown"]},
+    "tags": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "systemIds": {"$ref": "#/$defs/ids"}, "componentIds": {"$ref": "#/$defs/ids"}, "relatedRecordIds": {"$ref": "#/$defs/ids"}, "relatedFaultIds": {"$ref": "#/$defs/ids"}, "relatedMaintenanceIds": {"$ref": "#/$defs/ids"}, "relatedModificationIds": {"$ref": "#/$defs/ids"}, "relatedMeasurementIds": {"$ref": "#/$defs/ids"}, "relatedWorkshopJobIds": {"$ref": "#/$defs/ids"}, "manualPageRefs": {"type": "array", "items": {"type": "integer", "minimum": 1, "maximum": 286}, "uniqueItems": true}, "chapterRefs": {"type": "array", "items": {"type": "integer", "minimum": 1, "maximum": 44}, "uniqueItems": true}, "kbRefs": {"$ref": "#/$defs/ids"}, "digitalTwinRefs": {"$ref": "#/$defs/ids"},
+    "pageCount": {"type": "integer", "minimum": 1}, "dimensions": {"type": "object"}, "orientation": {"type": "string"}, "notes": {"type": "string"},
+    "revisionHistory": {"type": "array", "items": {"$ref": "#/$defs/revision"}}, "archiveState": {"type": "object", "required": ["archived"], "properties": {"archived": {"type": "boolean"}, "archivedAt": {"type": "string", "format": "date-time"}}}, "metadata": {"type": "object"},
+    "supplier": {"type": "string"}, "workshop": {"type": "string"}, "invoiceNumber": {"type": "string"}, "receiptNumber": {"type": "string"}, "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}, "subtotal": {"type": "number", "minimum": 0}, "tax": {"type": "number", "minimum": 0}, "total": {"type": "number", "minimum": 0}, "paymentStatus": {"type": "string"}, "warrantyEndDate": {"type": "string", "format": "date"}, "relatedParts": {"type": "array"}, "verification": {"type": "object"}
+  },
+  "$defs": {"ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}, "revision": {"type": "object", "required": ["revisionId", "evidenceId", "revisionNumber", "changedAt", "changeType", "changedFields", "previousValues", "newValues", "source", "notes"], "properties": {"revisionId": {"type": "string"}, "evidenceId": {"type": "string"}, "revisionNumber": {"type": "integer", "minimum": 1}, "changedAt": {"type": "string", "format": "date-time"}, "changeType": {"enum": ["created", "updated", "file-attached", "file-detached", "linked", "unlinked", "verified", "superseded", "archived", "restored", "imported", "migrated"]}, "changedFields": {"type": "array", "items": {"type": "string"}}, "previousValues": {"type": "object"}, "newValues": {"type": "object"}, "source": {"type": "string"}, "notes": {"type": "string"}}}}
+}

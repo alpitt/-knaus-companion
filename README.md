@@ -33,6 +33,8 @@ The deployment workflow refuses to publish unless the package contains:
 
 Version 15.1.0 adds private local owner records, append-only revision history, evidence links, fault and maintenance lifecycles, modifications, measurements, a vehicle timeline, runtime Digital Twin owner overlays, assistant retrieval and backup/health integration.
 
+Version 15.2.0 adds the local-only Evidence Library with validated metadata, IndexedDB file storage and SHA-256 duplicate detection. See the [Evidence Library guide](docs/EVIDENCE_LIBRARY_GUIDE.md) and [developer guide](docs/EVIDENCE_LIBRARY_DEVELOPER_GUIDE.md).
+
 Version 15.0.0 Release Candidate integrates application-health reporting, improved offline search, safer backup restore, cache recovery, accessibility and print hardening, and automated release integrity checks. It preserves the existing storage key and schema-version-2 compatibility.
 
 Version 14.2.0 adds deterministic local evidence-aware reasoning, source-ranked answers, safety escalation, traceability and guided diagnostics. It makes no external AI calls and requires no API key.

@@ -71,6 +71,12 @@ test("required production files exist", () => {
     "app/assets/js/evidence-links.js",
     "app/assets/js/digital-twin-owner-overlay.js",
     "scripts/validate-owner-records.js",
+    "app/data/evidence_library.schema.json",
+    "app/assets/js/evidence-storage.js",
+    "app/assets/js/evidence-library.js",
+    "app/assets/js/evidence-file-validation.js",
+    "app/assets/js/evidence-library-ui.js",
+    "scripts/validate-evidence-library.js",
   ];
   for (const relativePath of required) {
     assert.ok(fs.existsSync(path.join(ROOT, relativePath)), `Required production file is missing: ${relativePath}`);
