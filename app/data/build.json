@@ -1,7 +1,7 @@
 {
-  "version": "15.3.0",
-  "releaseName": "Interactive Systems Explorer",
-  "buildDate": "2026-07-27",
+  "version": "15.4.0",
+  "releaseName": "Modification Planning and Change Impact Analysis",
+  "buildDate": "2026-07-28",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
     "companionChapters": 44,
