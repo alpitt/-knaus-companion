@@ -35,7 +35,9 @@ The deployment workflow refuses to publish unless the package contains:
 
 ## Current release
 
-Version 16.0.0 adds local Workshop Jobs, defined-criteria inspections, explicit lifecycle transitions, readiness, checklists, defects, commissioning review and runtime owner overlays. It never treats owner-entered work as professional certification.
+Version 16.1.0 adds local Trip Readiness, explicit journey lifecycle records, evidence baselines, conservative readiness assessments, generic checklists, entered-value planning calculations and incident tracking. It never treats checklist completion as proof of roadworthiness or legal compliance.
+
+Trip documentation: [owner guide](docs/TRIP_READINESS_GUIDE.md), [developer guide](docs/TRIP_READINESS_DEVELOPER_GUIDE.md), and [checklist guide](docs/TRIP_CHECKLISTS_GUIDE.md).
 
 Version 15.4.0 adds deterministic, local-only modification planning with relevant baseline snapshots, graph-based impact review, safety blockers, evidence and measurement requirements, readiness assessment, reversible checklists, proposed graph overlays and explicit Owner Record conversion. It never treats a plan as automatically safe or approved.
 

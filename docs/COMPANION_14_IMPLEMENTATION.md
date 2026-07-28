@@ -250,3 +250,11 @@ Version 16.0.0 adds schema-version-2 workshop jobs and inspections. Explicit lif
 Jobs may be created explicitly from faults, maintenance, Change Plans or inspections without mutating those source records. Relevant baseline snapshots and runtime overlays leave the reference Digital Twin and System Graph unchanged. Backups, local assistant retrieval, health counts and offline caching include the new metadata and static modules. No private records enter the service-worker cache.
 
 Known limitations include repository-supported criteria only, no professional qualification verification, no live diagnostic equipment, and no automatic regulatory determination. Recommended Sprint 11: deepen import conflict previews, measurement/evidence selectors, printable handover packs and the interactive execution editor while preserving explicit safety boundaries.
+
+# Sprint 11 — Trip Readiness and Journey Operations
+
+Version 16.1.0 adds managed trip records alongside the preserved legacy touring journal. The additive schema-version-2 design needs no migration: `TR-` records use explicit lifecycle transitions, immutable reads, append-only revisions and confirmed archive/delete actions.
+
+Readiness is deterministic and conservative across 24 categories. Baselines retain source IDs and summary provenance without copying binary evidence or mutating the Digital Twin/System Graph. Checklists, planning calculations and incident conversions require explicit owner action; missing values remain unknown and no roadworthiness, legal, payload, capacity or consumption claim is inferred.
+
+Recommended Sprint 12: complete hands-on mobile acceptance of the trip editor and travel modes, then expand repository-backed checklist provenance and print/export usability without adding online travel services.

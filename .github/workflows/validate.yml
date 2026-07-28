@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer, companion-15-sprint-9-change-planning, companion-16-sprint-10-workshop-jobs]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer, companion-15-sprint-9-change-planning, companion-16-sprint-10-workshop-jobs, companion-16-sprint-11-trip-readiness]
 
 permissions:
   contents: read
@@ -79,6 +79,9 @@ jobs:
           node --check app/assets/js/workshop-owner-overlay.js
           node --check scripts/validate-workshop-jobs.js
           node --check scripts/validate-inspections.js
+          for file in app/assets/js/trip*.js; do node --check "$file"; done
+          node --check scripts/validate-trips.js
+          node --check scripts/validate-trip-templates.js
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
@@ -107,6 +110,11 @@ jobs:
         run: |
           node scripts/validate-workshop-jobs.js
           node scripts/validate-inspections.js
+
+      - name: Validate trip and checklist-template contracts
+        run: |
+          node scripts/validate-trips.js
+          node scripts/validate-trip-templates.js
 
       - name: Run every repository test
         shell: bash
