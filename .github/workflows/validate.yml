@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer, companion-15-sprint-9-change-planning]
 
 permissions:
   contents: read
@@ -61,6 +61,14 @@ jobs:
           node --check app/assets/js/system-graph.js
           node --check app/assets/js/system-explorer.js
           node --check scripts/validate-system-graph.js
+          node --check app/assets/js/change-plans.js
+          node --check app/assets/js/change-baseline.js
+          node --check app/assets/js/change-impact.js
+          node --check app/assets/js/change-readiness.js
+          node --check app/assets/js/change-calculations.js
+          node --check app/assets/js/change-graph-overlay.js
+          node --check app/assets/js/change-planner-ui.js
+          node --check scripts/validate-change-plans.js
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
@@ -81,6 +89,9 @@ jobs:
 
       - name: Validate Interactive Systems graph
         run: node scripts/validate-system-graph.js
+
+      - name: Validate change planning contracts and fixtures
+        run: node scripts/validate-change-plans.js
 
       - name: Run every repository test
         shell: bash

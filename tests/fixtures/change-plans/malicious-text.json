@@ -1,0 +1,1 @@
+{"expectedValid":false,"plan":{"id":"CP-MALICIOUS1","title":"<script>alert(1)</script>","category":"general","status":"draft","priority":"normal","confidence":"unknown","safetyClass":"informational","createdAt":"2026-07-28","updatedAt":"2026-07-28"}}

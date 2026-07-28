@@ -82,6 +82,15 @@ test("required production files exist", () => {
     "app/assets/js/system-graph.js",
     "app/assets/js/system-explorer.js",
     "scripts/validate-system-graph.js",
+    "app/data/change_plan.schema.json",
+    "app/assets/js/change-plans.js",
+    "app/assets/js/change-baseline.js",
+    "app/assets/js/change-impact.js",
+    "app/assets/js/change-readiness.js",
+    "app/assets/js/change-calculations.js",
+    "app/assets/js/change-graph-overlay.js",
+    "app/assets/js/change-planner-ui.js",
+    "scripts/validate-change-plans.js",
   ];
   for (const relativePath of required) {
     assert.ok(fs.existsSync(path.join(ROOT, relativePath)), `Required production file is missing: ${relativePath}`);
@@ -227,6 +236,14 @@ test("storage key and saved-state schema remain compatible", () => {
   const defaultSchema = source.match(/const DEFAULT_STATE=\{schemaVersion:(\d+),/)?.[1];
   assert.equal(defaultSchema, "2", "DEFAULT_STATE schema version must remain 2");
   assert.match(source, /schemaVersion:2/, "Schema version 2 migration/export support is missing");
+});
+
+test("change planning route, modules and offline shell are integrated",()=>{
+  const html=read("app/index.html"),worker=read("app/service-worker.js"),source=read("app/assets/js/app-v4.js");
+  assert.match(html,/data-screen="change-plans"/);
+  assert.match(source,/changePlans:\[\]/);
+  for(const asset of ["change-plans.js","change-baseline.js","change-impact.js","change-readiness.js","change-calculations.js","change-graph-overlay.js","change_plan.schema.json"]){assert.match(html+worker,new RegExp(asset.replace(".","\\.")),`${asset} is not integrated`) }
+  assert.match(worker,/v15-4-0-change-planning/);
 });
 
 test("owner-record runtime, routes and offline shell are integrated", () => {

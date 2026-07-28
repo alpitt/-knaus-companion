@@ -1,0 +1,1 @@
+{"expectedValid":false,"plan":{"id":"CP-CHECKBAD01","title":"Checklist","category":"general","status":"draft","priority":"normal","confidence":"unknown","safetyClass":"informational","createdAt":"2026-07-28","updatedAt":"2026-07-28","installationSteps":[{"status":"approved"}]}}

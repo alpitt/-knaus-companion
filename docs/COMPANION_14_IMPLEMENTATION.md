@@ -236,3 +236,10 @@ Privacy is structural: there are no uploads, analytics, telemetry, API keys or e
 Sprint 7 separates evidence metadata from binary storage. Metadata remains in schema-version-2 saved state; binary files remain local in IndexedDB database `knaus-companion-evidence` version 1. A central allowlist applies file-size, extension and magic-byte checks, while local SHA-256 checksums support duplicate detection. Evidence supports review, verification, supersede, archive, restore, append-only revisions and owner-record or Digital Twin links.
 
 The assistant receives metadata-only runtime records and cannot interpret attachments. JSON backups preserve metadata but not IndexedDB binary bodies, so important files require separate export. No analytics, upload, OCR, image recognition or remote preview service exists. Known limitations include native-browser preview variability and the outstanding full cross-device manual matrix. Sprint 8 may add the deterministic Interactive Systems Explorer after acceptance validation.
+# Sprint 9 — Modification Planning and Change Impact Analysis
+
+Version 15.4.0 adds an offline Change Planner backed by a formal schema and the existing schema-version-2 state. Relevant baseline snapshots preserve provenance without copying the whole application. Deterministic graph impact analysis exposes direct/dependent entities, evidence and measurement gaps, open faults and safety rules. Readiness reports blockers and professional-review needs; it never asserts safety.
+
+Proposed graph overlays, engineering calculations, installation/verification checklists, plan-versus-actual review and explicit Owner Record conversion remain additive. Plans are included in normal backup/restore and local assistant retrieval, but are labelled proposed and never uploaded. Known limitations include repository-data coverage, no certification, no automatic cable/fuse sizing, no regulatory determination, and no live vehicle data.
+
+Recommended Sprint 10: strengthen structured measurement/checklist editors, import previews, richer printable professional-review packs and visual proposed overlays while preserving the same deterministic safety boundary.

@@ -1,0 +1,1 @@
+{"expectedValid":false,"plan":{"id":"CP-DUPEDGE001","title":"Duplicate edge","category":"general","status":"draft","priority":"normal","confidence":"unknown","safetyClass":"informational","createdAt":"2026-07-28","updatedAt":"2026-07-28","proposedRelationships":[{"sourceId":"a","targetId":"b"},{"sourceId":"a","targetId":"b"}]}}
