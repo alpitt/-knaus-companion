@@ -1,0 +1,1 @@
+{"expectedValid":false,"job":{"id":"WJ-MALICIOUS1","title":"<script>alert(1)</script>","jobType":"general","status":"draft","priority":"normal","safetyClass":"informational","confidence":"unknown","verificationResult":"pending"}}

@@ -91,6 +91,20 @@ test("required production files exist", () => {
     "app/assets/js/change-graph-overlay.js",
     "app/assets/js/change-planner-ui.js",
     "scripts/validate-change-plans.js",
+    "app/data/workshop_job.schema.json",
+    "app/data/inspection.schema.json",
+    "app/data/inspection_templates.schema.json",
+    "app/data/inspection_templates.json",
+    "app/assets/js/workshop-jobs.js",
+    "app/assets/js/workshop-lifecycle.js",
+    "app/assets/js/workshop-readiness.js",
+    "app/assets/js/workshop-checklists.js",
+    "app/assets/js/workshop-defects.js",
+    "app/assets/js/workshop-commissioning.js",
+    "app/assets/js/inspections.js",
+    "app/assets/js/workshop-owner-overlay.js",
+    "scripts/validate-workshop-jobs.js",
+    "scripts/validate-inspections.js",
   ];
   for (const relativePath of required) {
     assert.ok(fs.existsSync(path.join(ROOT, relativePath)), `Required production file is missing: ${relativePath}`);
@@ -243,7 +257,15 @@ test("change planning route, modules and offline shell are integrated",()=>{
   assert.match(html,/data-screen="change-plans"/);
   assert.match(source,/changePlans:\[\]/);
   for(const asset of ["change-plans.js","change-baseline.js","change-impact.js","change-readiness.js","change-calculations.js","change-graph-overlay.js","change_plan.schema.json"]){assert.match(html+worker,new RegExp(asset.replace(".","\\.")),`${asset} is not integrated`) }
-  assert.match(worker,/v15-4-0-change-planning/);
+  assert.match(worker,/v16-0-0-workshop-jobs/);
+});
+
+test("workshop jobs inspections execution mode and offline shell are integrated",()=>{
+  const html=read("app/index.html"),worker=read("app/service-worker.js"),source=read("app/assets/js/app-v4.js");
+  for(const route of["workshop-jobs","workshop-job","inspections"])assert.match(html,new RegExp(`data-screen="${route}"`));
+  assert.match(source,/workshopJobs:\[\],inspections:\[\]/);
+  for(const asset of["workshop_job.schema.json","inspection.schema.json","inspection_templates.json","workshop-jobs.js","workshop-lifecycle.js","workshop-readiness.js","workshop-checklists.js","workshop-defects.js","workshop-commissioning.js","inspections.js","workshop-owner-overlay.js"]){assert.match(html+worker,new RegExp(asset.replace(".","\\.")),`${asset} is not integrated`)}
+  assert.match(worker,/v16-0-0-workshop-jobs/);
 });
 
 test("owner-record runtime, routes and offline shell are integrated", () => {

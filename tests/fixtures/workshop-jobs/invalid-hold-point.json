@@ -1,0 +1,1 @@
+{"expectedValid":false,"job":{"id":"WJ-HOLDFAIL01","title":"Bad hold","jobType":"general","status":"draft","priority":"normal","safetyClass":"informational","confidence":"unknown","verificationResult":"pending","holdPoints":[{"status":"auto-released"}]}}

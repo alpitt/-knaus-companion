@@ -1,5 +1,7 @@
 # Knaus Companion Ultimate
 
+Workshop operations are documented in the [Workshop Jobs guide](docs/WORKSHOP_JOBS_GUIDE.md), [Inspections guide](docs/INSPECTIONS_GUIDE.md) and [Workshop Jobs developer guide](docs/WORKSHOP_JOBS_DEVELOPER_GUIDE.md).
+
 Modification planning is documented in the [Change Planning guide](docs/CHANGE_PLANNING_GUIDE.md) and [Change Planning developer guide](docs/CHANGE_PLANNING_DEVELOPER_GUIDE.md).
 
 GitHub Pages host for the preserved Knaus Companion Ultimate workshop application.
@@ -32,6 +34,8 @@ The deployment workflow refuses to publish unless the package contains:
 `https://alpitt.github.io/-knaus-companion/`
 
 ## Current release
+
+Version 16.0.0 adds local Workshop Jobs, defined-criteria inspections, explicit lifecycle transitions, readiness, checklists, defects, commissioning review and runtime owner overlays. It never treats owner-entered work as professional certification.
 
 Version 15.4.0 adds deterministic, local-only modification planning with relevant baseline snapshots, graph-based impact review, safety blockers, evidence and measurement requirements, readiness assessment, reversible checklists, proposed graph overlays and explicit Owner Record conversion. It never treats a plan as automatically safe or approved.
 

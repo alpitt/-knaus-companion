@@ -243,3 +243,10 @@ Version 15.4.0 adds an offline Change Planner backed by a formal schema and the 
 Proposed graph overlays, engineering calculations, installation/verification checklists, plan-versus-actual review and explicit Owner Record conversion remain additive. Plans are included in normal backup/restore and local assistant retrieval, but are labelled proposed and never uploaded. Known limitations include repository-data coverage, no certification, no automatic cable/fuse sizing, no regulatory determination, and no live vehicle data.
 
 Recommended Sprint 10: strengthen structured measurement/checklist editors, import previews, richer printable professional-review packs and visual proposed overlays while preserving the same deterministic safety boundary.
+# Sprint 10 — Workshop Jobs, Inspections and Commissioning
+
+Version 16.0.0 adds schema-version-2 workshop jobs and inspections. Explicit lifecycle transitions preserve reasons and revision history. Readiness, safety controls, hold points, checklists, defects, commissioning and owner acceptance remain separate so completion cannot imply verification or certification.
+
+Jobs may be created explicitly from faults, maintenance, Change Plans or inspections without mutating those source records. Relevant baseline snapshots and runtime overlays leave the reference Digital Twin and System Graph unchanged. Backups, local assistant retrieval, health counts and offline caching include the new metadata and static modules. No private records enter the service-worker cache.
+
+Known limitations include repository-supported criteria only, no professional qualification verification, no live diagnostic equipment, and no automatic regulatory determination. Recommended Sprint 11: deepen import conflict previews, measurement/evidence selectors, printable handover packs and the interactive execution editor while preserving explicit safety boundaries.

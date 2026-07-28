@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer, companion-15-sprint-9-change-planning]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer, companion-15-sprint-9-change-planning, companion-16-sprint-10-workshop-jobs]
 
 permissions:
   contents: read
@@ -69,6 +69,16 @@ jobs:
           node --check app/assets/js/change-graph-overlay.js
           node --check app/assets/js/change-planner-ui.js
           node --check scripts/validate-change-plans.js
+          node --check app/assets/js/workshop-jobs.js
+          node --check app/assets/js/workshop-lifecycle.js
+          node --check app/assets/js/workshop-readiness.js
+          node --check app/assets/js/workshop-checklists.js
+          node --check app/assets/js/workshop-defects.js
+          node --check app/assets/js/workshop-commissioning.js
+          node --check app/assets/js/inspections.js
+          node --check app/assets/js/workshop-owner-overlay.js
+          node --check scripts/validate-workshop-jobs.js
+          node --check scripts/validate-inspections.js
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
@@ -92,6 +102,11 @@ jobs:
 
       - name: Validate change planning contracts and fixtures
         run: node scripts/validate-change-plans.js
+
+      - name: Validate workshop and inspection contracts
+        run: |
+          node scripts/validate-workshop-jobs.js
+          node scripts/validate-inspections.js
 
       - name: Run every repository test
         shell: bash

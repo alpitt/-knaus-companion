@@ -35,7 +35,7 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 15.4.0' app/index.html
+          grep -q 'Version 16.0.0' app/index.html
           grep -q 'id="printElectricalReport"' app/index.html
           grep -q 'id="electricalMeasurementInsights"' app/index.html
           grep -q 'id="electricalMeasurementFilters"' app/index.html
@@ -249,7 +249,7 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="15.4.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="16.0.0"' app/assets/js/app-v4.js
           grep -q 'function electricalReportHtml(' app/assets/js/app-v4.js
           grep -q 'function printElectricalReport(' app/assets/js/app-v4.js
           grep -q 'function renderElectricalMeasurementInsights(' app/assets/js/app-v4.js
