@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#16384b">
   <link rel="icon" href="data:,">
-  <title>Knaus Companion 16.0.0</title>
+  <title>Knaus Companion 16.1.0</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="assets/css/app-v4.css?v=16.0.0-workshop-jobs">
+  <link rel="stylesheet" href="assets/css/app-v4.css?v=16.1.0-trip-readiness">
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
@@ -17,7 +17,7 @@
       <button class="icon-btn" id="menuButton" aria-label="Open menu" aria-expanded="false">☰</button>
       <div class="brand">
         <strong>Knaus Companion</strong>
-        <span>Version 16.0.0</span>
+        <span>Version 16.1.0</span>
       </div>
       <button class="icon-btn" id="themeButton" aria-label="Toggle theme">◐</button>
     </header>
@@ -532,6 +532,8 @@
       <section class="screen" data-screen="timeline"><div class="page-head"><span class="eyebrow">Vehicle history</span><h1>Vehicle timeline</h1><p>A chronological view generated from local owner records without duplicating their payloads.</p></div><section class="panel timeline-toolbar"><label>Search timeline<input id="timelineSearch" type="search" placeholder="Record title, system or component"></label><label>Type<select id="timelineType"><option value="">All record types</option></select></label><label><input id="timelineArchived" type="checkbox"> Include archived records</label><button class="secondary-btn" id="printTimeline">Print timeline</button></section><div id="vehicleTimeline" class="vehicle-timeline" aria-live="polite"></div></section>
 
       <section class="screen" data-screen="workshop-jobs"><div class="page-head"><span class="eyebrow">Controlled workshop history</span><h1>Workshop Jobs</h1><p>Define scope, preserve the starting condition, record work and assess only explicit acceptance criteria.</p></div><div class="panel workshop-safety-note"><strong>Local record — not certification</strong><p>Jobs remain on this device. Completion never implies professional certification, fault resolution or maintenance completion.</p></div><div id="workshopJobSummary" class="status-grid" aria-live="polite"></div><section class="panel record-toolbar"><div class="record-actions"><button class="primary-btn" id="newWorkshopJob">Create workshop job</button><button class="secondary-btn" onclick="print()">Print register</button></div><div class="record-filters"><label>Search<input id="workshopJobSearch" type="search" placeholder="Job, scope, part, component or defect"></label><label>Status<select id="workshopJobStatus"><option value="">All statuses</option><option>draft</option><option>scheduled</option><option>ready-to-start</option><option>in-progress</option><option>blocked</option><option>awaiting-verification</option><option>completed</option><option>closed</option><option>archived</option></select></label></div></section><div id="workshopJobList" class="record-list" aria-live="polite"></div></section>
+      <section class="screen" data-screen="trips"><div class="page-head"><span class="eyebrow">Local journey operations</span><h1>Trips</h1><p>Plan a journey, preserve its evidence baseline and review what is ready, uncertain or blocked.</p></div><div class="panel workshop-safety-note"><strong>Planning aid — not roadworthiness certification</strong><p>Readiness covers only entered and linked data. No checklist guarantees roadworthiness or legal compliance.</p></div><div id="tripReadinessSummary" class="status-grid" aria-live="polite"></div><section class="panel record-toolbar"><div class="record-actions"><button class="primary-btn" id="newManagedTrip">Create trip</button><button class="secondary-btn" onclick="print()">Print travel register</button></div><label>Search<input id="managedTripSearch" type="search" placeholder="Trip, origin or destination"></label></section><div id="managedTripList" class="record-list" aria-live="polite"></div></section>
+      <section class="screen" data-screen="trip-dashboard"><div class="page-head"><span class="eyebrow">Departure, arrival and return</span><h1 id="tripDashboardTitle">Trip dashboard</h1></div><div id="tripDashboardContent"></div></section>
       <section class="screen" data-screen="workshop-job"><div class="page-head"><span class="eyebrow">Focused execution mode</span><h1 id="workshopExecutionTitle">Workshop job</h1><p id="workshopExecutionStatus" role="status"></p><button class="secondary-btn" data-route="workshop-jobs">Exit execution mode</button></div><div class="panel workshop-safety-note"><strong>Stop if conditions change</strong><p>Safety controls, hold points and unresolved defects remain visible. Steps require explicit action.</p></div><div id="workshopExecutionSteps"></div></section>
       <section class="screen" data-screen="inspections"><div class="page-head"><span class="eyebrow">Defined-condition review</span><h1>Inspections</h1><p>Record observations and assess only explicit, sourced or user-defined criteria.</p></div><div class="panel workshop-safety-note"><strong>Inspection record — not certification</strong><p>Owner-entered results do not represent professional approval.</p></div><div id="inspectionSummary" class="status-grid"></div><section class="panel record-toolbar"><button class="primary-btn" id="newInspection">Create inspection</button><button class="secondary-btn" onclick="print()">Print inspections</button></section><div id="inspectionList" class="record-list" aria-live="polite"></div></section>
       <section class="screen" data-screen="settings">
@@ -1106,7 +1108,8 @@
   <script src="assets/js/inspections.js?v=16.0.0-workshop-jobs"></script>
   <script src="assets/js/workshop-owner-overlay.js?v=16.0.0-workshop-jobs"></script>
   <script src="assets/js/workshop-jobs.js?v=16.0.0-workshop-jobs"></script>
-  <script src="assets/js/workshop-jobs-ui.js?v=16.0.0-workshop-jobs"></script>  <script src="assets/js/app-v4.js?v=16.0.0-workshop-jobs"></script>
+  <script src="assets/js/workshop-jobs-ui.js?v=16.0.0-workshop-jobs"></script>
+  <script src="assets/js/trip-lifecycle.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-checklists.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-baseline.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-readiness.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-load-planning.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-water-plan.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-gas-plan.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-energy-plan.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-documents.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trips.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-incidents.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trip-owner-overlay.js?v=16.1.0-trip-readiness"></script><script src="assets/js/trips-ui.js?v=16.1.0-trip-readiness"></script><script src="assets/js/app-v4.js?v=16.1.0-trip-readiness"></script>
 <script>
 if("serviceWorker" in navigator){
   let refreshing=false;
