@@ -1,7 +1,7 @@
 {
-  "version": "17.0.0",
-  "releaseName": "Maintenance Intelligence, Service Planning and Component Lifecycle Management",
-  "buildDate": "2026-07-28",
+  "version": "18.0.0",
+  "releaseName": "Ownership Intelligence, Cost Analytics and Component Provenance",
+  "buildDate": "2026-07-29",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
     "companionChapters": 44,
@@ -400,7 +400,12 @@
     "Electrical measurement activity insights",
     "Voltage, current, temperature and other reading filters",
     "Filter-aware electrical measurement CSV export",
-    "Print-ready electrical system evidence report"
+    "Print-ready electrical system evidence report",
+    "Traceable ownership event index with stable source references",
+    "Explicit local cost ledger with separate currencies and amount types",
+    "Component and system provenance histories",
+    "Ownership statistics, comparisons and recurring-pattern limitations",
+    "Historical Vehicle Health snapshots and ownership data-quality checks"
   ],
   "deploymentModel": "GitHub Pages workflow publishes a prepared site artifact",
   "auditRemediation": [
