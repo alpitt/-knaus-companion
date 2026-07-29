@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-quality.js");test("quality assessment reports without repair",()=>{const x=api.assess({ownerRecords:[{id:"A"}],ownershipCosts:[]},[{id:"E",sourceId:"MISSING"}],[]);assert.equal(x.orphanEvents.length,1);assert.equal(x.actionsAreSuggestions,true)});

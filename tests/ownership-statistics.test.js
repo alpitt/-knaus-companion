@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-statistics.js");test("statistics expose sample size and missing dates",()=>{const x=api.calculate([{sourceType:"trip",eventType:"trip-completed",occurredAt:null}],[]);assert.equal(x.sampleSize,1);assert.equal(x.unknownDateCount,1)});

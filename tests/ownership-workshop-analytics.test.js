@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-workshop-analytics.js");test("Workshop analytics never rate providers",()=>assert.equal(api.analyse([{status:"closed"}]).rating,null));

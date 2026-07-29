@@ -35,7 +35,9 @@ The deployment workflow refuses to publish unless the package contains:
 
 ## Current release
 
-Version 17.0.0 adds deterministic Maintenance Intelligence: explicit intervals and due states, recurrence previews, forecasts, campaigns, deferrals, lifecycle records, parts, consumables, warranties and transparent vehicle-health reporting. It never fabricates schedules or presents forecasts as failure predictions.
+Version 18.0.0 adds local Ownership Intelligence: traceable event normalisation, explicit cost records, currency-separated TCO, component and system provenance, descriptive statistics, Vehicle Health history and non-destructive data-quality reporting. It never fabricates history, cost, provenance or causation.
+
+Sprint 13 guides: [Ownership Intelligence](docs/OWNERSHIP_INTELLIGENCE_GUIDE.md), [Ownership Costs](docs/OWNERSHIP_COSTS_GUIDE.md), [Provenance](docs/PROVENANCE_GUIDE.md), [Ownership Analytics](docs/OWNERSHIP_ANALYTICS_GUIDE.md), [Total Cost of Ownership](docs/TOTAL_COST_OF_OWNERSHIP_GUIDE.md), and [developer guide](docs/OWNERSHIP_DEVELOPER_GUIDE.md).
 
 Trip documentation: [owner guide](docs/TRIP_READINESS_GUIDE.md), [developer guide](docs/TRIP_READINESS_DEVELOPER_GUIDE.md), and [checklist guide](docs/TRIP_CHECKLISTS_GUIDE.md).
 

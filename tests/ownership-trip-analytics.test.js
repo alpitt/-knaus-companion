@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-trip-analytics.js");test("trip analytics does not infer location",()=>assert.equal(api.analyse([]).locationInference,null));

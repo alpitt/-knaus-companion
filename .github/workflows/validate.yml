@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer, companion-15-sprint-9-change-planning, companion-16-sprint-10-workshop-jobs, companion-16-sprint-11-trip-readiness, companion-17-sprint-12-maintenance-intelligence]
+    branches: [companion-14-sprint-1-validation, companion-14-sprint-2-corpus, companion-14-sprint-3-digital-twin, companion-14-sprint-4-local-reasoning, companion-15-release-candidate, companion-15-sprint-6-owner-records, companion-15-sprint-7-evidence-library, companion-15-sprint-8-systems-explorer, companion-15-sprint-9-change-planning, companion-16-sprint-10-workshop-jobs, companion-16-sprint-11-trip-readiness, companion-17-sprint-12-maintenance-intelligence, companion-18-sprint-13-ownership-intelligence]
 
 permissions:
   contents: read
@@ -84,6 +84,8 @@ jobs:
           node --check scripts/validate-trip-templates.js
           for file in app/assets/js/maintenance-*.js app/assets/js/component-maintenance.js app/assets/js/vehicle-health.js; do node --check "$file"; done
           for file in scripts/validate-maintenance*.js scripts/validate-vehicle-health.js; do node --check "$file"; done
+          for file in app/assets/js/ownership-*.js app/assets/js/component-provenance.js app/assets/js/system-provenance.js app/assets/js/vehicle-health-history.js; do node --check "$file"; done
+          for file in scripts/validate-ownership*.js scripts/validate-vehicle-health-history.js; do node --check "$file"; done
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
@@ -126,6 +128,14 @@ jobs:
           node scripts/validate-maintenance-parts.js
           node scripts/validate-maintenance-consumables.js
           node scripts/validate-vehicle-health.js
+
+      - name: Validate ownership intelligence contracts
+        run: |
+          node scripts/validate-ownership.js
+          node scripts/validate-ownership-costs.js
+          node scripts/validate-ownership-provenance.js
+          node scripts/validate-ownership-quality.js
+          node scripts/validate-vehicle-health-history.js
 
       - name: Run every repository test
         shell: bash

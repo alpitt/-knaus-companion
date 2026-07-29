@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-maintenance-analytics.js");test("maintenance analytics avoids condition claims",()=>assert.match(api.analyse([]).statement,/does not establish overall vehicle condition/));

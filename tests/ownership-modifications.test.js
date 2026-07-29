@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-modifications.js");test("planned and completed modifications stay separate",()=>{const x=api.analyse([{id:"1",status:"planned"},{id:"2",status:"completed"}]);assert.equal(x.planned.length,1);assert.equal(x.completed.length,1)});

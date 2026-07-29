@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-history.js");test("history sorting is deterministic",()=>assert.deepEqual(api.build([{id:"B",recordedAt:"2"},{id:"A",recordedAt:"2"}]).map(x=>x.id),["A","B"]));

@@ -257,7 +257,7 @@ test("change planning route, modules and offline shell are integrated",()=>{
   assert.match(html,/data-screen="change-plans"/);
   assert.match(source,/changePlans:\[\]/);
   for(const asset of ["change-plans.js","change-baseline.js","change-impact.js","change-readiness.js","change-calculations.js","change-graph-overlay.js","change_plan.schema.json"]){assert.match(html+worker,new RegExp(asset.replace(".","\\.")),`${asset} is not integrated`) }
-  assert.match(worker,/v17-0-0-maintenance-intelligence/);
+  assert.match(worker,/v18-0-0-ownership-intelligence/);
 });
 
 test("workshop jobs inspections execution mode and offline shell are integrated",()=>{
@@ -265,7 +265,7 @@ test("workshop jobs inspections execution mode and offline shell are integrated"
   for(const route of["workshop-jobs","workshop-job","inspections"])assert.match(html,new RegExp(`data-screen="${route}"`));
   assert.match(source,/workshopJobs:\[\],inspections:\[\]/);
   for(const asset of["workshop_job.schema.json","inspection.schema.json","inspection_templates.json","workshop-jobs.js","workshop-lifecycle.js","workshop-readiness.js","workshop-checklists.js","workshop-defects.js","workshop-commissioning.js","inspections.js","workshop-owner-overlay.js"]){assert.match(html+worker,new RegExp(asset.replace(".","\\.")),`${asset} is not integrated`)}
-  assert.match(worker,/v17-0-0-maintenance-intelligence/);
+  assert.match(worker,/v18-0-0-ownership-intelligence/);
 });
 
 test("maintenance intelligence schemas runtimes routes and offline assets are integrated",()=>{

@@ -1,5 +1,9 @@
 # Companion 14 implementation programme
 
+## Sprint 13 — Ownership Intelligence, Cost Analytics and Component Provenance
+
+Version 18.0.0 adds an additive ownership layer over explicit local source records. A deterministic in-memory event index preserves source and revision IDs; cost records remain explicit and currency-separated; component/system provenance never changes reference data; recurring-pattern and comparison engines expose sample size, uncertainty and limitations; Vehicle Health snapshots are explicit historical records; and quality checks never mutate sources. Storage remains `knaus-ultimate-v1`, schema version 2, with previous backups accepted by the existing restore path. Recommended Sprint 14 scope is hardening the Ownership interfaces with larger accessibility/performance fixtures and owner-led usability validation—not prediction, cloud sync or accounting integration.
+
 ## Verified baseline
 
 Sprint 1 begins from the verified production baseline:

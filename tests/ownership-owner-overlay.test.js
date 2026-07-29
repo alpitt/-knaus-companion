@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-owner-overlay.js");test("owner overlay clears without modifying reference data",()=>{api.apply(api.build([],[]));api.clear();assert.equal(api.getStatus().referenceDataModified,false)});

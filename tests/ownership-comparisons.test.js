@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-comparisons.js");test("missing comparison data is not treated as zero",()=>{const x=api.compare({count:2,hasData:true},{count:0,hasData:false});assert.equal(x.difference,null);assert.match(x.statement,/not treated as zero/)});

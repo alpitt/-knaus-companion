@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/ownership-fault-analytics.js");test("fault analytics has no reliability score",()=>assert.equal(api.analyse([]).reliabilityScore,null));

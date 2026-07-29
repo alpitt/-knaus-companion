@@ -35,7 +35,7 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 17.0.0' app/index.html
+          grep -q 'Version 18.0.0' app/index.html
           grep -q 'id="printElectricalReport"' app/index.html
           grep -q 'id="electricalMeasurementInsights"' app/index.html
           grep -q 'id="electricalMeasurementFilters"' app/index.html
@@ -249,7 +249,16 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="17.0.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="18.0.0"' app/assets/js/app-v4.js
+          node scripts/validate-ownership.js
+          node scripts/validate-ownership-costs.js
+          node scripts/validate-ownership-provenance.js
+          node scripts/validate-ownership-quality.js
+          node scripts/validate-vehicle-health-history.js
+          grep -q 'data-screen="ownership"' app/index.html
+          grep -q 'data-screen="ownership-timeline"' app/index.html
+          grep -q 'data-screen="provenance"' app/index.html
+          grep -q 'data-screen="ownership-costs"' app/index.html
           node scripts/validate-maintenance.js
           node scripts/validate-maintenance-campaigns.js
           node scripts/validate-maintenance-forecast.js
