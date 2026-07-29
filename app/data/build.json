@@ -1,5 +1,5 @@
 {
-  "version": "18.0.0",
+  "version": "19.0.0",
   "releaseName": "Ownership Intelligence, Cost Analytics and Component Provenance",
   "buildDate": "2026-07-29",
   "architecture": "Static PWA, direct hash routing, offline-ready",
