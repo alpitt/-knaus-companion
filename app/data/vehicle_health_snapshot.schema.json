@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vehicle_health_snapshot.schema.json",
+  "type": "object",
+  "required": ["id", "recordedAt", "overallResult", "confidence", "blockers", "warnings", "unknowns", "sourceRecordIds", "rulesVersion", "revisionHistory"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^VHS-[A-Z0-9_-]{6,}$"},
+    "assessedAt": {"type": ["string", "null"], "format": "date-time"},
+    "recordedAt": {"type": "string", "format": "date-time"},
+    "overallResult": {"type": "string"},
+    "score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "confidence": {"type": "string"},
+    "categoryResults": {"type": "array", "items": {"type": "object"}},
+    "blockers": {"type": "array", "items": {"type": "string"}},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "unknowns": {"type": "array", "items": {"type": "string"}},
+    "sourceRecordIds": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "rulesVersion": {"type": "string"},
+    "ownerNotes": {"type": "string"},
+    "revisionHistory": {"type": "array", "items": {"type": "object"}},
+    "metadata": {"type": "object"}
+  },
+  "additionalProperties": true
+}
