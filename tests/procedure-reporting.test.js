@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-reporting");test("KnausProcedureReporting exposes its deterministic local API",()=>{for(const name of ["buildProcedureManual","buildExecutionReport","buildDeviationReport","buildTechnicalLibraryIndex"])assert.equal(typeof api[name],"function",name)});

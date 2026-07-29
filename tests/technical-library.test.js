@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/technical-library");test("KnausTechnicalLibrary exposes its deterministic local API",()=>{for(const name of ["initialise","buildIndex","search","getBacklinks","getQualityReport"])assert.equal(typeof api[name],"function",name)});

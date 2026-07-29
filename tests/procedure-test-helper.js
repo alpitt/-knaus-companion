@@ -1,0 +1,1 @@
+"use strict";const clone=x=>structuredClone(x);function adapter(seed={}){let state=clone(seed);return{getState:()=>state,setState:x=>{state=clone(x)},snapshot:()=>clone(state)}}function fresh(rel,name){delete require.cache[require.resolve(rel)];delete globalThis[name];return require(rel)}module.exports={adapter,fresh};

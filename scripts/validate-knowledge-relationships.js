@@ -1,0 +1,1 @@
+"use strict";const v=require("./procedure-validation-common");v.requireFiles(["app/assets/js/knowledge-relationships.js","app/data/knowledge_relationship.schema.json"]);console.log("Knowledge relationship runtime and schema are present.");

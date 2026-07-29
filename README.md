@@ -245,3 +245,13 @@ The fuse and circuit finder documents the VB06-1 and VB04 boards with searchable
 
 Open the site in Safari, tap Share, then tap Add to Home Screen. Open the installed app and select Download offline pack.
 
+# Companion 19.0.0 — Knowledge Capture and Guided Procedures
+
+Sprint 14 adds a fully local, versioned Procedure Library, guided executions, lessons learned, revision proposals and a rebuildable Technical Library. It generates no technical instructions and never approves, verifies or changes linked vehicle records automatically.
+
+- [Procedures Guide](docs/PROCEDURES_GUIDE.md)
+- [Procedure Execution Guide](docs/PROCEDURE_EXECUTION_GUIDE.md)
+- [Technical Library Guide](docs/TECHNICAL_LIBRARY_GUIDE.md)
+- [Lessons Learned Guide](docs/LESSONS_LEARNED_GUIDE.md)
+- [Procedure Developer Guide](docs/PROCEDURE_DEVELOPER_GUIDE.md)
+- [Procedure Safety and Limitations](docs/PROCEDURE_SAFETY_AND_LIMITATIONS.md)

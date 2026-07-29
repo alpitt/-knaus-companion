@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/lessons-learned");test("KnausLessonsLearned exposes its deterministic local API",()=>{for(const name of ["initialise","create","update","archive","createRevisionProposalPreview"])assert.equal(typeof api[name],"function",name)});

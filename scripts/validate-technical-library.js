@@ -1,0 +1,1 @@
+"use strict";const v=require("./procedure-validation-common");v.requireFiles(["app/assets/js/technical-library.js","app/data/technical_library_item.schema.json"]);console.log("Technical Library runtime and schema are present; private data remains runtime-only.");

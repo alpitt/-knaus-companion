@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-lifecycle");test("KnausProcedureLifecycle exposes its deterministic local API",()=>{for(const name of ["canTransition","transition","getAllowedTransitions","getBlockers"])assert.equal(typeof api[name],"function",name)});

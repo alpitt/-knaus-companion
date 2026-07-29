@@ -1,0 +1,1 @@
+"use strict";const v=require("./procedure-validation-common");v.requireFiles(["app/assets/js/procedure-library.js","app/assets/js/procedure-lifecycle.js","app/assets/js/procedure-versioning.js","app/assets/js/procedure-validation.js","app/assets/js/procedure-readiness.js"]);console.log("Procedure Library runtime files are present.");

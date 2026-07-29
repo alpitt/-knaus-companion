@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-deviations");test("KnausProcedureDeviations exposes its deterministic local API",()=>{for(const name of ["create","update","resolve","acceptRecordOnly","reject"])assert.equal(typeof api[name],"function",name)});

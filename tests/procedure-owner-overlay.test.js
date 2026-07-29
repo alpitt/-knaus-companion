@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-owner-overlay");test("KnausProcedureOwnerOverlay exposes its deterministic local API",()=>{for(const name of ["build","getComponentProcedures","getSystemProcedures","getExecutionHistory"])assert.equal(typeof api[name],"function",name)});

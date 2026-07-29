@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-versioning");test("KnausProcedureVersioning exposes its deterministic local API",()=>{for(const name of ["createVersion","compare","getHistory","validateVersionChain"])assert.equal(typeof api[name],"function",name)});

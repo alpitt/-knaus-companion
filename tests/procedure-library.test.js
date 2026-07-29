@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-library");test("KnausProcedureLibrary exposes its deterministic local API",()=>{for(const name of ["initialise","create","update","duplicate","archive","restore","remove","search","publish","supersede"])assert.equal(typeof api[name],"function",name)});

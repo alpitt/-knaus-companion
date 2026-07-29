@@ -86,6 +86,8 @@ jobs:
           for file in scripts/validate-maintenance*.js scripts/validate-vehicle-health.js; do node --check "$file"; done
           for file in app/assets/js/ownership-*.js app/assets/js/component-provenance.js app/assets/js/system-provenance.js app/assets/js/vehicle-health-history.js; do node --check "$file"; done
           for file in scripts/validate-ownership*.js scripts/validate-vehicle-health-history.js; do node --check "$file"; done
+          for file in app/assets/js/procedure-*.js app/assets/js/lessons-learned.js app/assets/js/technical-library.js app/assets/js/knowledge-relationships.js; do node --check "$file"; done
+          for file in scripts/validate-procedure*.js scripts/validate-technical-library.js scripts/validate-knowledge-relationships.js; do node --check "$file"; done
 
       - name: Rebuild deterministic Engineering Canon index
         run: node scripts/build-kb-index.js
@@ -136,6 +138,11 @@ jobs:
           node scripts/validate-ownership-provenance.js
           node scripts/validate-ownership-quality.js
           node scripts/validate-vehicle-health-history.js
+          node scripts/validate-procedures.js
+          node scripts/validate-procedure-library.js
+          node scripts/validate-procedure-executions.js
+          node scripts/validate-technical-library.js
+          node scripts/validate-knowledge-relationships.js
 
       - name: Run every repository test
         shell: bash

@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-validation");test("KnausProcedureValidation exposes its deterministic local API",()=>{for(const name of ["validate","validateSteps","validateBranches","getErrors"])assert.equal(typeof api[name],"function",name)});

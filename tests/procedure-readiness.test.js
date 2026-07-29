@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-readiness");test("KnausProcedureReadiness exposes its deterministic local API",()=>{for(const name of ["assess","getState","getMissingItems","getBlockers"])assert.equal(typeof api[name],"function",name)});

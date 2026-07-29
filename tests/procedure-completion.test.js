@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-completion");test("KnausProcedureCompletion exposes its deterministic local API",()=>{for(const name of ["createReview","complete","partiallyComplete","verify","createOwnerRecordPreview"])assert.equal(typeof api[name],"function",name)});

@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/knowledge-relationships");test("KnausKnowledgeRelationships exposes its deterministic local API",()=>{for(const name of ["create","validate","getOutgoing","getIncoming","getSupersessionChain"])assert.equal(typeof api[name],"function",name)});

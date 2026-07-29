@@ -1,0 +1,1 @@
+"use strict";const test=require("node:test"),assert=require("node:assert/strict"),api=require("../app/assets/js/procedure-revision-proposals");test("KnausProcedureRevisionProposals exposes its deterministic local API",()=>{for(const name of ["create","review","accept","reject","createProcedureRevisionPreview"])assert.equal(typeof api[name],"function",name)});
