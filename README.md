@@ -255,3 +255,8 @@ Sprint 14 adds a fully local, versioned Procedure Library, guided executions, le
 - [Lessons Learned Guide](docs/LESSONS_LEARNED_GUIDE.md)
 - [Procedure Developer Guide](docs/PROCEDURE_DEVELOPER_GUIDE.md)
 - [Procedure Safety and Limitations](docs/PROCEDURE_SAFETY_AND_LIMITATIONS.md)
+# Knaus Companion 20.0.0 — Deterministic Diagnostics
+
+Sprint 15 adds a local, deterministic Diagnostic Library, fault-tree validation, version-pinned investigation sessions, descriptive observations, explicit measurement criteria, escalations, unresolved questions, root-cause and resolution registers, reports, and read-only owner overlays. No diagnostic content, branch, criterion, hazard, diagnosis, root cause, or repair is generated automatically.
+
+Guides: [Diagnostics](docs/DIAGNOSTICS_GUIDE.md) · [Fault trees](docs/FAULT_TREE_GUIDE.md) · [Sessions](docs/DIAGNOSTIC_SESSION_GUIDE.md) · [Measurements](docs/DIAGNOSTIC_MEASUREMENT_GUIDE.md) · [Root causes and resolutions](docs/ROOT_CAUSE_AND_RESOLUTION_GUIDE.md) · [Developer guide](docs/DIAGNOSTIC_DEVELOPER_GUIDE.md) · [Safety and limitations](docs/DIAGNOSTIC_SAFETY_AND_LIMITATIONS.md)

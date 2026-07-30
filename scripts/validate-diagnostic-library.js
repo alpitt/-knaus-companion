@@ -1,0 +1,1 @@
+"use strict";const c=require("./diagnostic-validation-common"),files=["diagnostic-runtime","diagnostic-library","diagnostic-lifecycle","diagnostic-versioning","fault-tree-validation"];c.fail(files.filter(x=>!c.fs.existsSync(c.path.join(c.root,`app/assets/js/${x}.js`))).map(x=>`missing ${x}.js`),"Diagnostic Library validation");

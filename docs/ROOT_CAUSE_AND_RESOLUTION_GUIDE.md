@@ -1,0 +1,3 @@
+# Root cause and resolution guide
+
+A supported conclusion records what an explicit branch path supports; it is not a root cause. A proposed root cause remains unconfirmed until the owner explicitly confirms it or records professional/Workshop metadata. Such metadata does not verify identity, qualification, or approval. Supporting observations, measurements, evidence, and sources remain linked. Causes may be disputed, withdrawn, or superseded. A resolution records an action or outcome separately and does not prove the cause. Verification and reopening are explicit. Neither cause nor resolution closes faults, maintenance, Workshop Jobs, inspections, Change Plans, or component state automatically.

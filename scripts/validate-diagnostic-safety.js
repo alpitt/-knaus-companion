@@ -1,0 +1,1 @@
+"use strict";const c=require("./diagnostic-validation-common"),files=["app/assets/js/diagnostic-escalations.js","docs/DIAGNOSTIC_SAFETY_AND_LIMITATIONS.md"],errors=files.filter(x=>!c.fs.existsSync(c.path.join(c.root,x))).map(x=>`missing ${x}`);c.fail(errors,"Diagnostic safety validation");

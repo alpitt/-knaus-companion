@@ -1,0 +1,3 @@
+# Diagnostic measurement guide
+
+Record the observed value, original value, unit, original unit, method, tool identifier if known, time, component/system links, and limitations. Values are never captured automatically. Evaluation uses only an explicitly configured criterion and returns its rule ID, source, formula description, and result. No configured criterion returns `no-configured-criteria`. Incompatible units return `incompatible-unit`; the app does not silently convert them. Calibration state and uncertainty remain unknown unless recorded. A result does not prove component condition, safety, inspection compliance, or roadworthiness. Evidence may show a display but is not interpreted.

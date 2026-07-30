@@ -35,7 +35,7 @@ jobs:
           test "$(find app/chapters -type f -name '*.json' | wc -l)" -eq 44
           test "$(find app/manual/pages -type f | wc -l)" -eq 286
           test -f app/docs/Knaus_Sun_Traveller_Manufacturer_Manual.pdf
-          grep -q 'Version 19.0.0' app/index.html
+          grep -q 'Version 20.0.0' app/index.html
           grep -q 'id="printElectricalReport"' app/index.html
           grep -q 'id="electricalMeasurementInsights"' app/index.html
           grep -q 'id="electricalMeasurementFilters"' app/index.html
@@ -249,7 +249,14 @@ jobs:
           grep -q 'id="tripForm"' app/index.html
           grep -q 'id="campsitePlanner"' app/index.html
           grep -q 'id="campsiteForm"' app/index.html
-          grep -q 'const APP_VERSION="19.0.0"' app/assets/js/app-v4.js
+          grep -q 'const APP_VERSION="20.0.0"' app/assets/js/app-v4.js
+          for file in app/assets/js/diagnostic-*.js app/assets/js/fault-tree-validation.js app/assets/js/component-diagnostics.js app/assets/js/system-diagnostics.js; do node --check "$file"; done
+          node scripts/validate-diagnostics.js
+          node scripts/validate-diagnostic-library.js
+          node scripts/validate-diagnostic-sessions.js
+          node scripts/validate-fault-trees.js
+          node scripts/validate-diagnostic-measurements.js
+          node scripts/validate-diagnostic-safety.js
           node scripts/validate-procedures.js
           node scripts/validate-procedure-library.js
           node scripts/validate-procedure-executions.js

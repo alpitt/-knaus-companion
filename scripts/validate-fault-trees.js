@@ -1,0 +1,1 @@
+"use strict";const c=require("./diagnostic-validation-common"),v=require("../app/assets/js/fault-tree-validation");const r=v.validate({entryNodeId:""},[],[],[]);c.fail(r.errors.some(x=>x.code==="missing-entry-node")?[]:["validator did not reject missing entry node"],"Fault-tree validation");

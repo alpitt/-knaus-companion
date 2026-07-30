@@ -1,0 +1,1 @@
+"use strict";require("../app/assets/js/diagnostic-runtime");const c=require("./diagnostic-validation-common"),v=require("../app/assets/js/diagnostic-criteria"),r=v.evaluate({measuredValue:1,unit:"V"},null);c.fail(r.result==="no-configured-criteria"?[]:["missing criteria must remain explicit"],"Diagnostic measurement validation");
