@@ -176,6 +176,7 @@ function synchroniseProfileEvidence(configuration={},profile={},verifiedDate=new
 function loadState(){try{return migrateEvidenceState(JSON.parse(localStorage.getItem(STORE_KEY)||"{}"))}catch{return migrateEvidenceState({})}}
 function saveState(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 async function loadJSON(path,fallback=[]){try{const r=await fetch(path);if(!r.ok)throw new Error(path);return await r.json()}catch{return fallback}}
+async function initialiseReferenceModule(label,initialiser){try{return await initialiser()}catch(error){console.warn(`${label} unavailable during startup:`,error?.message||error);return{status:"unavailable",error:String(error?.message||"Reference data could not be loaded")}}}
 function toast(msg){const el=document.createElement("div");el.className="toast";el.textContent=msg;$("#toastHost").appendChild(el);setTimeout(()=>el.remove(),3500)}
 function route(){return (location.hash.slice(1)||"home").split("/")[0]}
 function navigate(id){location.hash=id}
@@ -2243,14 +2244,14 @@ async function init(){
     loadJSON("data/campsites.json"),loadJSON("data/touring_checklists.json"),loadJSON("data/touring_operations.json",{}),loadJSON("data/packing_templates.json",{})
   ]);
   DATA.inspectionTemplates=(await loadJSON("data/inspection_templates.json",{templates:[]})).templates||[];
-  await window.KnausCorpus?.initialise();
-  await window.KnausDigitalTwin?.initialise();
-  await window.KnausSystemGraph?.load();
+  await initialiseReferenceModule("Engineering Canon",()=>window.KnausCorpus?.initialise());
+  await initialiseReferenceModule("Digital Twin",()=>window.KnausDigitalTwin?.initialise());
+  await initialiseReferenceModule("System Graph",()=>window.KnausSystemGraph?.load());
   const ownerAdapter={getState:()=>state,setState:next=>{state=next;saveState()}};window.KnausOwnerRecords?.initialise(ownerAdapter);window.KnausEvidenceLinks?.initialise(ownerAdapter);window.KnausEvidenceLibrary?.initialise(ownerAdapter);try{await window.KnausEvidenceStorage?.initialise()}catch(error){console.warn("Evidence binary storage unavailable:",error.message)}
   window.KnausChangePlans?.initialise(ownerAdapter);window.KnausWorkshopJobs?.initialise(ownerAdapter);window.KnausInspections?.initialise(ownerAdapter,{templates:DATA.inspectionTemplates||[]});window.KnausTrips?.initialise(ownerAdapter);window.KnausMaintenanceEngine?.initialise(ownerAdapter);window.KnausMaintenanceCampaigns?.initialise(ownerAdapter);window.KnausMaintenanceParts?.initialise(ownerAdapter);window.KnausMaintenanceConsumables?.initialise(ownerAdapter);window.KnausMaintenanceWarranty?.initialise(ownerAdapter);window.KnausOwnershipIntelligence?.initialise(ownerAdapter);window.KnausOwnershipCosts?.initialise(ownerAdapter);window.KnausOwnershipProvenance?.initialise(ownerAdapter);window.KnausVehicleHealthHistory?.initialise(ownerAdapter);
   window.KnausProcedureUI?.initialise({adapter:ownerAdapter,toast});
   window.KnausDiagnosticUI?.initialise({adapter:ownerAdapter,toast});
-  await window.KnausReasoning?.initialise({runtimeRecords:reasoningRuntimeRecords()});
+  await initialiseReferenceModule("Local reasoning",()=>window.KnausReasoning?.initialise({runtimeRecords:reasoningRuntimeRecords()}));
   window.KnausOwnerRecordUI?.initialise({getSystems:()=>window.KnausDigitalTwin?.getSystems()||[],getComponents:()=>window.KnausDigitalTwin?.getComponents()||[],toast,onChange:async()=>{renderHome();renderHealth();await window.KnausReasoning?.initialise({runtimeRecords:reasoningRuntimeRecords()})}});
   window.KnausEvidenceLibraryUI?.initialise({toast,onChange:async()=>{renderHealth();await window.KnausReasoning?.initialise({runtimeRecords:reasoningRuntimeRecords()})}});
   window.KnausSystemExplorer?.initialise({toast});
