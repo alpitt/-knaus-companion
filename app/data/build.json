@@ -1,7 +1,7 @@
 {
-  "version": "19.0.0",
-  "releaseName": "Ownership Intelligence, Cost Analytics and Component Provenance",
-  "buildDate": "2026-07-29",
+  "version": "20.0.0",
+  "releaseName": "Deterministic Diagnostics, Fault-Tree Investigations and Evidence-Based Troubleshooting",
+  "buildDate": "2026-07-30",
   "architecture": "Static PWA, direct hash routing, offline-ready",
   "contentPreserved": {
     "companionChapters": 44,
